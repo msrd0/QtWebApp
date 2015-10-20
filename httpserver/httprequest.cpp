@@ -3,10 +3,11 @@
   @author Stefan Frings
 */
 
+#include "httpcookie.h"
 #include "httprequest.h"
 #include <QList>
 #include <QDir>
-#include "httpcookie.h"
+#include <QHostAddress>
 
 HttpRequest::HttpRequest(QSettings* settings) {
     status=waitForRequest;
@@ -44,6 +45,8 @@ void HttpRequest::readRequest(QTcpSocket* socket) {
             status=waitForHeader;
         }
     }
+	
+	ip = socket->peerAddress().toString().toUtf8();
 }
 
 void HttpRequest::readHeader(QTcpSocket* socket) {
@@ -277,6 +280,10 @@ QByteArray HttpRequest::getPath() const {
 
 QByteArray HttpRequest::getVersion() const {
     return version;
+}
+
+QByteArray HttpRequest::getIP() const {
+       return ip;
 }
 
 

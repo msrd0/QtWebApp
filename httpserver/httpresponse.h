@@ -68,6 +68,9 @@ public:
       Set status code and description. The default is 200,OK.
     */
     void setStatus(int statusCode, QByteArray description=QByteArray());
+	
+	int getStatusCode() const { return statusCode; }
+	QByteArray getStatusText() const { return statusText; }
 
     /**
       Write body data to the socket.

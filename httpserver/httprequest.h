@@ -73,6 +73,9 @@ public:
 
     /** Get the version of the HTPP request (e.g. "HTTP/1.1") */
     QByteArray getVersion() const;
+	
+	/** Get the IP address of the client. */
+	QByteArray getIP() const;
 
     /**
       Get the value of a HTTP request header.
@@ -163,6 +166,9 @@ private:
 
     /** Request protocol version */
     QByteArray version;
+	
+	/** The request ip */
+	QByteArray ip;
 
     /**
       Status of this request.
