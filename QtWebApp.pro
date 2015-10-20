@@ -3,6 +3,7 @@
 TARGET = QtWebApp
 TEMPLATE = lib
 QT -= gui
+QT += network
 VERSION = 1.5.8
 
 mac {
