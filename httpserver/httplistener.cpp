@@ -55,10 +55,6 @@ void HttpListener::close() {
 }
 
 void HttpListener::incomingConnection(tSocketDescriptor socketDescriptor) {
-#ifdef SUPERVERBOSE
-    qDebug("HttpListener: New connection");
-#endif
-
     HttpConnectionHandler* freeHandler=NULL;
     if (pool) {
         freeHandler=pool->getConnectionHandler();

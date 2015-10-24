@@ -14,7 +14,6 @@ TemplateCache::TemplateCache(QSettings* settings, QObject* parent)
 QString TemplateCache::tryFile(QString localizedName) {
     qint64 now=QDateTime::currentMSecsSinceEpoch();
     // search in cache
-    qDebug("TemplateCache: trying cached %s",qPrintable(localizedName));
     CacheEntry* entry=cache.object(localizedName);
     if (entry && (cacheTimeout==0 || entry->created>now-cacheTimeout)) {
         return entry->document;

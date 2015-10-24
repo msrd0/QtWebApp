@@ -4,6 +4,7 @@
 */
 
 #include "staticfilecontroller.h"
+#include <QCryptographicHash>
 #include <QFileInfo>
 #include <QDir>
 #include <QDateTime>
@@ -37,6 +38,12 @@ StaticFileController::StaticFileController(QSettings* settings, QObject* parent)
 
 void StaticFileController::service(HttpRequest& request, HttpResponse& response) {
     QByteArray path=request.getPath();
+	// Check whether the browsers cache is up to date
+	if (!request.getHeader("If-None-Match").isEmpty() && request.getHeader("If-None-Match") == ("\"" + etag.value(path) + "\""))
+	{
+		response.setStatus(304, "Not Modified");
+		return;
+	}
     // Check if we have the file in cache
     qint64 now=QDateTime::currentMSecsSinceEpoch();
     mutex.lock();
@@ -44,8 +51,8 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
     if (entry && (cacheTimeout==0 || entry->created>now-cacheTimeout)) {
         QByteArray document=entry->document; //copy the cached document, because other threads may destroy the cached entry immediately after mutex unlock.
         QByteArray filename=entry->filename;
+		response.setHeader("ETag", "\"" + etag.value(path) + "\"");
         mutex.unlock();
-        qDebug("StaticFileController: Cache hit for %s",path.data());
         setContentType(filename,response);
         response.setHeader("Cache-Control","max-age="+QByteArray::number(maxAge/1000));
         response.write(document);
@@ -53,7 +60,6 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
     else {
         mutex.unlock();
         // The file is not in cache.
-        qDebug("StaticFileController: Cache miss for %s",path.data());
         // Forbid access to files outside the docroot directory
         if (path.contains("/..")) {
             qWarning("StaticFileController: detected forbidden characters in path %s",path.data());
@@ -67,7 +73,6 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
         }
         // Try to open the file
         QFile file(docroot+path);
-        qDebug("StaticFileController: Open file %s",qPrintable(file.fileName()));
         if (file.open(QIODevice::ReadOnly)) {
             setContentType(path,response);
             response.setHeader("Cache-Control","max-age="+QByteArray::number(maxAge/1000));
@@ -76,12 +81,14 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
                 entry=new CacheEntry();
                 while (!file.atEnd() && !file.error()) {
                     QByteArray buffer=file.read(65536);
-                    response.write(buffer);
                     entry->document.append(buffer);
                 }
                 entry->created=now;
                 entry->filename=path;
                 mutex.lock();
+				etag.insert(path, QCryptographicHash::hash(entry->document, QCryptographicHash::Md5).toHex());
+				response.setHeader("ETag", "\"" + etag.value(path) + "\"");
+				response.write(entry->document);
                 cache.insert(request.getPath(),entry,entry->document.size());
                 mutex.unlock();
             }
@@ -133,4 +140,7 @@ void StaticFileController::setContentType(QString fileName, HttpResponse& respon
         response.setHeader("Content-Type", "text/javascript");
     }
     // Todo: add all of your content types
+	else {
+		response.setHeader("Content-Type", "application/octet-stream");
+	}
 }

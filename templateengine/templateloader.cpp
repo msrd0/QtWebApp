@@ -39,7 +39,6 @@ TemplateLoader::~TemplateLoader() {}
 
 QString TemplateLoader::tryFile(QString localizedName) {
     QString fileName=templatePath+"/"+localizedName+fileNameSuffix;
-    qDebug("TemplateCache: trying file %s",qPrintable(fileName));
     QFile file(fileName);
     if (file.exists()) {
         file.open(QIODevice::ReadOnly);

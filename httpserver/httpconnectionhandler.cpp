@@ -31,7 +31,6 @@ HttpConnectionHandler::HttpConnectionHandler(QSettings* settings, HttpRequestHan
     connect(&readTimer, SIGNAL(timeout()), SLOT(readTimeout()));
     readTimer.setSingleShot(true);
 
-    qDebug("HttpConnectionHandler (%p): constructed", this);
     this->start();
 }
 
@@ -40,7 +39,6 @@ HttpConnectionHandler::~HttpConnectionHandler() {
     quit();
     wait();
     delete socket;
-    qDebug("HttpConnectionHandler (%p): destroyed", this);
 }
 
 
@@ -61,7 +59,6 @@ void HttpConnectionHandler::createSocket() {
 
 
 void HttpConnectionHandler::run() {
-    qDebug("HttpConnectionHandler (%p): thread started", this);
     try {
         exec();
     }
@@ -69,12 +66,10 @@ void HttpConnectionHandler::run() {
         qCritical("HttpConnectionHandler (%p): an uncatched exception occured in the thread",this);
     }
     socket->close();
-    qDebug("HttpConnectionHandler (%p): thread stopped", this);
 }
 
 
 void HttpConnectionHandler::handleConnection(tSocketDescriptor socketDescriptor) {
-    qDebug("HttpConnectionHandler (%p): handle new connection", this);
     busy = true;
     Q_ASSERT(socket->isOpen()==false); // if not, then the handler is already busy
 
@@ -115,8 +110,6 @@ void HttpConnectionHandler::setBusy() {
 
 
 void HttpConnectionHandler::readTimeout() {
-    qDebug("HttpConnectionHandler (%p): read timeout occured",this);
-
 	socket->write("HTTP/1.1 408 request timeout\r\nConnection: close\r\n\r\n408 request timeout\r\n");
 
     socket->flush();
@@ -127,7 +120,6 @@ void HttpConnectionHandler::readTimeout() {
 
 
 void HttpConnectionHandler::disconnected() {
-    qDebug("HttpConnectionHandler (%p): disconnected", this);
     socket->close();
     readTimer.stop();
     busy = false;
@@ -136,10 +128,6 @@ void HttpConnectionHandler::disconnected() {
 void HttpConnectionHandler::read() {
     // The loop adds support for HTTP pipelinig
     while (socket->bytesAvailable()) {
-        #ifdef SUPERVERBOSE
-            qDebug("HttpConnectionHandler (%p): read input",this);
-        #endif
-
         // Create new HttpRequest object if necessary
         if (!currentRequest) {
             currentRequest=new HttpRequest(settings);
@@ -169,7 +157,6 @@ void HttpConnectionHandler::read() {
         // If the request is complete, let the request mapper dispatch it
         if (currentRequest->getStatus()==HttpRequest::complete) {
             readTimer.stop();
-            qDebug("HttpConnectionHandler (%p): received request",this);
             HttpResponse response(socket);
             try {
                 requestHandler->service(*currentRequest, response);
@@ -183,10 +170,10 @@ void HttpConnectionHandler::read() {
                 response.write(QByteArray(),true);
             }
 
-            qDebug("HttpConnectionHandler (%p): finished request",this);
-
             // Close the connection after delivering the response, if requested
-            if (QString::compare(currentRequest->getHeader("Connection"),"close",Qt::CaseInsensitive)==0) {
+			if (((QString::compare(currentRequest->getVersion(),"http/1.0",Qt::CaseInsensitive)==0) && !currentRequest->getHeaderMap().keys().contains("Connection")) ||
+					(QString::compare(currentRequest->getHeader("Connection"),"close",Qt::CaseInsensitive)==0))
+			{
                 socket->flush();
                 socket->disconnectFromHost();
             }

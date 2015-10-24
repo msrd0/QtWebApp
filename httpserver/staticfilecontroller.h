@@ -76,6 +76,9 @@ private:
 
     /** Cache storage */
     QCache<QString,CacheEntry> cache;
+	
+	/** ETag storage. */
+	QHash<QString,QByteArray> etag;
 
     /** Used to synchronize cache access for threads */
     QMutex mutex;
