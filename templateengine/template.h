@@ -6,13 +6,14 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
 
-#include <QString>
-#include <QRegExp>
-#include <QIODevice>
-#include <QTextCodec>
-#include <QFile>
-#include <QString>
 #include "templateglobal.h"
+#include <QFile>
+#include <QIODevice>
+#include <QRegExp>
+#include <QString>
+#include <QStringList>
+#include <QTextCodec>
+#include <QVariant>
 
 /**
  Enhanced version of QString for template processing. Templates
@@ -150,6 +151,38 @@ public:
     */
     int loop(QString name, int repetitions);
 
+	/**
+	 * Set number of repetitions of a loop and the data. This affects
+	 * tags with the syntax
+	 * 
+	 * - {loop name}...{end name}
+	 * - {loop name}...{else name}...{end name}
+	 * 
+	 * Inside the loop, the id can be accessed as {name.id} and the
+	 * value can be accessed with {name.val}.
+	 * 
+	 * @param name Name of the loop
+	 * @param data The data to put into the loop
+	 * @return The number of loops that have been processed
+	 */
+	int setLoop (const QString &name, const QStringList &data);
+	
+	/**
+	 * Set number of repetitions of a loop and the data. This affects
+	 * tags with the syntax
+	 * 
+	 * - {loop name}...{end name}
+	 * - {loop name}...{else name}...{end name}
+	 * 
+	 * Inside the loop, the id can be accessed as {name.id} and the
+	 * value can be accessed with {name.val}.
+	 * 
+	 * @param name Name of the loop
+	 * @param data The data to put into the loop
+	 * @return The number of loops that have been processed
+	 */
+	int setLoop (const QString &name, const QList<QVariant> &data);
+	
     /**
      Enable warnings for missing tags
      @param enable Warnings are enabled, if true
