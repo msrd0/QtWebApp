@@ -51,28 +51,30 @@
 #endif
 
 QtUnixSocket::QtUnixSocket(QObject *parent)
-    : QTcpSocket(parent)
+	: QTcpSocket(parent)
 {
 }
 
 bool QtUnixSocket::connectTo(const QString &path)
 {
-    bool ret = false;
-    int sock = ::socket(PF_UNIX, SOCK_STREAM, 0);
-    if (sock != -1) {
-        struct sockaddr_un addr;
-	::memset(&addr, 0, sizeof(struct sockaddr_un));
-	addr.sun_family = AF_UNIX;
-	size_t pathlen = strlen(path.toLatin1().constData());
-        pathlen = qMin(pathlen, sizeof(addr.sun_path));
-	::memcpy(addr.sun_path, path.toLatin1().constData(), pathlen);
-	int err = ::connect(sock, (struct sockaddr *)&addr, SUN_LEN(&addr));
-        if (err != -1) {
-            setSocketDescriptor(sock);
-	    ret = true;
-	} else {
-            ::close(sock);
-        }
-    }
-    return ret;
+	bool ret = false;
+	int sock = ::socket(PF_UNIX, SOCK_STREAM, 0);
+	if (sock != -1)
+	{
+		struct sockaddr_un addr;
+		::memset(&addr, 0, sizeof(struct sockaddr_un));
+		addr.sun_family = AF_UNIX;
+		size_t pathlen = strlen(path.toLatin1().constData());
+		pathlen = qMin(pathlen, sizeof(addr.sun_path));
+		::memcpy(addr.sun_path, path.toLatin1().constData(), pathlen);
+		int err = ::connect(sock, (struct sockaddr *)&addr, SUN_LEN(&addr));
+		if (err != -1)
+		{
+			setSocketDescriptor(sock);
+			ret = true;
+		}
+		else
+			::close(sock);
+	}
+	return ret;
 }

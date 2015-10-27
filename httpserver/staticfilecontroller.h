@@ -40,51 +40,53 @@
   received a related HTTP request.
 */
 
-class DECLSPEC StaticFileController : public HttpRequestHandler  {
-    Q_OBJECT
-    Q_DISABLE_COPY(StaticFileController)
+class DECLSPEC StaticFileController : public HttpRequestHandler
+{
+	Q_OBJECT
+	Q_DISABLE_COPY(StaticFileController)
 public:
 
-    /** Constructor */
-    StaticFileController(QSettings* settings, QObject* parent = NULL);
-
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
-
+	/** Constructor */
+	StaticFileController(QSettings *settings, QObject *parent = NULL);
+	
+	/** Generates the response */
+	void service(HttpRequest &request, HttpResponse &response);
+	
 private:
 
-    /** Encoding of text files */
-    QString encoding;
-
-    /** Root directory of documents */
-    QString docroot;
-
-    /** Maximum age of files in the browser cache */
-    int maxAge;
-
-    struct CacheEntry {
-        QByteArray document;
-        qint64 created;
-        QByteArray filename;
-    };
-
-    /** Timeout for each cached file */
-    int cacheTimeout;
-
-    /** Maximum size of files in cache, larger files are not cached */
-    int maxCachedFileSize;
-
-    /** Cache storage */
-    QCache<QString,CacheEntry> cache;
+	/** Encoding of text files */
+	QString encoding;
+	
+	/** Root directory of documents */
+	QString docroot;
+	
+	/** Maximum age of files in the browser cache */
+	int maxAge;
+	
+	struct CacheEntry
+	{
+		QByteArray document;
+		qint64 created;
+		QByteArray filename;
+	};
+	
+	/** Timeout for each cached file */
+	int cacheTimeout;
+	
+	/** Maximum size of files in cache, larger files are not cached */
+	int maxCachedFileSize;
+	
+	/** Cache storage */
+	QCache<QString, CacheEntry> cache;
 	
 	/** ETag storage. */
-	QHash<QString,QByteArray> etag;
-
-    /** Used to synchronize cache access for threads */
-    QMutex mutex;
-
-    /** Set a content-type header in the response depending on the ending of the filename */
-    void setContentType(QString file, HttpResponse& response) const;
+	QHash<QString, QByteArray> etag;
+	
+	/** Used to synchronize cache access for threads */
+	QMutex mutex;
+	
+	/** Set a content-type header in the response depending on the ending of the filename */
+	void setContentType(QString file, HttpResponse &response) const;
 };
 
 #endif // STATICFILECONTROLLER_H

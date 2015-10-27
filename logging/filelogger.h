@@ -46,78 +46,79 @@
   @see Logger for a descrition of the buffer.
 */
 
-class DECLSPEC FileLogger : public Logger {
-    Q_OBJECT
-    Q_DISABLE_COPY(FileLogger)
+class DECLSPEC FileLogger : public Logger
+{
+	Q_OBJECT
+	Q_DISABLE_COPY(FileLogger)
 public:
 
-    /**
-      Constructor.
-      @param settings Configuration settings, usually stored in an INI file. Must not be 0.
-      Settings are read from the current group, so the caller must have called settings->beginGroup().
-      Because the group must not change during runtime, it is recommended to provide a
-      separate QSettings instance to the logger that is not used by other parts of the program.
-      @param refreshInterval Interval of checking for changed config settings in msec, or 0=disabled
-      @param parent Parent object
-    */
-    FileLogger(QSettings* settings, const int refreshInterval=10000, QObject* parent = 0);
-
-    /**
-      Destructor. Closes the file.
-    */
-    virtual ~FileLogger();
-
-    /** Write a message to the log file */
-    virtual void write(const LogMessage* logMessage);
-
+	/**
+	  Constructor.
+	  @param settings Configuration settings, usually stored in an INI file. Must not be 0.
+	  Settings are read from the current group, so the caller must have called settings->beginGroup().
+	  Because the group must not change during runtime, it is recommended to provide a
+	  separate QSettings instance to the logger that is not used by other parts of the program.
+	  @param refreshInterval Interval of checking for changed config settings in msec, or 0=disabled
+	  @param parent Parent object
+	*/
+	FileLogger(QSettings *settings, const int refreshInterval = 10000, QObject *parent = 0);
+	
+	/**
+	  Destructor. Closes the file.
+	*/
+	virtual ~FileLogger();
+	
+	/** Write a message to the log file */
+	virtual void write(const LogMessage *logMessage);
+	
 protected:
 
-    /**
-      Handler for timer events.
-      Refreshes config settings or synchronizes I/O buffer, depending on the event.
-      This method is thread-safe.
-      @param event used to distinguish between the two timers.
-    */
-    void timerEvent(QTimerEvent* event);
-
+	/**
+	  Handler for timer events.
+	  Refreshes config settings or synchronizes I/O buffer, depending on the event.
+	  This method is thread-safe.
+	  @param event used to distinguish between the two timers.
+	*/
+	void timerEvent(QTimerEvent *event);
+	
 private:
 
-    /** Configured name of the log file */
-    QString fileName;
-
-    /** Configured  maximum size of the file in bytes, or 0=unlimited */
-    long maxSize;
-
-    /** Configured maximum number of backup files, or 0=unlimited */
-    int maxBackups;
-
-    /** Pointer to the configuration settings */
-    QSettings* settings;
-
-    /** Output file, or 0=disabled */
-    QFile* file;
-
-    /** Timer for refreshing configuration settings */
-    QBasicTimer refreshTimer;
-
-    /** Timer for flushing the file I/O buffer */
-    QBasicTimer flushTimer;
-
-    /** Open the output file */
-    void open();
-
-    /** Close the output file */
-    void close();
-
-    /** Rotate files and delete some backups if there are too many */
-    void rotate();
-
-    /**
-      Refreshes the configuration settings.
-      This method is thread-safe.
-    */
-    void refreshSettings();
-
+	/** Configured name of the log file */
+	QString fileName;
+	
+	/** Configured  maximum size of the file in bytes, or 0=unlimited */
+	long maxSize;
+	
+	/** Configured maximum number of backup files, or 0=unlimited */
+	int maxBackups;
+	
+	/** Pointer to the configuration settings */
+	QSettings *settings;
+	
+	/** Output file, or 0=disabled */
+	QFile *file;
+	
+	/** Timer for refreshing configuration settings */
+	QBasicTimer refreshTimer;
+	
+	/** Timer for flushing the file I/O buffer */
+	QBasicTimer flushTimer;
+	
+	/** Open the output file */
+	void open();
+	
+	/** Close the output file */
+	void close();
+	
+	/** Rotate files and delete some backups if there are too many */
+	void rotate();
+	
+	/**
+	  Refreshes the configuration settings.
+	  This method is thread-safe.
+	*/
+	void refreshSettings();
+	
 };
 
 #endif // FILELOGGER_H
