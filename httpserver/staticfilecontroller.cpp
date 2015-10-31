@@ -131,6 +131,8 @@ void StaticFileController::setContentType(QString fileName, HttpResponse &respon
 		response.setHeader("Content-Type", "image/jpeg");
 	else if (fileName.endsWith(".gif"))
 		response.setHeader("Content-Type", "image/gif");
+	else if (fileName.endsWith(".svg"))
+		response.setHeader("Content-Type", "image/svg+xml");
 	else if (fileName.endsWith(".pdf"))
 		response.setHeader("Content-Type", "application/pdf");
 	else if (fileName.endsWith(".txt"))
