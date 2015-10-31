@@ -7,26 +7,28 @@
 #define HTTPCONNECTIONHANDLER_H
 
 #ifndef QT_NO_OPENSSL
-	#include <QSslConfiguration>
+#include <QSslConfiguration>
 #endif
-#include <QTcpSocket>
-#include <QSettings>
-#include <QTimer>
-#include <QThread>
 #include "httpglobal.h"
 #include "httprequest.h"
 #include "httprequesthandler.h"
+#include <QSettings>
+#include <QTcpSocket>
+#include <QThread>
+#include <QTimer>
+
+class HttpStream;
 
 /** Alias type definition, for compatibility to different Qt versions */
 #if QT_VERSION >= 0x050000
-	typedef qintptr tSocketDescriptor;
+typedef qintptr tSocketDescriptor;
 #else
-	typedef int tSocketDescriptor;
+typedef int tSocketDescriptor;
 #endif
 
 /** Alias for QSslConfiguration if OpenSSL is not supported */
 #ifdef QT_NO_OPENSSL
-	#define QSslConfiguration QObject
+#define QSslConfiguration QObject
 #endif
 
 /**
@@ -50,7 +52,18 @@ class DECLSPEC HttpConnectionHandler : public QThread
 	Q_DISABLE_COPY(HttpConnectionHandler)
 	
 public:
-
+	enum Protocol
+	{
+		/** Unknown */
+		UNKNOWN = 0,
+		/** HTTP/1.0 */
+		HTTP_1_0 = 100,
+		/** HTTP/1.1 */
+		HTTP_1_1 = 101,
+		/** HTTP/2 */
+		HTTP_2 = 200
+	};
+	
 	/**
 	  Constructor.
 	  @param settings Configuration settings of the HTTP webserver
@@ -68,8 +81,30 @@ public:
 	/** Mark this handler as busy */
 	void setBusy();
 	
+public slots:
+	/**
+	  Received from from the listener, when the handler shall start processing a new connection.
+	  @param socketDescriptor references the accepted connection.
+	*/
+	void handleConnection(tSocketDescriptor socketDescriptor);
+	
+private slots:
+	/** Received from the socket when a read-timeout occured */
+	void readTimeout();
+	
+	/** Received from the socket when incoming data can be read */
+	void read();
+	
+	/** Received from the socket when a connection has been closed */
+	void disconnected();
+	
 private:
-
+	/** Executes the threads own event loop */
+	void run();
+	
+	/**  Create SSL or TCP socket */
+	void createSocket();
+	
 	/** Configuration settings */
 	QSettings *settings;
 	
@@ -79,8 +114,11 @@ private:
 	/** Time for read timeout detection */
 	QTimer readTimer;
 	
-	/** Storage for the current incoming HTTP request */
-	HttpRequest *currentRequest;
+	/** The Protocol used by this connection. */
+	Protocol protocol;
+	
+	/** Storage for the root stream. */
+	HttpStream *rootStream;
 	
 	/** Dispatches received requests to services */
 	HttpRequestHandler *requestHandler;
@@ -90,31 +128,6 @@ private:
 	
 	/** Configuration for SSL */
 	QSslConfiguration *sslConfiguration;
-	
-	/** Executes the threads own event loop */
-	void run();
-	
-	/**  Create SSL or TCP socket */
-	void createSocket();
-	
-public slots:
-
-	/**
-	  Received from from the listener, when the handler shall start processing a new connection.
-	  @param socketDescriptor references the accepted connection.
-	*/
-	void handleConnection(tSocketDescriptor socketDescriptor);
-	
-private slots:
-
-	/** Received from the socket when a read-timeout occured */
-	void readTimeout();
-	
-	/** Received from the socket when incoming data can be read */
-	void read();
-	
-	/** Received from the socket when a connection has been closed */
-	void disconnected();
 	
 };
 

@@ -5,17 +5,21 @@
 
 #include "httpconnectionhandler.h"
 #include "httpresponse.h"
+#include "httpstream.h"
+#include <QHostAddress>
+#include <QRegularExpression>
 
 HttpConnectionHandler::HttpConnectionHandler(QSettings *settings, HttpRequestHandler *requestHandler, QSslConfiguration *sslConfiguration)
 	: QThread()
+	, settings(settings)
+	, protocol(UNKNOWN)
+	, rootStream(0)
+	, requestHandler(requestHandler)
+	, busy(false)
+	, sslConfiguration(sslConfiguration)
 {
 	Q_ASSERT(settings != 0);
 	Q_ASSERT(requestHandler != 0);
-	this->settings = settings;
-	this->requestHandler = requestHandler;
-	this->sslConfiguration = sslConfiguration;
-	currentRequest = 0;
-	busy = false;
 	
 	// Create TCP or SSL socket
 	createSocket();
@@ -40,6 +44,8 @@ HttpConnectionHandler::~HttpConnectionHandler()
 	quit();
 	wait();
 	delete socket;
+	if (rootStream)
+		delete rootStream;
 }
 
 
@@ -69,7 +75,7 @@ void HttpConnectionHandler::run()
 	}
 	catch (...)
 	{
-		qCritical("HttpConnectionHandler (%p): an uncatched exception occured in the thread", this);
+		qCritical("HttpConnectionHandler (%p): an uncaught exception occured in the thread", this);
 	}
 	socket->close();
 }
@@ -103,9 +109,6 @@ void HttpConnectionHandler::handleConnection(tSocketDescriptor socketDescriptor)
 	// Start timer for read timeout
 	int readTimeout = settings->value("readTimeout", 10000).toInt();
 	readTimer.start(readTimeout);
-	// delete previous request
-	delete currentRequest;
-	currentRequest = 0;
 }
 
 
@@ -119,17 +122,16 @@ void HttpConnectionHandler::setBusy()
 	this->busy = true;
 }
 
-
 void HttpConnectionHandler::readTimeout()
 {
-	socket->write("HTTP/1.1 408 request timeout\r\nConnection: close\r\n\r\n408 request timeout\r\n");
+	if (rootStream)
+		rootStream->sendTimeout();
 	
 	socket->flush();
 	socket->disconnectFromHost();
-	delete currentRequest;
-	currentRequest = 0;
+	delete rootStream;
+	rootStream = 0;
 }
-
 
 void HttpConnectionHandler::disconnected()
 {
@@ -143,68 +145,44 @@ void HttpConnectionHandler::read()
 	// The loop adds support for HTTP pipelinig
 	while (socket->bytesAvailable())
 	{
-		// Create new HttpRequest object if necessary
-		if (!currentRequest)
-			currentRequest = new HttpRequest(settings);
-			
-		// Collect data for the request object
-		while (socket->bytesAvailable() && currentRequest->getStatus() != HttpRequest::complete && currentRequest->getStatus() != HttpRequest::abort)
+		// if no stream has been created, do so
+		if (!rootStream)
 		{
-			currentRequest->readFromSocket(socket);
-			if (currentRequest->getStatus() == HttpRequest::waitForBody)
+			QByteArray line = socket->readLine();
+			QRegularExpression http1("(GET|POST|OPTIONS|PUT|DELETE|HEAD|TRACE|CONNECT)\\s+\\S+\\s+HTTP/1.(?P<version>[01])\r\n");
+			QRegularExpressionMatch match = http1.match(line);
+			if (match.hasMatch())
 			{
-				// Restart timer for read timeout, otherwise it would
-				// expire during large file uploads.
-				int readTimeout = settings->value("readTimeout", 10000).toInt();
-				readTimer.start(readTimeout);
+				if (match.captured("version") == "0")
+					protocol = HTTP_1_0;
+				else
+					protocol = HTTP_1_1;
 			}
-		}
-		
-		// If the request is aborted, return error message and close the connection
-		if (currentRequest->getStatus() == HttpRequest::abort)
-		{
-			socket->write("HTTP/1.1 413 entity too large\r\nConnection: close\r\n\r\n413 Entity too large\r\n");
-			socket->flush();
-			socket->disconnectFromHost();
-			delete currentRequest;
-			currentRequest = 0;
-			return;
-		}
-		
-		// If the request is complete, let the request mapper dispatch it
-		if (currentRequest->getStatus() == HttpRequest::complete)
-		{
-			readTimer.stop();
-			HttpResponse response(socket);
-			try
+			else if (line == "PRI * HTTP/2.0\r\n")
+				protocol = HTTP_2;
+			rootStream = HttpStream::newStream(protocol);
+			if (!rootStream)
 			{
-				requestHandler->service(*currentRequest, response);
-			}
-			catch (...)
-			{
-				qCritical("HttpConnectionHandler (%p): An uncatched exception occured in the request handler", this);
-			}
-			
-			// Finalize sending the response if not already done
-			if (!response.hasSentLastPart())
-				response.write(QByteArray(), true);
-				
-			// Close the connection after delivering the response, if requested
-			if (((QString::compare(currentRequest->getVersion(), "http/1.0", Qt::CaseInsensitive) == 0) && !currentRequest->getHeaderMap().keys().contains("Connection")) ||
-			        (QString::compare(currentRequest->getHeader("Connection"), "close", Qt::CaseInsensitive) == 0))
-			{
+				qCritical() << "Unknown protocol from" << socket->peerAddress().toString();
+#ifdef QT_DEBUG
+				qCritical() << "\tInitial line:" << line;
+#endif
 				socket->flush();
 				socket->disconnectFromHost();
+				return;
 			}
-			else
-			{
-				// Start timer for next request
-				int readTimeout = settings->value("readTimeout", 10000).toInt();
-				readTimer.start(readTimeout);
-			}
-			// Prepare for next request
-			delete currentRequest;
-			currentRequest = 0;
+			rootStream->recv(line);
+		}
+		
+		// forward data to the stream
+		while (socket->bytesAvailable())
+		{
+			rootStream->recv(socket->read(settings->value("bufferSize", 8192).toLongLong()));
+			
+			// Restart timer for read timeout, otherwise it would
+			// expire during large file uploads.
+			int readTimeout = settings->value("readTimeout", 10000).toInt();
+			readTimer.start(readTimeout);
 		}
 	}
 }
