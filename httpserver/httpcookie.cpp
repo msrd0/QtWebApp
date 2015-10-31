@@ -12,23 +12,25 @@ HttpCookie::HttpCookie()
 	secure = false;
 }
 
-HttpCookie::HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path, const QByteArray comment, const QByteArray domain, const bool secure)
+HttpCookie::HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path, const QByteArray comment, const QByteArray domain, const bool secure, const bool httponly)
+	: name(name)
+	, value(value)
+	, comment(comment)
+	, domain(domain)
+	, maxAge(maxAge)
+	, path(path)
+	, secure(secure)
+	, httpOnly(httponly)
+	, version(1)
 {
-	this->name = name;
-	this->value = value;
-	this->maxAge = maxAge;
-	this->path = path;
-	this->comment = comment;
-	this->domain = domain;
-	this->secure = secure;
-	this->version = 1;
 }
 
 HttpCookie::HttpCookie(const QByteArray source)
+	: maxAge(0)
+	, secure(false)
+	, httpOnly(false)
+	, version(1)
 {
-	version = 1;
-	maxAge = 0;
-	secure = false;
 	QList<QByteArray> list = splitCSV(source);
 	foreach (QByteArray part, list)
 	{
@@ -59,6 +61,8 @@ HttpCookie::HttpCookie(const QByteArray source)
 			path = value;
 		else if (name == "Secure")
 			secure = true;
+		else if (name == "HttpOnly")
+			httpOnly = true;
 		else if (name == "Version")
 			version = value.toInt();
 		else
@@ -101,6 +105,8 @@ QByteArray HttpCookie::toByteArray() const
 	}
 	if (secure)
 		buffer.append("; Secure");
+	if (httpOnly)
+		buffer.append("; HttpOnly");
 	buffer.append("; Version=");
 	buffer.append(QByteArray::number(version));
 	return buffer;
@@ -141,6 +147,11 @@ void HttpCookie::setSecure(const bool secure)
 	this->secure = secure;
 }
 
+void HttpCookie::setHttpOnly(const bool httponly)
+{
+	this->httpOnly = httponly;
+}
+
 QByteArray HttpCookie::getName() const
 {
 	return name;
@@ -171,9 +182,14 @@ QByteArray HttpCookie::getPath() const
 	return path;
 }
 
-bool HttpCookie::getSecure() const
+bool HttpCookie::isSecure() const
 {
 	return secure;
+}
+
+bool HttpCookie::isHttpOnly() const
+{
+	return httpOnly;
 }
 
 int HttpCookie::getVersion() const

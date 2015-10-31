@@ -5,7 +5,6 @@
 
 #include "httpsessionstore.h"
 #include <QDateTime>
-#include <QUuid>
 
 HttpSessionStore::HttpSessionStore(QSettings *settings, QObject *parent)
 	: QObject(parent)
@@ -39,7 +38,7 @@ QByteArray HttpSessionStore::getSessionId(HttpRequest &request, HttpResponse &re
 	{
 		if (!sessions.contains(sessionId))
 		{
-			qDebug("HttpSessionStore: received invalid session cookie with ID %s", sessionId.data());
+			qDebug() << "HttpSessionStore: received invalid session cookie from" << request.getIP() << "with ID" << sessionId;
 			sessionId.clear();
 		}
 	}
@@ -62,7 +61,8 @@ HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &res
 			QByteArray cookiePath = settings->value("cookiePath").toByteArray();
 			QByteArray cookieComment = settings->value("cookieComment").toByteArray();
 			QByteArray cookieDomain = settings->value("cookieDomain").toByteArray();
-			response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain));
+			bool cookieSecure = settings->value("cookieSecure", false).toBool();
+			response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain, cookieSecure, true));
 			session.setLastAccess();
 			return session;
 		}
@@ -74,10 +74,10 @@ HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &res
 		QByteArray cookiePath = settings->value("cookiePath").toByteArray();
 		QByteArray cookieComment = settings->value("cookieComment").toByteArray();
 		QByteArray cookieDomain = settings->value("cookieDomain").toByteArray();
+		bool cookieSecure = settings->value("cookieSecure", false).toBool();
 		HttpSession session(true);
-		qDebug("HttpSessionStore: create new session with ID %s", session.getId().data());
 		sessions.insert(session.getId(), session);
-		response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain));
+		response.setCookie(HttpCookie(cookieName, session.getId(), expirationTime / 1000, cookiePath, cookieComment, cookieDomain, cookieSecure, true));
 		mutex.unlock();
 		return session;
 	}

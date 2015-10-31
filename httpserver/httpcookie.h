@@ -33,7 +33,7 @@ public:
 	  @param domain Optional domain for that the cookie will be sent. Defaults to the current domain
 	  @param secure If true, the cookie will only be sent on secure connections
 	*/
-	HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path = "/", const QByteArray comment = QByteArray(), const QByteArray domain = QByteArray(), const bool secure = false);
+	HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path = "/", const QByteArray comment = QByteArray(), const QByteArray domain = QByteArray(), const bool secure = false, const bool httponly = false);
 	
 	/**
 	  Create a cookie from a string.
@@ -68,8 +68,11 @@ public:
 	/** Set the path for that the cookie will be sent, default="/" which means the whole domain */
 	void setPath(const QByteArray path);
 	
-	/** Set secure mode, so that the cokkie will only be sent on secure connections */
+	/** Set secure mode, so that the cookie will only be sent on secure connections */
 	void setSecure(const bool secure);
+	
+	/** Set httponly mode, so that the cookie can only be access from javascript. */
+	void setHttpOnly(const bool httponly);
 	
 	/** Get the name of this cookie */
 	QByteArray getName() const;
@@ -90,7 +93,10 @@ public:
 	QByteArray getPath() const;
 	
 	/** Get the secure flag of this cookie */
-	bool getSecure() const;
+	bool isSecure() const;
+	
+	/** Get the httponly flag of this cookie */
+	bool isHttpOnly() const;
 	
 	/** Returns always 1 */
 	int getVersion() const;
@@ -104,6 +110,7 @@ private:
 	int maxAge;
 	QByteArray path;
 	bool secure;
+	bool httpOnly;
 	int version;
 	
 };
