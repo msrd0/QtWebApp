@@ -16,7 +16,7 @@ class HttpStream : public QObject
 	
 public:
 	/** Creates a new (root) stream for the given protocol. */
-	static HttpStream* newStream(HttpRequest::Protocol protocol, const QHostAddress &address);
+	static HttpStream* newStream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address);
 	
 	/** Returns the protocol of this stream. */
 	HttpRequest::Protocol protocol() const { return _protocol; }
@@ -32,9 +32,15 @@ public slots:
 	virtual void sendTimeout() {}
 	
 protected:
-	HttpStream(HttpRequest::Protocol protocol, const QHostAddress &address);
+	HttpStream(QSettings *settings, HttpRequest::Protocol protocol, const QHostAddress &address);
+	
+	/** Configuration settings. */
+	QSettings *config;
 	
 signals:
+	/** Emited when the server should sent data to the client. */
+	void send(const QByteArray &data);
+	
 	/** Emited when the server and client agreed to change the used protocol. */
 	void changeProtocol(HttpRequest::Protocol protocol);
 	
@@ -71,7 +77,7 @@ public:
 		RESPONDING
 	};
 	
-	Http1Stream(HttpRequest::Protocol protocol, const QHostAddress &address);
+	Http1Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address);
 	
 	virtual void recv(const QByteArray &data);
 	
@@ -121,44 +127,205 @@ public:
 	};
 	Q_ENUM(State)
 	
+	/** All specified HTTP/2.0 error codes. */
+	enum ErrorCode
+	{
+		NO_ERROR = 0x0,
+		PROTOCOL_ERROR = 0x1,
+		INTERNAL_ERROR = 0x2,
+		FLOW_CONTROL_ERROR = 0x3,
+		SETTINGS_TIMEOUT = 0x4,
+		STREAM_CLOSED = 0x5,
+		FRAME_SIZE_ERROR = 0x6,
+		REFUSED_STREAM = 0x7,
+		CANCEL = 0x8,
+		COMPRESSION_ERROR = 0x9,
+		CONNECT_ERROR = 0xa,
+		ENHANCE_YOUR_CALM = 0xb,
+		INADEQUATE_SECURITY = 0xc,
+		HTTP_1_1_REQUIRED = 0xd
+	};
+	Q_ENUM(ErrorCode)
+	
+	/** All specified HTTP/2.0 frame types. */
+	enum FrameType
+	{
+		DATA = 0x0,
+		HEADERS = 0x1,
+		PRIORITY = 0x2,
+		RST_STREAM = 0x3,
+		SETTINGS = 0x4,
+		PUSH_PROMISE = 0x5,
+		PING = 0x6,
+		GOAWAY = 0x7,
+		WINDOW_UPDATE = 0x8,
+		CONTINUATION = 0x9
+	};
+	Q_ENUM(FrameType)
+	
+	/** All specified HTTP/2.0 SETTINGS Parameters. */
+	enum SettingsParameter
+	{
+		/** Allows the sender to inform the remote endpoint of the maximum size of the header
+		 * compression table used to decode header blocks, in octets. */
+		HEADER_TABLE_SIZE = 0x1,
+		/** This setting can be used to disable server push. */
+		ENABLE_PUSH = 0x2,
+		/** Indicates the maximum number of concurrent streams that the sender will allow. This
+		 * limit is directional: it applies to the number of streams that the sender permits
+		 * the receiver to create. */
+		MAX_CONCURRENT_STREAMS = 0x3,
+		/** Indicates the sender's initial window size (in octets) for stream-level flow control. */
+		INITIAL_WINDOW_SIZE = 0x4,
+		/** Indicates the size of the largest frame payload that the sender is willing to receive,
+		 * in octets. */
+		MAX_FRAME_SIZE = 0x5,
+		/** This advisory setting informs a peer of the maximum size of header list that the sender
+		 * is prepared to accept, in octets. The value is based on the uncompressed size of header
+		 * fields, including the length of the name and value in octets plus an overhead of 32 octets
+		 * for each header field. */
+		MAX_HEADER_LIST_SIZE = 0x6
+	};
+	Q_ENUM(SettingsParameter)
+	
 	/** This class stores an HTTP/2.0 frame. */
 	class Frame
 	{
 		
 	public:
+		/** Reads the Frame metadata from the 9 bytes. */
 		Frame(const QByteArray &data);
+		/** Creates a new Frame with the given data. */
+		Frame(qint8 type, qint8 flags, qint32 streamId, const QByteArray &data = QByteArray());
 		
-		qint32 length() const { return _length; }
-		qint8 type() const { return _type; }
-		qint8 flags() const { return _flags; }
-		bool reserved() const { return _reserved; }
-		qint32 streamId() const { return _streamId; }
+		/** Returns the length of this frame. This does not work with frames not read from raw data! */
+		quint32 length() const { return _length; }
+		/** Returns the type of this frame. */
+		quint8 type() const { return _type; }
+		/** Returns the flags of this frame. */
+		quint8 flags() const { return _flags; }
+		/** Returns the stream id of this frame. */
+		quint32 streamId() const { return _streamId; }
 		
+		/** Returns the data of this frame. */
 		QByteArray data() const { return _data; }
-		void append(const QByteArray &data) { _data.append(data); }
+		/** Appends the bytes to the data of this frame. */
+		void append(const QByteArray &data) { _data.append(data); _length = _data.length(); }
+		/** Appends the bytes to the data of this frame. */
+		void append(char data) { _data.append(data); _length = _data.length(); }
+		
+		/** Serializes this frame to raw data. */
+		QByteArray serialize() const;
 		
 	private:
-		qint32 _length; // 24bit
-		qint8 _type;
-		qint8 _flags;
-		bool _reserved;
-		qint32 _streamId; // 31bit
+		quint32 _length; // 24bit
+		quint8 _type;
+		quint8 _flags;
+		quint32 _streamId; // 31bit
 		
 		QByteArray _data;
 		
 	};
 	
+	/** This class is used to read and serialize priority frames. */
+	class PriorityFrame
+	{
+		
+	public:
+		PriorityFrame(bool exclusive, quint32 dependency, quint8 weight);
+		PriorityFrame(const Frame &frame);
+		
+		/** Returns true if the stream should be the only child of its parent. */
+		bool exlusive() const { return _exclusive; }
+		/** Returns the dependency parent stream identifier. */
+		quint32 dependency() const { return _dependency; }
+		/** Returns the weight of this stream. */
+		quint8 weight() const { return _weight; }
+		
+		/** Returns the error processed while parsing the data. */
+		ErrorCode error() const { return _error; }
+		
+		/** Serializes this priority frame into an HTTP/2.0 frame. */
+		Frame serialize(quint32 streamId) const;
+		
+	private:
+		bool _exclusive;
+		quint32 _dependency;
+		quint8 _weight;
+		ErrorCode _error;
+		
+	};
+	
+	/** This class is used to read and serialize settings frames. */
+	class SettingsFrame
+	{
+		
+	public:
+		SettingsFrame();
+		SettingsFrame(const Frame &frame);
+		
+		/** Return all settings set in this frame. */
+		QMap<quint16, quint32> settings() const { return _settings; }
+		/** Insert or update a setting into this frame. */
+		void insert(quint16 parameter, quint32 value) { _settings.insert(parameter, value); }
+		
+		/** Returns the error processed while parsing the data. */
+		ErrorCode error() const { return _error; }
+		
+		/** Serializes this settings frame into an HTTP/2.0 frame. */
+		Frame serialize() const;
+		
+	private:
+		QMap<quint16, quint32> _settings;
+		ErrorCode _error;
+		
+	};
+	
+	/** This class is used to read header and continuation frames. */
+	class Headers
+	{
+		
+	public:
+		Headers();
+		
+		void append(const Frame &frame);
+		
+		/** Returns the data of the appended Header/Continuation frames. The output is only usefull if the completed flag is set. */
+		QByteArray data() const { return _data; }
+		/** Returns if the END_STREAM flag was set on any appended frame. */
+		bool end() const { return _end; }
+		/** Returns whether all required frames have been appended. If true, please don't append frames anymore. */
+		bool complete() const { return _complete; }
+		
+	private:
+		QByteArray _data;
+		bool _end;
+		bool _complete;
+		
+	};
+	
 	/** Creates a new HTTP/2 Stream with the given stream id. */
-	Http2Stream(HttpRequest::Protocol protocol, const QHostAddress &address, qint32 streamId = 0);
+	Http2Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, quint32 streamId = 0);
 	
 	virtual void recv(const QByteArray &data);
 	void recvFrame(const Frame &frame);
 	
-	qint32 streamId() const { return _streamId; }
+	/** Returns the stream identifier of this stream. */
+	quint32 streamId() const { return _streamId; }
+	/** Returns the state of this stream. Note that the root stream is always idle. */
 	State state() const { return _state; }
 	
+	/** Returns the dependency parent stream or 0 if there is no parent stream. */
 	Http2Stream *parent() { return _parent; }
-	QList<Http2Stream*> children() { return _children; }
+	/** Returns a list of all dependency children of this stream. */
+	QSet<Http2Stream*> children() { return _children; }
+	
+	/** Sets the dependency parent of this stream. */
+	void setParent(Http2Stream *parent);
+	/** Adds the dependency child to this stream. */
+	void addChild(Http2Stream *child) { _children.insert(child); }
+	/** Remove the dependency child from this stream. */
+	bool removeChild(Http2Stream *child) { return _children.remove(child); }
 	
 private:
 	/** A buffer containing stuff received from the client. */
@@ -170,13 +337,20 @@ private:
 	/** The current receiving frame. */
 	Frame *_currentFrame;
 	
+	/** The header data received from the client. */
+	Headers *_headers;
+	
 	/** The stream identification of this stream. */
-	qint32 _streamId;
+	quint32 _streamId;
 	/** The state of this stream. */
 	State _state;
+	/** The weight of this stream. */
+	quint8 _weight;
 	
 	Http2Stream *_parent;
-	QList<Http2Stream*> _children;
+	Http2Stream *_root;
+	QSet<Http2Stream*> _children;
+	QMap<quint32, Http2Stream*> _streams; // only on root stream
 	
 };
 

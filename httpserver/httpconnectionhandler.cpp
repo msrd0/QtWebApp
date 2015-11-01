@@ -140,6 +140,12 @@ void HttpConnectionHandler::disconnected()
 	busy = false;
 }
 
+void HttpConnectionHandler::write(const QByteArray &data)
+{
+	qDebug() << "sending" << data;
+	socket->write(data);
+}
+
 void HttpConnectionHandler::read()
 {
 	// The loop adds support for HTTP pipelinig
@@ -160,7 +166,7 @@ void HttpConnectionHandler::read()
 			}
 			else if (line == "PRI * HTTP/2.0\r\n")
 				protocol = HttpRequest::HTTP_2;
-			rootStream = HttpStream::newStream(protocol, socket->peerAddress());
+			rootStream = HttpStream::newStream(settings, protocol, socket->peerAddress());
 			if (!rootStream)
 			{
 				qCritical() << "Unknown protocol from" << socket->peerAddress().toString();
@@ -171,6 +177,7 @@ void HttpConnectionHandler::read()
 				socket->disconnectFromHost();
 				return;
 			}
+			connect(rootStream, SIGNAL(send(QByteArray)), SLOT(write(QByteArray)));
 			rootStream->recv(line);
 		}
 		

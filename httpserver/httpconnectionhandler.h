@@ -86,6 +86,9 @@ private slots:
 	/** Received from the socket when a connection has been closed */
 	void disconnected();
 	
+	/** Received from the stream when there is data to be written. */
+	void write(const QByteArray &data);
+	
 private:
 	/** Executes the threads own event loop */
 	void run();
