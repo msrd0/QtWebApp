@@ -12,7 +12,7 @@
 HttpConnectionHandler::HttpConnectionHandler(QSettings *settings, HttpRequestHandler *requestHandler, QSslConfiguration *sslConfiguration)
 	: QThread()
 	, settings(settings)
-	, protocol(UNKNOWN)
+	, protocol(HttpRequest::UNKNOWN)
 	, rootStream(0)
 	, requestHandler(requestHandler)
 	, busy(false)
@@ -154,13 +154,13 @@ void HttpConnectionHandler::read()
 			if (match.hasMatch())
 			{
 				if (match.captured("version") == "0")
-					protocol = HTTP_1_0;
+					protocol = HttpRequest::HTTP_1_0;
 				else
-					protocol = HTTP_1_1;
+					protocol = HttpRequest::HTTP_1_1;
 			}
 			else if (line == "PRI * HTTP/2.0\r\n")
-				protocol = HTTP_2;
-			rootStream = HttpStream::newStream(protocol);
+				protocol = HttpRequest::HTTP_2;
+			rootStream = HttpStream::newStream(protocol, socket->peerAddress());
 			if (!rootStream)
 			{
 				qCritical() << "Unknown protocol from" << socket->peerAddress().toString();

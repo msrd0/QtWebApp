@@ -6,14 +6,16 @@
 #ifndef HTTPSESSIONSTORE_H
 #define HTTPSESSIONSTORE_H
 
-#include <QObject>
-#include <QMap>
-#include <QTimer>
-#include <QMutex>
 #include "httpglobal.h"
-#include "httpsession.h"
-#include "httpresponse.h"
 #include "httprequest.h"
+#include "httpresponse.h"
+#include "httpsession.h"
+
+#include <QMap>
+#include <QMutex>
+#include <QObject>
+#include <QTimer>
+#include <QSettings>
 
 /**
   Stores HTTP sessions and deletes them when they have expired.

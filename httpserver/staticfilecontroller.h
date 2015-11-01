@@ -6,12 +6,14 @@
 #ifndef STATICFILECONTROLLER_H
 #define STATICFILECONTROLLER_H
 
-#include <QCache>
-#include <QMutex>
 #include "httpglobal.h"
 #include "httprequest.h"
-#include "httpresponse.h"
 #include "httprequesthandler.h"
+#include "httpresponse.h"
+
+#include <QCache>
+#include <QMutex>
+#include <QSettings>
 
 /**
   Delivers static files. It is usually called by the applications main request handler when
@@ -67,7 +69,7 @@ private:
 	{
 		QByteArray document;
 		qint64 created;
-		QByteArray filename;
+		QString filename;
 	};
 	
 	/** Timeout for each cached file */

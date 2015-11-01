@@ -52,18 +52,6 @@ class DECLSPEC HttpConnectionHandler : public QThread
 	Q_DISABLE_COPY(HttpConnectionHandler)
 	
 public:
-	enum Protocol
-	{
-		/** Unknown */
-		UNKNOWN = 0,
-		/** HTTP/1.0 */
-		HTTP_1_0 = 100,
-		/** HTTP/1.1 */
-		HTTP_1_1 = 101,
-		/** HTTP/2 */
-		HTTP_2 = 200
-	};
-	
 	/**
 	  Constructor.
 	  @param settings Configuration settings of the HTTP webserver
@@ -115,7 +103,7 @@ private:
 	QTimer readTimer;
 	
 	/** The Protocol used by this connection. */
-	Protocol protocol;
+	HttpRequest::Protocol protocol;
 	
 	/** Storage for the root stream. */
 	HttpStream *rootStream;

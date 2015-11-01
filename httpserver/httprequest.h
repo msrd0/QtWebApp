@@ -6,31 +6,18 @@
 #ifndef HTTPREQUEST_H
 #define HTTPREQUEST_H
 
+#include "httpglobal.h"
 #include <QByteArray>
-#include <QTcpSocket>
+#include <QHostAddress>
 #include <QMap>
 #include <QMultiMap>
-#include <QSettings>
 #include <QTemporaryFile>
 #include <QUuid>
-#include "httpglobal.h"
 
 /**
-  This object represents a single HTTP request. It reads the request
-  from a TCP socket and provides getters for the individual parts
-  of the request.
-  <p>
-  The follwing config settings are required:
-  <code><pre>
-  maxRequestSize=16000
-  maxMultiPartSize=1000000
-  </pre></code>
-  <p>
-  MaxRequestSize is the maximum size of a HTTP request. In case of
-  multipart/form-data requests (also known as file-upload), the maximum
-  size of the body must not exceed maxMultiPartSize.
-  The body is always a little larger than the file itself.
-*/
+ * This object represents a single HTTP request. It is created by the HttpStream
+ * and passed to the HttpRequestHandler.
+ */
 
 class DECLSPEC HttpRequest
 {
@@ -38,45 +25,60 @@ class DECLSPEC HttpRequest
 	friend class HttpSessionStore;
 	
 public:
-
-	/** Values for getStatus() */
-	enum RequestStatus {waitForRequest, waitForHeader, waitForBody, complete, abort};
+	/** All supported protocols. */
+	enum Protocol
+	{
+		/** Unknown */
+		UNKNOWN = 0,
+		/** HTTP/1.0 */
+		HTTP_1_0 = 100,
+		/** HTTP/1.1 */
+		HTTP_1_1 = 101,
+		/** HTTP/2 */
+		HTTP_2 = 200
+	};
+	
+	/** All HTTP Methods. */
+	enum Method
+	{
+		GET,
+		POST,
+		HEAD,
+		OPTIONS,
+		PUT,
+		DELETE,
+		TRACE,
+		CONNECT
+	};
 	
 	/**
 	  Constructor.
 	  @param settings Configuration settings
 	*/
-	HttpRequest(QSettings *settings);
+	HttpRequest(Protocol protocol, const QHostAddress &address);
 	
 	/**
 	  Destructor.
 	*/
 	virtual ~HttpRequest();
 	
-	/**
-	  Read the request from a socket. This method must be called repeatedly
-	  until the status is RequestStatus::complete or RequestStatus::abort.
-	  @param socket Source of the data
-	*/
-	void readFromSocket(QTcpSocket *socket);
-	
-	/**
-	  Get the status of this reqeust.
-	  @see RequestStatus
-	*/
-	RequestStatus getStatus() const;
-	
 	/** Get the method of the HTTP request  (e.g. "GET") */
-	QByteArray getMethod() const;
+	Method method() const { return _method; }
 	
-	/** Get the decoded path of the HTPP request (e.g. "/index.html") */
-	QByteArray getPath() const;
+	/** Set the method of the HTTP request. */
+	void setMethod(Method method) { _method = method; }
 	
-	/** Get the version of the HTPP request (e.g. "HTTP/1.1") */
-	QByteArray getVersion() const;
+	/** Get the decoded path of the HTTP request (e.g. "/index.html") */
+	QString path() const { return _path; }
 	
-	/** Get the IP address of the client. */
-	QByteArray getIP() const;
+	/** Set the decoded path of the HTTP request. */
+	void setPath(const QString &path) { _path = path; }
+	
+	/** Get the protocol. */
+	Protocol protocol() const { return _protocol; }
+	
+	/** Get the address of the client. */
+	QHostAddress address() const { return _address; }
 	
 	/**
 	  Get the value of a HTTP request header.
@@ -94,6 +96,9 @@ public:
 	
 	/** Get all HTTP request headers */
 	QMultiMap<QByteArray, QByteArray> getHeaderMap() const;
+	
+	/** Inserts the request header. */
+	void insertHeader(const QByteArray &name, const QByteArray &value) { qDebug() << name << value; _headers.insert(name, value); }
 	
 	/**
 	  Get the value of a HTTP request parameter.
@@ -145,79 +150,31 @@ public:
 private:
 
 	/** Request headers */
-	QMultiMap<QByteArray, QByteArray> headers;
+	QMultiMap<QByteArray, QByteArray> _headers;
 	
 	/** Parameters of the request */
-	QMultiMap<QByteArray, QByteArray> parameters;
+	QMultiMap<QByteArray, QByteArray> _parameters;
 	
 	/** Uploaded files of the request, key is the field name. */
-	QMap<QByteArray, QTemporaryFile *> uploadedFiles;
+	QMap<QByteArray, QTemporaryFile*> _uploadedFiles;
 	
 	/** Received cookies */
-	QMap<QByteArray, QByteArray> cookies;
+	QMap<QByteArray, QByteArray> _cookies;
 	
 	/** Storage for raw body data */
-	QByteArray bodyData;
+	QByteArray _bodyData;
 	
 	/** Request method */
-	QByteArray method;
+	Method _method;
 	
 	/** Request path (in raw encoded format) */
-	QByteArray path;
+	QString _path;
 	
-	/** Request protocol version */
-	QByteArray version;
+	/** Request protocol. */
+	Protocol _protocol;
 	
-	/** The request ip */
-	QByteArray ip;
-	
-	/**
-	  Status of this request.
-	  @see RequestStatus
-	*/
-	RequestStatus status;
-	
-	/** Maximum size of requests in bytes. */
-	int maxSize;
-	
-	/** Maximum allowed size of multipart forms in bytes. */
-	int maxMultiPartSize;
-	
-	/** Current size */
-	int currentSize;
-	
-	/** Expected size of body */
-	int expectedBodySize;
-	
-	/** Name of the current header, or empty if no header is being processed */
-	QByteArray currentHeader;
-	
-	/** Boundary of multipart/form-data body. Empty if there is no such header */
-	QByteArray boundary;
-	
-	/** Temp file, that is used to store the multipart/form-data body */
-	QTemporaryFile tempFile;
-	
-	/** Parset he multipart body, that has been stored in the temp file. */
-	void parseMultiPartFile();
-	
-	/** Sub-procedure of readFromSocket(), read the first line of a request. */
-	void readRequest(QTcpSocket *socket);
-	
-	/** Sub-procedure of readFromSocket(), read header lines. */
-	void readHeader(QTcpSocket *socket);
-	
-	/** Sub-procedure of readFromSocket(), read the request body. */
-	void readBody(QTcpSocket *socket);
-	
-	/** Sub-procedure of readFromSocket(), extract and decode request parameters. */
-	void decodeRequestParams();
-	
-	/** Sub-procedure of readFromSocket(), extract cookies from headers */
-	void extractCookies();
-	
-	/** Buffer for collecting characters of request and header lines */
-	QByteArray lineBuffer;
+	/** The address of the peer. */
+	QHostAddress _address;
 	
 };
 

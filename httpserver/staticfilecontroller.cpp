@@ -38,7 +38,7 @@ StaticFileController::StaticFileController(QSettings *settings, QObject *parent)
 
 void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 {
-	QByteArray path = request.getPath();
+	QString path = request.path();
 	// Check whether the browsers cache is up to date
 	if (!request.getHeader("If-None-Match").isEmpty() && request.getHeader("If-None-Match") == ("\"" + etag.value(path) + "\""))
 	{
@@ -52,7 +52,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 	if (entry && (cacheTimeout == 0 || entry->created > now - cacheTimeout))
 	{
 		QByteArray document = entry->document; //copy the cached document, because other threads may destroy the cached entry immediately after mutex unlock.
-		QByteArray filename = entry->filename;
+		QString filename = entry->filename;
 		response.setHeader("ETag", "\"" + etag.value(path) + "\"");
 		mutex.unlock();
 		setContentType(filename, response);
@@ -66,7 +66,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 		// Forbid access to files outside the docroot directory
 		if (path.contains("/.."))
 		{
-			qWarning("StaticFileController: detected forbidden characters in path %s", path.data());
+			qWarning() << "StaticFileController: detected forbidden characters in path" << path.data();
 			response.setStatus(403, "forbidden");
 			response.write("403 forbidden", true);
 			return;
@@ -95,7 +95,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 				etag.insert(path, QCryptographicHash::hash(entry->document, QCryptographicHash::Md5).toHex());
 				response.setHeader("ETag", "\"" + etag.value(path) + "\"");
 				response.write(entry->document);
-				cache.insert(request.getPath(), entry, entry->document.size());
+				cache.insert(request.path(), entry, entry->document.size());
 				mutex.unlock();
 			}
 			else

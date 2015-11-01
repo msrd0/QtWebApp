@@ -38,7 +38,7 @@ QByteArray HttpSessionStore::getSessionId(HttpRequest &request, HttpResponse &re
 	{
 		if (!sessions.contains(sessionId))
 		{
-			qDebug() << "HttpSessionStore: received invalid session cookie from" << request.getIP() << "with ID" << sessionId;
+			qDebug() << "HttpSessionStore: received invalid session cookie from" << request.address().toString() << "with ID" << sessionId;
 			sessionId.clear();
 		}
 	}
