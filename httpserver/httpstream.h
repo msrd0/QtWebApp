@@ -7,6 +7,28 @@
 #include <QHostAddress>
 #include <QObject>
 
+/** Reads an unsigned 8bit integer from data. */
+extern quint8 readu8bit(const QByteArray &data);
+/** Reads an unsigned 16bit integer from data. */
+extern quint16 readu16bit(const QByteArray &data);
+/** Reads an unsigned 24bit integer from data. */
+extern quint32 readu24bit(const QByteArray &data);
+/** Reads an unsigned 31bit integer from data. */
+extern quint32 readu31bit(const QByteArray &data);
+/** Reads an unsigned 32bit integer from data. */
+extern quint32 readu32bit(const QByteArray &data);
+
+/** Writes an unsigned 8bit integer. */
+extern QByteArray writeu8bit(quint8 num);
+/** Writes an unsigned 16bit integer. */
+extern QByteArray writeu16bit(quint16 num);
+/** Writes an unsigned 24bit integer. */
+extern QByteArray writeu24bit(quint32 num);
+/** Writes an unsigned 31bit integer. */
+extern QByteArray writeu31bit(quint32 num);
+/** Writes an unsigned 32bit integer. */
+extern QByteArray writeu32bit(quint32 num);
+
 /**
  * This class represents an HTTP Stream. In HTTP/1, this is just the whole connection, while HTTP/2 specifies streams.
  */

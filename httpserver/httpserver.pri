@@ -27,4 +27,6 @@ SOURCES += $$PWD/httpglobal.cpp \
            $$PWD/httpsession.cpp \
            $$PWD/httpsessionstore.cpp \
            $$PWD/staticfilecontroller.cpp \
-           $$PWD/httpstream.cpp
+           $$PWD/httpstream.cpp \
+    $$PWD/httpstream-http1.cpp \
+    $$PWD/httpstream-http2.cpp
