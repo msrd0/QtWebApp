@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/hpack">
+        <file alias="static_table">hpack_static_table.txt</file>
+    </qresource>
+</RCC>

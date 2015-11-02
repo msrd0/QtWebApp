@@ -1,6 +1,7 @@
 #ifndef HTTPSTREAM_H
 #define HTTPSTREAM_H
 
+#include "hpack.h"
 #include "httpconnectionhandler.h"
 #include "httprequest.h"
 
@@ -310,7 +311,7 @@ public:
 	public:
 		Headers();
 		
-		void append(const Frame &frame);
+		void append(const Frame &frame, HPACK *decode);
 		
 		/** Returns the data of the appended Header/Continuation frames. The output is only usefull if the completed flag is set. */
 		QByteArray data() const { return _data; }
@@ -373,6 +374,8 @@ private:
 	Http2Stream *_root;
 	QSet<Http2Stream*> _children;
 	QMap<quint32, Http2Stream*> _streams; // only on root stream
+	
+	HPACK decode, encode; // only on root stream
 	
 };
 

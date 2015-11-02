@@ -136,7 +136,7 @@ Http2Stream::Headers::Headers()
 {
 }
 
-void Http2Stream::Headers::append(const Frame &frame)
+void Http2Stream::Headers::append(const Frame &frame, HPACK *decode)
 {
 	// only append to uncomplete
 	if (_complete)
@@ -155,7 +155,13 @@ void Http2Stream::Headers::append(const Frame &frame)
 	if ((frame.flags() & 0b00000100) != 0)
 	{
 		_complete = true;
-		qDebug() << "TODO: Decompress headers";
+		qDebug() << "Decompressing headers";
+		qDebug() << _data;
+		QList<HPACKTableEntry> headers = decode->decode(_data);
+		if (decode->error())
+			qDebug() << "send" << COMPRESSION_ERROR;
+		for (HPACKTableEntry entry : headers)
+			qDebug() << entry.name << ":" << entry.value;
 	}
 }
 
@@ -165,6 +171,7 @@ Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, cons
 	, _currentFrame(0)
 	, _headers(0)
 	, _streamId(streamId)
+	, _state(IDLE)
 	, _weight(16)
 	, _parent(0)
 	, _root(0)
@@ -234,7 +241,10 @@ void Http2Stream::recv(const QByteArray &data)
 
 void Http2Stream::recvFrame(const Frame &frame)
 {
-	qDebug() << frame.length() << frame.type() << frame.flags() << frame.streamId() << frame.data();
+	qDebug() << QByteArray::number(frame.type(), 16).data()
+			 << QByteArray::number(frame.flags(), 2).data()
+			 << frame.streamId()
+			 << frame.data();
 	if (frame.streamId() != _streamId)
 	{
 		if (streamId() == 0)
@@ -260,7 +270,7 @@ void Http2Stream::recvFrame(const Frame &frame)
 				break;
 			QByteArray data = frame.data();
 			// remove padding
-			if ((frame.flags() & 0b00001000) != 0)
+			if ((frame.flags() & 0x8) != 0)
 			{
 				quint8 pad = readu8bit(data);
 				data = data.mid(1);
@@ -269,15 +279,20 @@ void Http2Stream::recvFrame(const Frame &frame)
 			// divide data into priority and header data
 			if ((_state == IDLE) || (_state == RESERVED_LOCAL) || (_state == RESERVED_REMOTE))
 			{
-				if ((frame.flags() & 0b00100000) != 0)
+				if ((frame.flags() & 0x20) != 0)
 				{
 					recvFrame(Frame(PRIORITY, 0, streamId(), data.mid(0, 5)));
 					data = data.mid(5);
 				}
 				_state = OPEN;
 			}
+			else if ((frame.flags() & 0x20) != 0)
+			{
+				qDebug() << "send" << PROTOCOL_ERROR;
+				return;
+			}
 			_headers = new Headers;
-			_headers->append(Frame(HEADERS, frame.flags() & 0b11010111, streamId(), data));
+			_headers->append(Frame(HEADERS, frame.flags() & 0b11010111, streamId(), data), &(_root->decode));
 		}
 		break;
 	case PRIORITY: {
@@ -321,7 +336,7 @@ void Http2Stream::recvFrame(const Frame &frame)
 				return;
 			}
 			if (!_headers->complete())
-				_headers->append(frame);
+				_headers->append(frame, &(_root->decode));
 		}
 		break;
 	default:
