@@ -2,6 +2,76 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QRegularExpression>
+
+Huffman *Huffman::_huffmanTable = 0;
+Huffman Huffman::huffmanTable()
+{
+	if (!_huffmanTable)
+		_huffmanTable = new Huffman();
+	return *_huffmanTable;
+}
+
+Huffman::Huffman()
+{
+	QFile in(":/hpack/huffman_table");
+	if (!in.open(QIODevice::ReadOnly))
+	{
+		qCritical() << "Couldn't find the HPACK Huffman Table!";
+		exit(1);
+	}
+	QByteArray line;
+	while (!(line = in.readLine()).isEmpty())
+	{
+		line = line.trimmed().replace(" ", "");
+		QBitArray bits(line.length());
+		for (int i = 0; i < line.length(); i++)
+			bits.setBit(i, line[i] == '1');
+		table.append(bits);
+	}
+	in.close();
+}
+
+QBitArray Huffman::applyMask(const QBitArray &bits, const QBitArray &mask, int off)
+{
+	Q_ASSERT((bits.size() - off) >= mask.size());
+	
+	QBitArray ret(mask.size());
+	for (int i = 0; i < mask.size(); i++)
+		ret.setBit(i, bits.at(off + i) && mask.at(i));
+	return ret;
+}
+
+QByteArray Huffman::decode(const QByteArray &in)
+{
+	QBitArray enc(in.length() * 8);
+	for(int i = 0; i < in.length(); i++)
+		for(int b = 0 ; b < 8; b++)
+			enc.setBit(i * 8 + b, in.at(i) & (1<<(7-b)));
+	QByteArray dec;
+	uint off = 0;
+	while (off < enc.size())
+	{
+		bool found = false;
+		for (uint c = 0; c < huffmanTable().table.size(); c++)
+		{
+			QBitArray te = huffmanTable().table.at(c);
+			if (te.size() > enc.size() - off)
+				continue;
+			QBitArray mask(te.size(), true);
+			if (applyMask(enc, mask, off) == te)
+			{
+				dec.append((uchar)c);
+				off += te.size();
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+			break;
+	}
+	return dec;
+}
 
 uint HPACKTableEntry::size() const
 {
@@ -157,7 +227,7 @@ QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 					return QList<HPACKTableEntry>();
 				off += bytesRead;
 				if (huffman)
-					qDebug() << "TODO: implement huffman";
+					entry.name = Huffman::decode(source.mid(off, nameLength));
 				else
 					entry.name = source.mid(off, nameLength);
 				off += nameLength;
@@ -168,7 +238,7 @@ QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 				return QList<HPACKTableEntry>();
 			off += bytesRead;
 			if (huffman)
-				qDebug() << "TODO: implement huffman";
+				entry.value = Huffman::decode(source.mid(off, valueLength));
 			else
 				entry.value = source.mid(off, valueLength);
 			off += valueLength;

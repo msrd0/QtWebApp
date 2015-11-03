@@ -34,7 +34,8 @@ SOURCES += $$PWD/httpglobal.cpp \
     $$PWD/hpack.cpp
 
 DISTFILES += \
-    $$PWD/hpack_static_table.txt
+    $$PWD/hpack_static_table.txt \
+    $$PWD/hpack_huffman_table.txt
 
 RESOURCES += \
     $$PWD/hpack.qrc

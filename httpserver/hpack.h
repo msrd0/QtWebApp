@@ -3,8 +3,23 @@
 
 #include "httpglobal.h"
 
+#include <QBitArray>
 #include <QByteArray>
 #include <QList>
+
+/** This class is used to compress and/or decompress huffman code. */
+class Huffman
+{
+private:
+	static Huffman *_huffmanTable;
+	static Huffman huffmanTable();
+	explicit Huffman();
+	QList<QBitArray> table;
+	
+public:
+	static QBitArray applyMask(const QBitArray &bits, const QBitArray &mask, int off = 0);
+	static QByteArray decode(const QByteArray &in);
+};
 
 /** An entry in a HPACK Table. */
 struct HPACKTableEntry
