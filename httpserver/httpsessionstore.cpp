@@ -27,7 +27,7 @@ QByteArray HttpSessionStore::getSessionId(HttpRequest &request, HttpResponse &re
 	// The session ID in the response has priority because this one will be used in the next request.
 	mutex.lock();
 	// Get the session ID from the response cookie
-	QByteArray sessionId = response.getCookies().value(cookieName).getValue();
+	QByteArray sessionId = response.cookies().value(cookieName).getValue();
 	if (sessionId.isEmpty())
 	{
 		// Get the session ID from the request cookie

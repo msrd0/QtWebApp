@@ -16,20 +16,75 @@ HttpRequest::HttpRequest(Protocol protocol, const QHostAddress &address)
 	Q_ASSERT(protocol != UNKNOWN);
 }
 
+HttpRequest::~HttpRequest()
+{
+	foreach (QByteArray key, _uploadedFiles.keys())
+	{
+		QTemporaryFile *file = _uploadedFiles.value(key);
+		file->close();
+		delete file;
+	}
+}
+
+QString HttpRequest::methodStr() const
+{
+	switch (method())
+	{
+	case GET:
+		return "GET";
+	case POST:
+		return "POST";
+	case HEAD:
+		return "HEAD";
+	case OPTIONS:
+		return "OPTIONS";
+	case PUT:
+		return "PUT";
+	case DELETE:
+		return "DELETE";
+	case TRACE:
+		return "TRACE";
+	case CONNECT:
+		return "CONNECT";
+	default:
+		return QString();
+	}
+}
+
+QString HttpRequest::protocolStr() const
+{
+	switch (protocol())
+	{
+	case HTTP_1_0:
+		return "HTTP/1.0";
+	case HTTP_1_1:
+		return "HTTP/1.1";
+	case HTTP_2_0:
+		return "HTTP/2.0";
+	default:
+		return QString();
+	}
+}
 
 QByteArray HttpRequest::getHeader(const QByteArray &name) const
 {
-	return _headers.value(name);
+	return _headers.value(name.toLower());
 }
 
 QList<QByteArray> HttpRequest::getHeaders(const QByteArray &name) const
 {
-	return _headers.values(name);
+	return _headers.values(name.toLower());
 }
 
 QMultiMap<QByteArray, QByteArray> HttpRequest::getHeaderMap() const
 {
 	return _headers;
+}
+
+void HttpRequest::insertHeader(const QByteArray &name, const QByteArray &value)
+ {
+	qDebug() << name << value;
+	_headers.insert(name.toLower(), value);
 }
 
 QByteArray HttpRequest::getParameter(const QByteArray &name) const
@@ -50,16 +105,6 @@ QMultiMap<QByteArray, QByteArray> HttpRequest::getParameterMap() const
 QByteArray HttpRequest::getBody() const
 {
 	return _bodyData;
-}
-
-HttpRequest::~HttpRequest()
-{
-	foreach (QByteArray key, _uploadedFiles.keys())
-	{
-		QTemporaryFile *file = _uploadedFiles.value(key);
-		file->close();
-		delete file;
-	}
 }
 
 QTemporaryFile *HttpRequest::getUploadedFile(const QByteArray fieldName)

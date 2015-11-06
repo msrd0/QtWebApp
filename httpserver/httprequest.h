@@ -34,8 +34,8 @@ public:
 		HTTP_1_0 = 100,
 		/** HTTP/1.1 */
 		HTTP_1_1 = 101,
-		/** HTTP/2 */
-		HTTP_2 = 200
+		/** HTTP/2.0 */
+		HTTP_2_0 = 200
 	};
 	
 	/** All HTTP Methods. */
@@ -51,19 +51,13 @@ public:
 		CONNECT
 	};
 	
-	/**
-	  Constructor.
-	  @param settings Configuration settings
-	*/
 	HttpRequest(Protocol protocol, const QHostAddress &address);
-	
-	/**
-	  Destructor.
-	*/
 	virtual ~HttpRequest();
 	
-	/** Get the method of the HTTP request  (e.g. "GET") */
+	/** Get the method of the HTTP request  (e.g. HttpRequest::GET) */
 	Method method() const { return _method; }
+	/** Get the method of the HTTP request as a string (e.g. "GET"). */
+	QString methodStr() const;
 	
 	/** Set the method of the HTTP request. */
 	void setMethod(Method method) { _method = method; }
@@ -76,6 +70,8 @@ public:
 	
 	/** Get the protocol. */
 	Protocol protocol() const { return _protocol; }
+	/** Get the string representation of the protocol (e.g. "HTTP\2.0"). */
+	QString protocolStr() const;
 	
 	/** Get the address of the client. */
 	QHostAddress address() const { return _address; }
@@ -98,7 +94,7 @@ public:
 	QMultiMap<QByteArray, QByteArray> getHeaderMap() const;
 	
 	/** Inserts the request header. */
-	void insertHeader(const QByteArray &name, const QByteArray &value) { qDebug() << name << value; _headers.insert(name, value); }
+	void insertHeader(const QByteArray &name, const QByteArray &value);
 	
 	/**
 	  Get the value of a HTTP request parameter.

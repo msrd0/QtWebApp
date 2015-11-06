@@ -29,6 +29,9 @@ struct HPACKTableEntry
 	
 	/** Returns the size of this entry. */
 	uint size() const;
+	
+	/** Compares this entry with other. If either value is empty, it is not checked. */
+	bool operator== (const HPACKTableEntry &other) const;
 };
 
 /** This class stores the HPACK Dynamic Table. */
@@ -42,7 +45,12 @@ public:
 	/** Inserts the element into the table. This could result in eviction of older elements. */
 	void insert(const HPACKTableEntry &entry);
 	/** Returns the element with the given index. */
-	HPACKTableEntry entry(int index);
+	HPACKTableEntry entry(int index) const;
+	
+	/** Checks whether the element is in this list. */
+	bool contains(const HPACKTableEntry &entry) const;
+	/** Returns the index of the entry. */
+	int indexOf(const HPACKTableEntry &entry) const;
 	
 	/** Returns the current size of the Table. */
 	uint size() const { return _size; }
@@ -72,17 +80,29 @@ private:
 public:
 	HPACK(uint tableSize = 4096);
 	
+	/** Decodes the bytes using HPACK to a list of headers. */
 	QList<HPACKTableEntry> decode(const QByteArray &source);
 	
+	/** Encedes the list of headers using HPACK. */
+	QByteArray encode(const QList<HPACKTableEntry> &headers);
+	
+	/** Set if decoding of the header fields produced an error. */
 	bool error() const { return _error; }
+	/** Removes the error flag from this HPACK instance. */
 	void clearError() { _error = false; }
 	
 private:
 	/** Returns the decoded integer with a n prefix. */
-	quint64 decodeInteger(const QByteArray &bytes, quint8 n = 0, uint *bytesRead = 0);
+	quint64 decodeInteger(const QByteArray &bytes, quint8 n = 8, uint *bytesRead = 0);
+	
+	/** Encodes an integer with a n prefix. */
+	QByteArray encodeInteger(quint64 i, quint8 n = 8);
 	
 	/** Returns the entry with the given id from either the static or the dynamic table. */
 	HPACKTableEntry tableEntry(quint64 id);
+	
+	/** Returns the id of the entry in either the static or the dynamic table, or 0 if it wasn't found. */
+	quint64 tableEntry(const HPACKTableEntry &entry);
 	
 	HPACKDynamicTable _dynTable;
 	bool _error;

@@ -49,11 +49,11 @@ QByteArray Huffman::decode(const QByteArray &in)
 		for(int b = 0 ; b < 8; b++)
 			enc.setBit(i * 8 + b, in.at(i) & (1<<(7-b)));
 	QByteArray dec;
-	uint off = 0;
+	int off = 0;
 	while (off < enc.size())
 	{
 		bool found = false;
-		for (uint c = 0; c < huffmanTable().table.size(); c++)
+		for (int c = 0; c < huffmanTable().table.size(); c++)
 		{
 			QBitArray te = huffmanTable().table.at(c);
 			if (te.size() > enc.size() - off)
@@ -78,6 +78,13 @@ uint HPACKTableEntry::size() const
 	return (name.length() + value.length() + 32);
 }
 
+bool HPACKTableEntry::operator== (const HPACKTableEntry &other) const
+{
+	if (value.isEmpty() || other.value.isEmpty())
+		return (name == other.name);
+	return ((name == other.name) && (value == other.value));
+}
+
 HPACKDynamicTable::HPACKDynamicTable(uint maxSize)
 	: _size(0)
 	, _maxSize(maxSize)
@@ -95,9 +102,19 @@ void HPACKDynamicTable::insert(const HPACKTableEntry &entry)
 	}
 }
 
-HPACKTableEntry HPACKDynamicTable::entry(int index)
+HPACKTableEntry HPACKDynamicTable::entry(int index) const
 {
 	return _table.value(index);
+}
+
+bool HPACKDynamicTable::contains(const HPACKTableEntry &entry) const
+{
+	return _table.contains(entry);
+}
+
+int HPACKDynamicTable::indexOf(const HPACKTableEntry &entry) const
+{
+	return _table.indexOf(entry);
 }
 
 void HPACKDynamicTable::setMaxSize(uint maxSize)
@@ -159,7 +176,7 @@ HPACK::HPACK(uint tableSize)
 QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 {
 	QList<HPACKTableEntry> headers;
-	uint off = 0;
+	int off = 0;
 	while (off < source.length())
 	{
 		// Indexed Header Field
@@ -258,7 +275,7 @@ quint64 HPACK::decodeInteger(const QByteArray &bytes, quint8 n, uint *bytesRead)
 		_error = true;
 		return 0;
 	}
-	char mask = (char)(pow(2, n) - 1);
+	uchar mask = (uchar)(pow(2, n) - 1);
 	quint64 dec = bytes[0] & mask;
 	if (dec < mask)
 	{
@@ -269,7 +286,7 @@ quint64 HPACK::decodeInteger(const QByteArray &bytes, quint8 n, uint *bytesRead)
 	{
 		uint m = 0;
 		char b = 0x80;
-		uint i;
+		int i;
 		for (i = 1; (b & 0x80) == 0x80; i++)
 		{
 			if (i >= bytes.size())
@@ -287,11 +304,88 @@ quint64 HPACK::decodeInteger(const QByteArray &bytes, quint8 n, uint *bytesRead)
 	return dec;
 }
 
+QByteArray HPACK::encode(const QList<HPACKTableEntry> &headers)
+{
+	QByteArray enc;
+	for (HPACKTableEntry entry : headers)
+	{
+		if (entry.value.isEmpty())
+		{
+			qWarning() << "HPACK: I won't encode a header field with empty value";
+			continue;
+		}
+		
+		quint64 id = tableEntry(entry);
+		qDebug() << "HPACK:" << entry.name << "=" << entry.value << "; id:" << id;
+		HPACKTableEntry tblEntry = id==0 ? HPACKTableEntry{ QByteArray(), QByteArray() } : tableEntry(id);
+		if (!tblEntry.name.isEmpty() && !tblEntry.value.isEmpty())
+		{
+			QByteArray b = encodeInteger(id, 7);
+			enc.append((char)(b.at(0) | 0x80));
+			enc.append(b.mid(1));
+			continue;
+		}
+		qDebug() << "TODO: Soll" << entry.name << "geindext werden?";
+		QByteArray b = encodeInteger(id, 6);
+		qDebug() << "encoding" << id << ":" << b;
+		enc.append((char)(b.at(0) ^ 0x80 | 0x40));
+		enc.append(b.mid(1));
+		qDebug() << enc;
+		if (id == 0)
+		{
+			b = encodeInteger(entry.name.length(), 7);
+			qDebug() << "encoding" << entry.name.length() << ":" << b;
+			enc.append((char)(b.at(0) ^ 0x80));
+			enc.append(b.mid(1));
+			enc.append(entry.name);
+			qDebug() << enc;
+		}
+		b = encodeInteger(entry.value.length(), 7);
+		qDebug() << "encoding" << entry.value.length() << ":" << b;
+		enc.append((char)(b.at(0) ^ 0x80));
+		enc.append(b.mid(1));
+		enc.append(entry.value);
+		qDebug() << enc;
+		_dynTable.insert(entry);
+	}
+	qDebug() << "RESULT:" << enc;
+	return enc;
+}
+
+QByteArray HPACK::encodeInteger(quint64 i, quint8 n)
+{
+	QByteArray enc;
+	if (i < pow(2, n) - 1)
+	{
+		enc.append((unsigned char)i);
+		return enc;
+	}
+	enc.append((unsigned char)(pow(2, n) - 1));
+	i -= pow(2, n) - 1;
+	while (i >= 0x80)
+	{
+		enc.append((unsigned char)(i % 0x80 + 0x80));
+		i /= 0x80;
+	}
+	enc.append((unsigned char)i);
+	return enc;
+}
+
 HPACKTableEntry HPACK::tableEntry(quint64 id)
 {
 	if (id >= 1 && id <= 61)
 		return staticTable().at(id - 1);
 	if (id > 61)
-		return _dynTable.entry(id);
+		return _dynTable.entry(id - 62);
 	return HPACKTableEntry();
+}
+
+quint64 HPACK::tableEntry(const HPACKTableEntry &entry)
+{
+	quint64 id = 0;
+	if (staticTable().contains(entry))
+		id = staticTable().indexOf(entry) + 1;
+	else if (_dynTable.contains(entry))
+		id = _dynTable.indexOf(entry) + 62;
+	return id;
 }

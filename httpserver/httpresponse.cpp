@@ -4,56 +4,56 @@
 */
 
 #include "httpresponse.h"
+#include "httpstream.h"
 
-HttpResponse::HttpResponse(QTcpSocket *socket)
+HttpResponse::HttpResponse(HttpStream *stream)
+	: _stream(stream)
+	, _status(OK)
+	, _sentHeaders(false)
+	, _sentLastPart(false)
 {
-	this->socket = socket;
-	statusCode = 200;
-	statusText = "OK";
-	sentHeaders = false;
-	sentLastPart = false;
+	Q_ASSERT(stream);
 }
 
 void HttpResponse::setHeader(QByteArray name, QByteArray value)
 {
-	Q_ASSERT(sentHeaders == false);
-	headers.insert(name, value);
+	Q_ASSERT(_sentHeaders == false);
+	_headers.insert(name, value);
 }
 
 void HttpResponse::setHeader(QByteArray name, int value)
 {
-	Q_ASSERT(sentHeaders == false);
-	headers.insert(name, QByteArray::number(value));
+	Q_ASSERT(_sentHeaders == false);
+	_headers.insert(name, QByteArray::number(value));
 }
 
-QMap<QByteArray, QByteArray> &HttpResponse::getHeaders()
+QMap<QByteArray, QByteArray> &HttpResponse::headers()
 {
-	return headers;
+	return _headers;
 }
 
-void HttpResponse::setStatus(int statusCode, QByteArray description)
+void HttpResponse::setStatus(HttpResponseStatus status)
 {
-	this->statusCode = statusCode;
-	statusText = description;
+	_status = status;
 }
 
 void HttpResponse::writeHeaders()
 {
-	Q_ASSERT(sentHeaders == false);
+	Q_ASSERT(_sentHeaders == false);
 	QByteArray buffer;
 	buffer.append("HTTP/1.1 ");
-	buffer.append(QByteArray::number(statusCode));
+	buffer.append(QByteArray::number(_status.code()));
 	buffer.append(' ');
-	buffer.append(statusText);
+	buffer.append(_status.text());
 	buffer.append("\r\n");
-	foreach (QByteArray name, headers.keys())
+	foreach (QByteArray name, _headers.keys())
 	{
 		buffer.append(name);
 		buffer.append(": ");
-		buffer.append(headers.value(name));
+		buffer.append(_headers.value(name));
 		buffer.append("\r\n");
 	}
-	foreach (HttpCookie cookie, cookies.values())
+	foreach (HttpCookie cookie, _cookies.values())
 	{
 		buffer.append("Set-Cookie: ");
 		buffer.append(cookie.toByteArray());
@@ -61,42 +61,37 @@ void HttpResponse::writeHeaders()
 	}
 	buffer.append("\r\n");
 	writeToSocket(buffer);
-	sentHeaders = true;
+	_sentHeaders = true;
 }
 
-bool HttpResponse::writeToSocket(QByteArray data)
+bool HttpResponse::writeToSocket(const QByteArray &data)
 {
-	int remaining = data.size();
-	char *ptr = data.data();
-	while (socket->isOpen() && remaining > 0)
-	{
-		// Wait until the previous buffer content is written out, otherwise it could become very large
-		socket->waitForBytesWritten(-1);
-		int written = socket->write(ptr, remaining);
-		if (written == -1)
-			return false;
-		ptr += written;
-		remaining -= written;
-	}
-	return true;
+	Q_UNUSED(data);
+	return false;
 }
 
 void HttpResponse::write(QByteArray data, bool lastPart)
 {
-	Q_ASSERT(sentLastPart == false);
-	if (sentHeaders == false)
+	Q_ASSERT(_sentLastPart == false);
+	if (_sentHeaders == false)
 	{
-		QByteArray connectionMode = headers.value("Connection");
-		if (!headers.contains("Content-Length") && !headers.contains("Transfer-Encoding") && connectionMode != "close" && connectionMode != "Close")
+		QByteArray connectionMode = _headers.value("Connection");
+		if (!_headers.contains("Content-Length") && !_headers.contains("Transfer-Encoding") && connectionMode != "close" && connectionMode != "Close")
 		{
 			if (!lastPart)
-				headers.insert("Transfer-Encoding", "chunked");
+			{
+				_stream->sendHeaders(_headers, _status);
+				_headers.insert("Transfer-Encoding", "chunked");
+			}
 			else
-				headers.insert("Content-Length", QByteArray::number(data.size()));
+			{
+				_stream->sendHeaders(_headers, _status, data.size());
+				_headers.insert("Content-Length", QByteArray::number(data.size()));
+			}
 		}
 		writeHeaders();
 	}
-	bool chunked = headers.value("Transfer-Encoding") == "chunked" || headers.value("Transfer-Encoding") == "Chunked";
+	bool chunked = _headers.value("Transfer-Encoding") == "chunked" || _headers.value("Transfer-Encoding") == "Chunked";
 	if (chunked)
 	{
 		if (data.size() > 0)
@@ -114,34 +109,34 @@ void HttpResponse::write(QByteArray data, bool lastPart)
 	{
 		if (chunked)
 			writeToSocket("0\r\n\r\n");
-		else if (!headers.contains("Content-Length"))
-			socket->disconnectFromHost();
-		sentLastPart = true;
+//		else if (!_headers.contains("Content-Length"))
+//			socket->disconnectFromHost();
+		_sentLastPart = true;
 	}
 }
 
 
 bool HttpResponse::hasSentLastPart() const
 {
-	return sentLastPart;
+	return _sentLastPart;
 }
 
 
 void HttpResponse::setCookie(const HttpCookie &cookie)
 {
-	Q_ASSERT(sentHeaders == false);
+	Q_ASSERT(_sentHeaders == false);
 	if (!cookie.getName().isEmpty())
-		cookies.insert(cookie.getName(), cookie);
+		_cookies.insert(cookie.getName(), cookie);
 }
 
-QMap<QByteArray, HttpCookie> &HttpResponse::getCookies()
+QMap<QByteArray, HttpCookie> &HttpResponse::cookies()
 {
-	return cookies;
+	return _cookies;
 }
 
 void HttpResponse::redirect(const QByteArray &url)
 {
-	setStatus(303, "See Other");
+	setStatus(SEE_OTHER);
 	setHeader("Location", url);
 	write("Redirect", true);
 }

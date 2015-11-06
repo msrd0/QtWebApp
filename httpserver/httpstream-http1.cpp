@@ -1,10 +1,12 @@
+#include "httpconnectionhandler.h"
+#include "httprequesthandler.h"
 #include "httpstream.h"
 
 #include <QBuffer>
 #include <QRegularExpression>
 
-Http1Stream::Http1Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address)
-	: HttpStream(config, protocol, address)
+Http1Stream::Http1Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler)
+	: HttpStream(config, protocol, address, connectionHandler)
 	, _currentRequest(0)
 	, _state(IDLE)
 {
@@ -29,7 +31,7 @@ void Http1Stream::recv(const QByteArray &data)
 				QRegularExpressionMatch match = regex.match(line);
 				if (!match.hasMatch())
 				{
-					emit changeProtocol(HttpRequest::UNKNOWN);
+					connectionHandler->changeProtocol(HttpRequest::UNKNOWN);
 					return;
 				}
 				QString method = match.captured("method");
@@ -51,7 +53,7 @@ void Http1Stream::recv(const QByteArray &data)
 					_currentRequest->setMethod(HttpRequest::CONNECT);
 				else
 				{
-					emit changeProtocol(HttpRequest::UNKNOWN);
+					connectionHandler->changeProtocol(HttpRequest::UNKNOWN);
 					return;
 				}
 				_currentRequest->setPath(match.captured("path"));
@@ -83,4 +85,9 @@ void Http1Stream::recv(const QByteArray &data)
 			break;
 		}
 	}
+}
+
+void Http1Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength)
+{
+	qDebug() << "implement send headers in http 1";
 }

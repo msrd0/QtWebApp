@@ -1,3 +1,5 @@
+#include "httpconnectionhandler.h"
+#include "httprequesthandler.h"
 #include "httpstream.h"
 
 #include <QBuffer>
@@ -115,24 +117,29 @@ QByteArray writeu32bit(quint32 num)
 
 
 
-HttpStream* HttpStream::newStream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address)
+HttpStream* HttpStream::newStream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler)
 {
 	switch (protocol)
 	{
 	case HttpRequest::HTTP_1_0:
 	case HttpRequest::HTTP_1_1:
-		return new Http1Stream(config, protocol, address);
-	case HttpRequest::HTTP_2:
-		return new Http2Stream(config, protocol, address);
+		return new Http1Stream(config, protocol, address, connectionHandler);
+	case HttpRequest::HTTP_2_0:
+		return new Http2Stream(config, protocol, address, connectionHandler);
 	default:
 		return 0;
 	}
 }
 
-HttpStream::HttpStream(QSettings *settings, HttpRequest::Protocol protocol, const QHostAddress &address)
+HttpStream::HttpStream(QSettings *settings, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler)
 	: config(settings)
+	, requestHandler(connectionHandler->requestHandler())
+	, connectionHandler(connectionHandler)
 	, _protocol(protocol)
 	, _address(address)
 {
+	Q_ASSERT(settings);
+	Q_ASSERT(requestHandler);
+	
 	qDebug() << "created new stream for protocol" << protocol;
 }

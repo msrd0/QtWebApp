@@ -58,7 +58,7 @@ public:
 	  @param requestHandler Handler that will process each incoming HTTP request
 	  @param sslConfiguration SSL (HTTPS) will be used if not NULL
 	*/
-	HttpConnectionHandler(QSettings *settings, HttpRequestHandler *requestHandler, QSslConfiguration *sslConfiguration = NULL);
+	HttpConnectionHandler(QSettings *settings, HttpRequestHandler *_requestHandler, QSslConfiguration *sslConfiguration = NULL);
 	
 	/** Destructor */
 	virtual ~HttpConnectionHandler();
@@ -68,6 +68,17 @@ public:
 	
 	/** Mark this handler as busy */
 	void setBusy();
+	
+	/** Called from the stream when the protocol should be changed. Using Protocol::UNKNOWN
+	 * indicates that the connection should be closed because of malformed data received
+	 * from the client. */
+	void changeProtocol(HttpRequest::Protocol protocol);
+	
+	/** Called from the stream when there is data to be written. */
+	void send(const QByteArray &data);
+	
+	/** Returns the RequestHandler associated to this ConnectionHandler. */
+	HttpRequestHandler *requestHandler() { return _requestHandler; }
 	
 public slots:
 	/**
@@ -85,9 +96,6 @@ private slots:
 	
 	/** Received from the socket when a connection has been closed */
 	void disconnected();
-	
-	/** Received from the stream when there is data to be written. */
-	void write(const QByteArray &data);
 	
 private:
 	/** Executes the threads own event loop */
@@ -112,7 +120,7 @@ private:
 	HttpStream *rootStream;
 	
 	/** Dispatches received requests to services */
-	HttpRequestHandler *requestHandler;
+	HttpRequestHandler *_requestHandler;
 	
 	/** This shows the busy-state from a very early time */
 	bool busy;

@@ -1,3 +1,6 @@
+#include "httpconnectionhandler.h"
+#include "httprequesthandler.h"
+#include "httpresponse.h"
 #include "httpstream.h"
 
 Http2Stream::Frame::Frame(const QByteArray &data)
@@ -17,6 +20,7 @@ Http2Stream::Frame::Frame(qint8 type, qint8 flags, qint32 streamId, const QByteA
 	, _streamId(streamId)
 	, _data(data)
 {
+	qDebug() << "created frame:" << type << flags << streamId << data;
 }
 
 QByteArray Http2Stream::Frame::serialize() const
@@ -157,16 +161,16 @@ void Http2Stream::Headers::append(const Frame &frame, HPACK *decode)
 		_complete = true;
 		qDebug() << "Decompressing headers";
 		qDebug() << _data;
-		QList<HPACKTableEntry> headers = decode->decode(_data);
+		_headers = decode->decode(_data);
 		if (decode->error())
 			qDebug() << "send" << COMPRESSION_ERROR;
-		for (HPACKTableEntry entry : headers)
+		for (HPACKTableEntry entry : _headers)
 			qDebug() << entry.name << ":" << entry.value;
 	}
 }
 
-Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, quint32 streamId)
-	: HttpStream(config, protocol, address)
+Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler, quint32 streamId)
+	: HttpStream(config, protocol, address, connectionHandler)
 	, _preface(streamId != 0)
 	, _currentFrame(0)
 	, _headers(0)
@@ -176,7 +180,7 @@ Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, cons
 	, _parent(0)
 	, _root(0)
 {
-	Q_ASSERT(protocol == HttpRequest::HTTP_2);
+	Q_ASSERT(protocol == HttpRequest::HTTP_2_0);
 	
 	qDebug() << "Created new Http2Stream with id" << streamId;
 	
@@ -186,6 +190,8 @@ Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, cons
 
 void Http2Stream::recv(const QByteArray &data)
 {
+	qDebug() << "begin recv";
+	
 	_buffer.append(data);
 	if (!_preface && (_buffer.size() < 24))
 		return;
@@ -193,7 +199,7 @@ void Http2Stream::recv(const QByteArray &data)
 	{
 		if (!_buffer.startsWith("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"))
 		{
-			emit changeProtocol(HttpRequest::UNKNOWN);
+			connectionHandler->changeProtocol(HttpRequest::UNKNOWN);
 			return;
 		}
 		_preface = true;
@@ -204,7 +210,7 @@ void Http2Stream::recv(const QByteArray &data)
 		settings.insert(ENABLE_PUSH, 0); // the client isn't allowed push anything
 		if (config->contains("maxConcurrentStreams"))
 			settings.insert(MAX_CONCURRENT_STREAMS, config->value("maxConcurrentStreams").toUInt());
-		emit send(settings.serialize().serialize());
+		connectionHandler->send(settings.serialize().serialize());
 	}
 	
 	while (!_buffer.isEmpty())
@@ -237,6 +243,8 @@ void Http2Stream::recv(const QByteArray &data)
 				break;
 		}
 	}
+	
+	qDebug() << "end recv";
 }
 
 void Http2Stream::recvFrame(const Frame &frame)
@@ -252,7 +260,7 @@ void Http2Stream::recvFrame(const Frame &frame)
 			Http2Stream *stream = _streams.value(frame.streamId());
 			if (stream == 0)
 			{
-				stream = new Http2Stream(config, protocol(), address(), frame.streamId());
+				stream = new Http2Stream(config, protocol(), address(), connectionHandler, frame.streamId());
 				stream->setParent(this);
 				_streams.insert(stream->streamId(), stream);
 			}
@@ -293,6 +301,53 @@ void Http2Stream::recvFrame(const Frame &frame)
 			}
 			_headers = new Headers;
 			_headers->append(Frame(HEADERS, frame.flags() & 0b11010111, streamId(), data), &(_root->decode));
+			if (_headers->complete())
+			{
+				HttpRequest req(protocol(), address());
+				for (HPACKTableEntry header : _headers->headers())
+				{
+					if (header.name == ":path")
+						req.setPath(header.value);
+					else if (header.name == ":method")
+					{
+						if (header.value == "GET")
+							req.setMethod(HttpRequest::GET);
+						else if (header.value == "POST")
+							req.setMethod(HttpRequest::POST);
+						else if (header.value == "OPTIONS")
+							req.setMethod(HttpRequest::OPTIONS);
+						else if (header.value == "PUT")
+							req.setMethod(HttpRequest::PUT);
+						else if (header.value == "DELETE")
+							req.setMethod(HttpRequest::DELETE);
+						else if (header.value == "HEAD")
+							req.setMethod(HttpRequest::HEAD);
+						else if (header.value == "TRACE")
+							req.setMethod(HttpRequest::TRACE);
+						else if (header.value == "CONNECT")
+							req.setMethod(HttpRequest::CONNECT);
+						else
+						{
+							connectionHandler->changeProtocol(HttpRequest::UNKNOWN);
+							return;
+						}
+					}
+					else if (header.name == ":scheme")
+						qDebug() << "TODO: handle :scheme";
+					else if (header.name == ":authority")
+						qDebug() << "TODO: handle :authority";
+					else if (header.name.startsWith(":"))
+					{
+						qDebug() << "send" << PROTOCOL_ERROR;
+						return;
+					}
+					else
+						req.insertHeader(header.name, header.value);
+				}
+				qDebug() << "processing request";
+				HttpResponse response(this);
+				requestHandler->service(req, response);
+			}
 		}
 		break;
 	case PRIORITY: {
@@ -326,7 +381,7 @@ void Http2Stream::recvFrame(const Frame &frame)
 			}
 			qDebug() << sf.settings();
 			// tell the peer that the settings have been set
-			emit send(Frame(SETTINGS, 0x1, 0).serialize());
+			connectionHandler->send(Frame(SETTINGS, 0x1, 0).serialize());
 		}
 		break;
 	case CONTINUATION: {
@@ -342,6 +397,21 @@ void Http2Stream::recvFrame(const Frame &frame)
 	default:
 		qDebug() << "Unknown frame type" << frame.type() << "received from" << address().toString();
 	}
+	qDebug() << "Finished recvFrame";
+}
+
+void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength)
+{
+	QList<HPACKTableEntry> entries;
+	HPACKTableEntry statusEntry{ ":status", QByteArray::number(status.code()) };
+	entries << statusEntry;
+	for (QByteArray key : headers.keys())
+		entries << HPACKTableEntry{ key.toLower(), headers.value(key) };
+	for (HPACKTableEntry entry : entries)
+		qDebug() << entry.name << entry.value;
+	QByteArray bytes = _root->encode.encode(entries);
+	qDebug() << "encoded bytes:" << bytes;
+	connectionHandler->send(Frame(HEADERS, 0x4, streamId(), bytes).serialize());
 }
 
 void Http2Stream::setParent(Http2Stream *parent)

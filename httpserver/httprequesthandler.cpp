@@ -15,6 +15,6 @@ void HttpRequestHandler::service(HttpRequest &request, HttpResponse &response)
 {
 	qCritical("HttpRequestHandler: you need to override the service() function");
 	qDebug() << "HttpRequestHandler: request=" << request.method() << request.path() << request.protocol();
-	response.setStatus(501, "not implemented");
+	response.setStatus(NOT_IMPLEMENTED);
 	response.write("501 not implemented", true);
 }

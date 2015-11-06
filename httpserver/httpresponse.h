@@ -6,11 +6,14 @@
 #ifndef HTTPRESPONSE_H
 #define HTTPRESPONSE_H
 
+#include "httpcookie.h"
+#include "httpglobal.h"
+#include "httprequest.h"
+#include "httpresponsestatus.h"
 #include <QMap>
 #include <QString>
-#include <QTcpSocket>
-#include "httpglobal.h"
-#include "httpcookie.h"
+
+class HttpStream;
 
 /**
   This object represents a HTTP response, in particular the response headers.
@@ -37,13 +40,10 @@
 class DECLSPEC HttpResponse
 {
 	Q_DISABLE_COPY(HttpResponse)
+	
 public:
-
-	/**
-	  Constructor.
-	  @param socket used to write the response
-	*/
-	HttpResponse(QTcpSocket *socket);
+	
+	HttpResponse(HttpStream *stream);
 	
 	/**
 	  Set a HTTP response header
@@ -60,24 +60,16 @@ public:
 	void setHeader(QByteArray name, int value);
 	
 	/** Get the map of HTTP response headers */
-	QMap<QByteArray, QByteArray> &getHeaders();
+	QMap<QByteArray, QByteArray> &headers();
 	
 	/** Get the map of cookies */
-	QMap<QByteArray, HttpCookie> &getCookies();
+	QMap<QByteArray, HttpCookie> &cookies();
 	
-	/**
-	  Set status code and description. The default is 200,OK.
-	*/
-	void setStatus(int statusCode, QByteArray description = QByteArray());
+	/** Set status code. The default is 200 OK. */
+	void setStatus(HttpResponseStatus status);
 	
-	int getStatusCode() const
-	{
-		return statusCode;
-	}
-	QByteArray getStatusText() const
-	{
-		return statusText;
-	}
+	/** Returns the status code. */
+	HttpResponseStatus status() const { return _status; }
 	
 	/**
 	  Write body data to the socket.
@@ -114,30 +106,26 @@ public:
 	void redirect(const QByteArray &url);
 	
 private:
-
 	/** Request headers */
-	QMap<QByteArray, QByteArray> headers;
+	QMap<QByteArray, QByteArray> _headers;
 	
-	/** Socket for writing output */
-	QTcpSocket *socket;
+	/** The Stream to write tho output to. */
+	HttpStream *_stream;
 	
-	/** HTTP status code*/
-	int statusCode;
-	
-	/** HTTP status code description */
-	QByteArray statusText;
+	/** HTTP status code. */
+	HttpResponseStatus _status;
 	
 	/** Indicator whether headers have been sent */
-	bool sentHeaders;
+	bool _sentHeaders;
 	
 	/** Indicator whether the body has been sent completely */
-	bool sentLastPart;
+	bool _sentLastPart;
 	
 	/** Cookies */
-	QMap<QByteArray, HttpCookie> cookies;
+	QMap<QByteArray, HttpCookie> _cookies;
 	
 	/** Write raw data to the socket. This method blocks until all bytes have been passed to the TCP buffer */
-	bool writeToSocket(QByteArray data);
+	bool writeToSocket(const QByteArray &data);
 	
 	/**
 	  Write the response HTTP status and headers to the socket.

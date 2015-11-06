@@ -14,7 +14,7 @@ HttpConnectionHandler::HttpConnectionHandler(QSettings *settings, HttpRequestHan
 	, settings(settings)
 	, protocol(HttpRequest::UNKNOWN)
 	, rootStream(0)
-	, requestHandler(requestHandler)
+	, _requestHandler(requestHandler)
 	, busy(false)
 	, sslConfiguration(sslConfiguration)
 {
@@ -140,7 +140,12 @@ void HttpConnectionHandler::disconnected()
 	busy = false;
 }
 
-void HttpConnectionHandler::write(const QByteArray &data)
+void HttpConnectionHandler::changeProtocol(HttpRequest::Protocol protocol)
+{
+	qDebug() << "TODO: Change Protocol to" << protocol;
+}
+
+void HttpConnectionHandler::send(const QByteArray &data)
 {
 	qDebug() << "sending" << data;
 	socket->write(data);
@@ -148,6 +153,8 @@ void HttpConnectionHandler::write(const QByteArray &data)
 
 void HttpConnectionHandler::read()
 {
+	qDebug() << "begin read";
+	
 	// The loop adds support for HTTP pipelinig
 	while (socket->bytesAvailable())
 	{
@@ -165,8 +172,8 @@ void HttpConnectionHandler::read()
 					protocol = HttpRequest::HTTP_1_1;
 			}
 			else if (line == "PRI * HTTP/2.0\r\n")
-				protocol = HttpRequest::HTTP_2;
-			rootStream = HttpStream::newStream(settings, protocol, socket->peerAddress());
+				protocol = HttpRequest::HTTP_2_0;
+			rootStream = HttpStream::newStream(settings, protocol, socket->peerAddress(), this);
 			if (!rootStream)
 			{
 				qCritical() << "Unknown protocol from" << socket->peerAddress().toString();
@@ -192,4 +199,6 @@ void HttpConnectionHandler::read()
 			readTimer.start(readTimeout);
 		}
 	}
+	
+	qDebug() << "end read";
 }

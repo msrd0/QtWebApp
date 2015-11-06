@@ -15,7 +15,8 @@ HEADERS += $$PWD/httpglobal.h \
            $$PWD/httpsessionstore.h \
            $$PWD/staticfilecontroller.h \
            $$PWD/httpstream.h \
-    $$PWD/hpack.h
+    $$PWD/hpack.h \
+    $$PWD/httpresponsestatus.h
 
 SOURCES += $$PWD/httpglobal.cpp \
            $$PWD/httplistener.cpp \
@@ -31,7 +32,8 @@ SOURCES += $$PWD/httpglobal.cpp \
            $$PWD/httpstream.cpp \
     $$PWD/httpstream-http1.cpp \
     $$PWD/httpstream-http2.cpp \
-    $$PWD/hpack.cpp
+    $$PWD/hpack.cpp \
+    $$PWD/httpresponsestatus.cpp
 
 DISTFILES += \
     $$PWD/hpack_static_table.txt \

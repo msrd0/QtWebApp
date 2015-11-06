@@ -42,7 +42,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 	// Check whether the browsers cache is up to date
 	if (!request.getHeader("If-None-Match").isEmpty() && request.getHeader("If-None-Match") == ("\"" + etag.value(path) + "\""))
 	{
-		response.setStatus(304, "Not Modified");
+		response.setStatus(NOT_MODIFIED);
 		return;
 	}
 	// Check if we have the file in cache
@@ -67,7 +67,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 		if (path.contains("/.."))
 		{
 			qWarning() << "StaticFileController: detected forbidden characters in path" << path.data();
-			response.setStatus(403, "forbidden");
+			response.setStatus(FORBIDDEN);
 			response.write("403 forbidden", true);
 			return;
 		}
@@ -111,12 +111,12 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 			if (file.exists())
 			{
 				qWarning("StaticFileController: Cannot open existing file %s for reading", qPrintable(file.fileName()));
-				response.setStatus(403, "forbidden");
+				response.setStatus(FORBIDDEN);
 				response.write("403 forbidden", true);
 			}
 			else
 			{
-				response.setStatus(404, "not found");
+				response.setStatus(NOT_FOUND);
 				response.write("404 not found", true);
 			}
 		}

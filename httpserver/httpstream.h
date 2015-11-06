@@ -2,11 +2,15 @@
 #define HTTPSTREAM_H
 
 #include "hpack.h"
-#include "httpconnectionhandler.h"
 #include "httprequest.h"
+#include "httpresponsestatus.h"
 
 #include <QHostAddress>
 #include <QObject>
+#include <QSettings>
+
+class HttpConnectionHandler;
+class HttpRequestHandler;
 
 /** Reads an unsigned 8bit integer from data. */
 extern quint8 readu8bit(const QByteArray &data);
@@ -39,7 +43,7 @@ class HttpStream : public QObject
 	
 public:
 	/** Creates a new (root) stream for the given protocol. */
-	static HttpStream* newStream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address);
+	static HttpStream* newStream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler);
 	
 	/** Returns the protocol of this stream. */
 	HttpRequest::Protocol protocol() const { return _protocol; }
@@ -50,22 +54,24 @@ public:
 	/** Receives some data from the TCP connection. */
 	virtual void recv(const QByteArray &data) = 0;
 	
+	/** Sends the headers from the HttpResponse to the Client. */
+	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1) = 0;
+	
 public slots:
 	/** Can send a timeout message to the client. The connection will be closed afterwards. */
 	virtual void sendTimeout() {}
 	
 protected:
-	HttpStream(QSettings *settings, HttpRequest::Protocol protocol, const QHostAddress &address);
+	HttpStream(QSettings *settings, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler);
 	
 	/** Configuration settings. */
 	QSettings *config;
 	
-signals:
-	/** Emited when the server should sent data to the client. */
-	void send(const QByteArray &data);
+	/** The request handler. */
+	HttpRequestHandler *requestHandler;
 	
-	/** Emited when the server and client agreed to change the used protocol. */
-	void changeProtocol(HttpRequest::Protocol protocol);
+	/** The ConnectionHandler that created this stream. */
+	HttpConnectionHandler *connectionHandler;
 	
 private:
 	/** The protocol of this stream. */
@@ -100,9 +106,11 @@ public:
 		RESPONDING
 	};
 	
-	Http1Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address);
+	Http1Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler);
 	
 	virtual void recv(const QByteArray &data);
+	
+	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1);
 	
 	State state() const { return _state; }
 	
@@ -315,6 +323,8 @@ public:
 		
 		/** Returns the data of the appended Header/Continuation frames. The output is only usefull if the completed flag is set. */
 		QByteArray data() const { return _data; }
+		/** Returns the headers of the appended Header/Continuation frames. The output is only usefull if the completed flag is set. */
+		QList<HPACKTableEntry> headers() const { return _headers; }
 		/** Returns if the END_STREAM flag was set on any appended frame. */
 		bool end() const { return _end; }
 		/** Returns whether all required frames have been appended. If true, please don't append frames anymore. */
@@ -322,16 +332,19 @@ public:
 		
 	private:
 		QByteArray _data;
+		QList<HPACKTableEntry> _headers;
 		bool _end;
 		bool _complete;
 		
 	};
 	
 	/** Creates a new HTTP/2 Stream with the given stream id. */
-	Http2Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, quint32 streamId = 0);
+	Http2Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler, quint32 streamId = 0);
 	
 	virtual void recv(const QByteArray &data);
 	void recvFrame(const Frame &frame);
+	
+	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1);
 	
 	/** Returns the stream identifier of this stream. */
 	quint32 streamId() const { return _streamId; }
