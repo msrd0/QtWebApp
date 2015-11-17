@@ -19,6 +19,7 @@ private:
 public:
 	static QBitArray applyMask(const QBitArray &bits, const QBitArray &mask, int off = 0);
 	static QByteArray decode(const QByteArray &in);
+	static QByteArray encode(const QByteArray &in);
 };
 
 /** An entry in a HPACK Table. */

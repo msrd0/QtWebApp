@@ -73,6 +73,49 @@ QByteArray Huffman::decode(const QByteArray &in)
 	return dec;
 }
 
+QByteArray Huffman::encode(const QByteArray &in)
+{
+	qDebug() << "Huffman::encode(" << in << ")";
+	QBitArray rem(0);
+	QByteArray enc;
+	for (char c : in)
+	{
+		QBitArray code = huffmanTable().table.at(c);
+		qDebug() << c << ":" << code;
+		QBitArray all(rem.size() + code.size());
+		uint i = 0;
+		for (int j = 0; j < rem.size(); j++)
+			all.setBit(i++, rem.testBit(j));
+		for (int j = 0; j < code.size(); j++)
+			all.setBit(i++, code.testBit(j));
+		qDebug() << rem << "+" << code << "=" << all;
+		for (i = 0; i < all.size()/8; i++)
+		{
+			char byte = 0;
+			for (int j = 0; j < 8; j++)
+				if (all.testBit(i*8+j))
+					byte |= (1<<(7-j));
+			enc.append(byte);
+		}
+		i*=8;
+		rem.resize(all.size()-i);
+		for (int j = 0; i < all.size(); i++, j++)
+			rem.setBit(j, all.testBit(i));
+	}
+	if (rem.size() != 0)
+	{
+		char byte = 0;
+		int i;
+		for (i = 0; i < rem.size(); i++)
+			if (rem.testBit(i))
+				byte |= (1<<(7-i));
+		for (; i < 8; i++)
+			byte |= (1<<(7-i)); // eos
+		enc.append(byte);
+	}
+	return enc;
+}
+
 uint HPACKTableEntry::size() const
 {
 	return (name.length() + value.length() + 32);
@@ -327,22 +370,23 @@ QByteArray HPACK::encode(const QList<HPACKTableEntry> &headers)
 		}
 		qDebug() << "TODO: Soll" << entry.name << "geindext werden?";
 		QByteArray b = encodeInteger(id, 6);
-//		enc.append((char)((b.at(0) ^ 0x80) | 0x40));
 		enc.append((char)(b.at(0) | 0x40));
 		enc.append(b.mid(1));
 		if (id == 0)
 		{
-			b = encodeInteger(entry.name.length(), 7);
-//			enc.append((char)(b.at(0) ^ 0x80));
-			enc.append(b.at(0));
+			bool huffman = false; // never encode the name of the header
+			QByteArray v = huffman ? Huffman::encode(entry.name) : entry.name;
+			b = encodeInteger(v.length(), 7);
+			enc.append(b.at(0) | (huffman ? 0x80 : 0));
 			enc.append(b.mid(1));
-			enc.append(entry.name);
+			enc.append(v);
 		}
-		b = encodeInteger(entry.value.length(), 7);
-//		enc.append((char)(b.at(0) ^ 0x80));
-		enc.append(b.at(0));
+		bool huffman = entry.value.length() >= 10;
+		QByteArray v = huffman ? Huffman::encode(entry.value) : entry.value;
+		b = encodeInteger(v.length(), 7);
+		enc.append(b.at(0) | (huffman ? 0x80 : 0));
 		enc.append(b.mid(1));
-		enc.append(entry.value);
+		enc.append(v);
 		_dynTable.insert(entry);
 	}
 	return enc;
