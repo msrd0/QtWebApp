@@ -138,5 +138,6 @@ void HttpResponse::redirect(const QByteArray &url)
 {
 	setStatus(SEE_OTHER);
 	setHeader("Location", url);
-	write("Redirect", true);
+	setHeader("Content-Type", "text/html; charset=utf-8");
+	write("<html><body>Redirecting to <a href=\"" + url + "\">" + url + "</a></body></html>", true);
 }

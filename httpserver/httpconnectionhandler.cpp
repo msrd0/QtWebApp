@@ -135,6 +135,7 @@ void HttpConnectionHandler::readTimeout()
 
 void HttpConnectionHandler::disconnected()
 {
+	qDebug() << "disconnected";
 	socket->close();
 	readTimer.stop();
 	busy = false;
@@ -145,16 +146,26 @@ void HttpConnectionHandler::changeProtocol(HttpRequest::Protocol protocol)
 	qDebug() << "TODO: Change Protocol to" << protocol;
 }
 
-void HttpConnectionHandler::send(const QByteArray &data)
+bool HttpConnectionHandler::send(const QByteArray &data)
 {
 	qDebug() << "sending" << data;
-	socket->write(data);
+	int remaining = data.size();
+	const char *ptr = data.data();
+	while (socket->isOpen() && remaining > 0)
+	{
+		// Wait until the previous buffer content is written out, otherwise it could become very large
+		socket->waitForBytesWritten(-1);
+		int written = socket->write(ptr, remaining);
+		if (written == -1)
+			return false;
+		ptr += written;
+		remaining -= written;
+	}
+	return true;
 }
 
 void HttpConnectionHandler::read()
 {
-	qDebug() << "begin read";
-	
 	// The loop adds support for HTTP pipelinig
 	while (socket->bytesAvailable())
 	{
@@ -184,7 +195,6 @@ void HttpConnectionHandler::read()
 				socket->disconnectFromHost();
 				return;
 			}
-			connect(rootStream, SIGNAL(send(QByteArray)), SLOT(write(QByteArray)));
 			rootStream->recv(line);
 		}
 		
@@ -199,6 +209,4 @@ void HttpConnectionHandler::read()
 			readTimer.start(readTimeout);
 		}
 	}
-	
-	qDebug() << "end read";
 }

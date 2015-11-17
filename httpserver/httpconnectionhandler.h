@@ -75,7 +75,7 @@ public:
 	void changeProtocol(HttpRequest::Protocol protocol);
 	
 	/** Called from the stream when there is data to be written. */
-	void send(const QByteArray &data);
+	bool send(const QByteArray &data);
 	
 	/** Returns the RequestHandler associated to this ConnectionHandler. */
 	HttpRequestHandler *requestHandler() { return _requestHandler; }

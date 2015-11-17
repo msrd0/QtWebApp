@@ -20,7 +20,11 @@ Http2Stream::Frame::Frame(qint8 type, qint8 flags, qint32 streamId, const QByteA
 	, _streamId(streamId)
 	, _data(data)
 {
-	qDebug() << "created frame:" << type << flags << streamId << data;
+	qDebug() << "created frame:"
+			 << static_cast<FrameType>(type)
+			 << QByteArray::number(flags, 2)
+			 << streamId
+			 << data;
 }
 
 QByteArray Http2Stream::Frame::serialize() const
@@ -190,8 +194,6 @@ Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, cons
 
 void Http2Stream::recv(const QByteArray &data)
 {
-	qDebug() << "begin recv";
-	
 	_buffer.append(data);
 	if (!_preface && (_buffer.size() < 24))
 		return;
@@ -243,13 +245,11 @@ void Http2Stream::recv(const QByteArray &data)
 				break;
 		}
 	}
-	
-	qDebug() << "end recv";
 }
 
 void Http2Stream::recvFrame(const Frame &frame)
 {
-	qDebug() << QByteArray::number(frame.type(), 16).data()
+	qDebug() << static_cast<FrameType>(frame.type())
 			 << QByteArray::number(frame.flags(), 2).data()
 			 << frame.streamId()
 			 << frame.data();
@@ -381,7 +381,8 @@ void Http2Stream::recvFrame(const Frame &frame)
 			}
 			qDebug() << sf.settings();
 			// tell the peer that the settings have been set
-			connectionHandler->send(Frame(SETTINGS, 0x1, 0).serialize());
+			if ((frame.flags() & 0x1) == 0)
+				connectionHandler->send(Frame(SETTINGS, 0x1, 0).serialize());
 		}
 		break;
 	case CONTINUATION: {
@@ -397,7 +398,6 @@ void Http2Stream::recvFrame(const Frame &frame)
 	default:
 		qDebug() << "Unknown frame type" << frame.type() << "received from" << address().toString();
 	}
-	qDebug() << "Finished recvFrame";
 }
 
 void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength)
@@ -407,6 +407,8 @@ void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const
 	entries << statusEntry;
 	for (QByteArray key : headers.keys())
 		entries << HPACKTableEntry{ key.toLower(), headers.value(key) };
+	if (contentLength >= 0)
+		entries << HPACKTableEntry{ "content-length", QByteArray::number(contentLength) };
 	for (HPACKTableEntry entry : entries)
 		qDebug() << entry.name << entry.value;
 	QByteArray bytes = _root->encode.encode(entries);

@@ -327,28 +327,24 @@ QByteArray HPACK::encode(const QList<HPACKTableEntry> &headers)
 		}
 		qDebug() << "TODO: Soll" << entry.name << "geindext werden?";
 		QByteArray b = encodeInteger(id, 6);
-		qDebug() << "encoding" << id << ":" << b;
-		enc.append((char)(b.at(0) ^ 0x80 | 0x40));
+//		enc.append((char)((b.at(0) ^ 0x80) | 0x40));
+		enc.append((char)(b.at(0) | 0x40));
 		enc.append(b.mid(1));
-		qDebug() << enc;
 		if (id == 0)
 		{
 			b = encodeInteger(entry.name.length(), 7);
-			qDebug() << "encoding" << entry.name.length() << ":" << b;
-			enc.append((char)(b.at(0) ^ 0x80));
+//			enc.append((char)(b.at(0) ^ 0x80));
+			enc.append(b.at(0));
 			enc.append(b.mid(1));
 			enc.append(entry.name);
-			qDebug() << enc;
 		}
 		b = encodeInteger(entry.value.length(), 7);
-		qDebug() << "encoding" << entry.value.length() << ":" << b;
-		enc.append((char)(b.at(0) ^ 0x80));
+//		enc.append((char)(b.at(0) ^ 0x80));
+		enc.append(b.at(0));
 		enc.append(b.mid(1));
 		enc.append(entry.value);
-		qDebug() << enc;
 		_dynTable.insert(entry);
 	}
-	qDebug() << "RESULT:" << enc;
 	return enc;
 }
 
