@@ -5,6 +5,8 @@
 #include "httprequest.h"
 #include "httpresponsestatus.h"
 
+#include <limits>
+
 #include <QHostAddress>
 #include <QObject>
 #include <QSettings>
@@ -397,6 +399,13 @@ private:
 	
 	HPACK decode, encode; // only on root stream
 	
+	// this variables represent the settings. only on root stream
+	int _headerTableSize = 4096;
+	int _enablePush = 1;
+	int _maxConcurrentStreams = std::numeric_limits<int>::max();
+	int _initialWindowSize = 65535;
+	int _maxFrameSize = 16384;
+	int _maxHeaderListSize = std::numeric_limits<int>::max();
 };
 
 #endif // HTTPSTREAM_H

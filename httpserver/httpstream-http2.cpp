@@ -3,6 +3,8 @@
 #include "httpresponse.h"
 #include "httpstream.h"
 
+#include <algorithm>
+
 Http2Stream::Frame::Frame(const QByteArray &data)
 {
 	Q_ASSERT(data.length() == 9);
@@ -365,6 +367,33 @@ void Http2Stream::recvFrame(const Frame &frame)
 				return;
 			}
 			qDebug() << sf.settings();
+			for (auto key : sf.settings().keys())
+			{
+				Q_ASSERT(_root == this);
+				switch (key)
+				{
+				case HEADER_TABLE_SIZE:
+					_headerTableSize = sf.settings()[key];
+					break;
+				case ENABLE_PUSH:
+					_enablePush = sf.settings()[key];
+					break;
+				case MAX_CONCURRENT_STREAMS:
+					_maxConcurrentStreams = sf.settings()[key];
+					break;
+				case INITIAL_WINDOW_SIZE:
+					_initialWindowSize = sf.settings()[key];
+					break;
+				case MAX_FRAME_SIZE:
+					_maxFrameSize = sf.settings()[key];
+					break;
+				case MAX_HEADER_LIST_SIZE:
+					_maxHeaderListSize = sf.settings()[key];
+					break;
+				default:
+					qDebug() << "TODO: send" << PROTOCOL_ERROR;
+				}
+			}
 			// tell the peer that the settings have been set
 			if ((frame.flags() & 0x1) == 0)
 				connectionHandler->send(Frame(SETTINGS, 0x1, 0).serialize());
@@ -400,7 +429,11 @@ void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const
 
 void Http2Stream::sendBody(const QByteArray &data, bool lastPart)
 {
-	connectionHandler->send(Frame(DATA, lastPart?0x1:0, streamId(), data).serialize());
+	for (int off = 0; off < data.length(); off += _maxFrameSize)
+	{
+		qDebug() << "sendBody(" << data.length() << "," << lastPart << "):" << off << "/" << data.length() << "(" << _maxFrameSize << ")";
+		connectionHandler->send(Frame(DATA, (lastPart && off+_maxFrameSize>=data.length())?0x1:0, streamId(), data.mid(off, std::min(_maxFrameSize, data.length()-off))).serialize());
+	}
 }
 
 void Http2Stream::setParent(Http2Stream *parent)

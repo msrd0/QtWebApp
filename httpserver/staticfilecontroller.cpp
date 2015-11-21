@@ -94,7 +94,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 				mutex.lock();
 				etag.insert(path, QCryptographicHash::hash(entry->document, QCryptographicHash::Md5).toHex());
 				response.setHeader("ETag", "\"" + etag.value(path) + "\"");
-				response.write(entry->document);
+				response.write(entry->document, true);
 				cache.insert(request.path(), entry, entry->document.size());
 				mutex.unlock();
 			}

@@ -44,6 +44,7 @@ class DECLSPEC HttpResponse
 public:
 	
 	HttpResponse(HttpStream *stream);
+	~HttpResponse();
 	
 	/**
 	  Set a HTTP response header

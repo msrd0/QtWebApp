@@ -15,16 +15,22 @@ HttpResponse::HttpResponse(HttpStream *stream)
 	Q_ASSERT(stream);
 }
 
+HttpResponse::~HttpResponse()
+{
+	if (!_sentLastPart)
+		write(QByteArray(), true);
+}
+
 void HttpResponse::setHeader(QByteArray name, QByteArray value)
 {
 	Q_ASSERT(_sentHeaders == false);
-	_headers.insert(name, value);
+	_headers.insert(name.toLower(), value);
 }
 
 void HttpResponse::setHeader(QByteArray name, int value)
 {
 	Q_ASSERT(_sentHeaders == false);
-	_headers.insert(name, QByteArray::number(value));
+	_headers.insert(name.toLower(), QByteArray::number(value));
 }
 
 QMap<QByteArray, QByteArray> &HttpResponse::headers()
@@ -41,7 +47,10 @@ void HttpResponse::write(QByteArray data, bool lastPart)
 {
 	Q_ASSERT(!_sentLastPart);
 	if (!_sentHeaders)
+	{
 		_stream->sendHeaders(headers(), status(), lastPart?data.length():-1);
+		_sentHeaders = true;
+	}
 	_stream->sendBody(data, lastPart);
 }
 
