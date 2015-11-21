@@ -83,7 +83,7 @@ QMultiMap<QByteArray, QByteArray> HttpRequest::getHeaderMap() const
 
 void HttpRequest::insertHeader(const QByteArray &name, const QByteArray &value)
  {
-	qDebug() << name << value;
+//	qDebug() << name << value;
 	_headers.insert(name.toLower(), value);
 }
 

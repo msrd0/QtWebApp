@@ -110,6 +110,7 @@ public:
 		/** Responding to an request. */
 		RESPONDING
 	};
+	Q_ENUM(State)
 	
 	Http1Stream(QSettings *config, HttpRequest::Protocol protocol, const QHostAddress &address, HttpConnectionHandler *connectionHandler);
 	
@@ -135,6 +136,9 @@ private:
 	
 	/** The current state of this stream. */
 	State _state;
+	
+	/** Stores whether we know the content size or we need to use chunked encoding. */
+	bool _chunked;
 	
 };
 

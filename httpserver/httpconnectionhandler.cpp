@@ -148,7 +148,7 @@ void HttpConnectionHandler::changeProtocol(HttpRequest::Protocol protocol)
 
 bool HttpConnectionHandler::send(const QByteArray &data)
 {
-	qDebug() << "sending" << data;
+//	qDebug() << "sending" << data;
 	int remaining = data.size();
 	const char *ptr = data.data();
 	while (socket->isOpen() && remaining > 0)

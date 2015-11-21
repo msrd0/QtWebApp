@@ -21,11 +21,14 @@ void Http1Stream::recv(const QByteArray &data)
 	QByteArray line;
 	while (!(line = buf.readLine()).isEmpty())
 	{
+		qDebug() << "Http1Stream::recv: state:" << state() << "; line:" << line;
 		switch (_state)
 		{
 		case IDLE:
 			{
-				Q_ASSERT(!_currentRequest);
+				if (_currentRequest)
+					delete _currentRequest;
+				
 				_currentRequest = new HttpRequest(protocol(), address());
 				QRegularExpression regex("(?P<method>GET|POST|OPTIONS|PUT|DELETE|HEAD|TRACE|CONNECT)\\s+(?<path>\\S+)\\s+HTTP/1.([01])\r\n");
 				QRegularExpressionMatch match = regex.match(line);
@@ -75,7 +78,19 @@ void Http1Stream::recv(const QByteArray &data)
 				{
 					if (!_latestHeaderName.isEmpty())
 						_currentRequest->insertHeader(_latestHeaderName, _latestHeaderValue);
-					_state = BODY;
+					switch(_currentRequest->method())
+					{
+					case HttpRequest::POST:
+					case HttpRequest::OPTIONS:
+					case HttpRequest::PUT:
+						if (_currentRequest->getHeaderMap().keys().contains("Content-Length"))
+						{
+							_state = BODY;
+							break;
+						}
+					default:
+						_state = RESPONDING;
+					}
 				}
 				else
 				{
@@ -83,16 +98,52 @@ void Http1Stream::recv(const QByteArray &data)
 				}
 			}
 			break;
+		case BODY:
+			qDebug() << "TODO: Accept http 1 body";
+			break;
+		default:
+			qWarning() << "received data in a state where no data was expected";
+			return;
 		}
+	}
+	_buffer = _buffer.mid(buf.pos());
+	
+	if (_state == RESPONDING)
+	{
+		HttpResponse response(this);
+		requestHandler->service(*_currentRequest, response);
 	}
 }
 
 void Http1Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength)
 {
-	qDebug() << "implement send headers in http 1";
+	QByteArray b;
+	HttpResponseStatus s = status.status(protocol());
+	b.append(QByteArray("HTTP/1.") + (protocol()==HttpRequest::HTTP_1_0 ? "0" : "1") + " " + QByteArray::number(s.code()) + " " + s.text() + "\r\n");
+	QMap<QByteArray, QByteArray> h(headers);
+	if (contentLength > 0)
+		h.insert("content-length", QByteArray::number(contentLength));
+	else if (!h.contains("content-length"))
+		h.insert("transfer-encoding", "chunked");
+	_chunked = h["transfer-encoding"].contains("chunked");
+	for (QByteArray key : h.keys())
+		b.append(key + ": " + h[key] + "\r\n");
+	b.append("\r\n");
+	connectionHandler->send(b);
 }
 
 void Http1Stream::sendBody(const QByteArray &data, bool lastPart)
 {
-	qDebug() << "implement send body in http 1";
+	QByteArray b = data;
+	if (_chunked)
+		b = QByteArray::number(data.length()) + "\r\n" + b;
+	if (lastPart && _chunked)
+		b += "0\r\n";
+	connectionHandler->send(b);
+	
+	if (lastPart)
+	{
+		qDebug() << "todo: close conn if requested";
+		_state = IDLE;
+	}
 }
