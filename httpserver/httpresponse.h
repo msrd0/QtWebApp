@@ -124,16 +124,6 @@ private:
 	/** Cookies */
 	QMap<QByteArray, HttpCookie> _cookies;
 	
-	/** Write raw data to the socket. This method blocks until all bytes have been passed to the TCP buffer */
-	bool writeToSocket(const QByteArray &data);
-	
-	/**
-	  Write the response HTTP status and headers to the socket.
-	  Calling this method is optional, because writeBody() calls
-	  it automatically when required.
-	*/
-	void writeHeaders();
-	
 };
 
 #endif // HTTPRESPONSE_H

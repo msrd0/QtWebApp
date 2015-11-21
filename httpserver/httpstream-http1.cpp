@@ -91,3 +91,8 @@ void Http1Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const
 {
 	qDebug() << "implement send headers in http 1";
 }
+
+void Http1Stream::sendBody(const QByteArray &data, bool lastPart)
+{
+	qDebug() << "implement send body in http 1";
+}

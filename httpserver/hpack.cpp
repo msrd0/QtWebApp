@@ -75,20 +75,17 @@ QByteArray Huffman::decode(const QByteArray &in)
 
 QByteArray Huffman::encode(const QByteArray &in)
 {
-	qDebug() << "Huffman::encode(" << in << ")";
 	QBitArray rem(0);
 	QByteArray enc;
 	for (char c : in)
 	{
 		QBitArray code = huffmanTable().table.at(c);
-		qDebug() << c << ":" << code;
 		QBitArray all(rem.size() + code.size());
 		uint i = 0;
 		for (int j = 0; j < rem.size(); j++)
 			all.setBit(i++, rem.testBit(j));
 		for (int j = 0; j < code.size(); j++)
 			all.setBit(i++, code.testBit(j));
-		qDebug() << rem << "+" << code << "=" << all;
 		for (i = 0; i < all.size()/8; i++)
 		{
 			char byte = 0;
@@ -232,7 +229,6 @@ QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 				_error = true;
 				return QList<HPACKTableEntry>();
 			}
-			qDebug() << "indexed header field" << id;
 			off += bytesRead;
 			headers.append(tableEntry(id));
 		}
@@ -243,7 +239,6 @@ QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 			uint bytesRead;
 			quint64 id = decodeInteger(source.mid(off), 5, &bytesRead);
 			off += bytesRead;
-			qDebug() << "dynamic table size upgrade" << id;
 		}
 		
 		else
@@ -277,7 +272,6 @@ QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 			if (_error)
 				return QList<HPACKTableEntry>();
 			off += bytesRead;
-			qDebug() << "literal header field with incremental indexing" << id;
 			HPACKTableEntry entry = tableEntry(id);
 			if (id == 0)
 			{
@@ -307,7 +301,6 @@ QList<HPACKTableEntry> HPACK::decode(const QByteArray &source)
 			headers.append(entry);
 		}
 	}
-	qDebug() << "finished decompressing";
 	return headers;
 }
 
@@ -359,7 +352,6 @@ QByteArray HPACK::encode(const QList<HPACKTableEntry> &headers)
 		}
 		
 		quint64 id = tableEntry(entry);
-		qDebug() << "HPACK:" << entry.name << "=" << entry.value << "; id:" << id;
 		HPACKTableEntry tblEntry = id==0 ? HPACKTableEntry{ QByteArray(), QByteArray() } : tableEntry(id);
 		if (!tblEntry.name.isEmpty() && !tblEntry.value.isEmpty())
 		{

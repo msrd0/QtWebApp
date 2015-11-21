@@ -57,6 +57,9 @@ public:
 	/** Sends the headers from the HttpResponse to the Client. */
 	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1) = 0;
 	
+	/** Sends the part of the body to the client. If this is the last part that will be sent, the lastPart flag will be set to true. */
+	virtual void sendBody(const QByteArray &data, bool lastPart = false) = 0;
+	
 public slots:
 	/** Can send a timeout message to the client. The connection will be closed afterwards. */
 	virtual void sendTimeout() {}
@@ -111,6 +114,8 @@ public:
 	virtual void recv(const QByteArray &data);
 	
 	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1);
+	
+	virtual void sendBody(const QByteArray &data, bool lastPart = false);
 	
 	State state() const { return _state; }
 	
@@ -345,6 +350,8 @@ public:
 	void recvFrame(const Frame &frame);
 	
 	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1);
+	
+	virtual void sendBody(const QByteArray &data, bool lastPart = false);
 	
 	/** Returns the stream identifier of this stream. */
 	quint32 streamId() const { return _streamId; }

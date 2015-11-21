@@ -20,11 +20,6 @@ Http2Stream::Frame::Frame(qint8 type, qint8 flags, qint32 streamId, const QByteA
 	, _streamId(streamId)
 	, _data(data)
 {
-	qDebug() << "created frame:"
-			 << static_cast<FrameType>(type)
-			 << QByteArray::number(flags, 2)
-			 << streamId
-			 << data;
 }
 
 QByteArray Http2Stream::Frame::serialize() const
@@ -163,13 +158,9 @@ void Http2Stream::Headers::append(const Frame &frame, HPACK *decode)
 	if ((frame.flags() & 0b00000100) != 0)
 	{
 		_complete = true;
-		qDebug() << "Decompressing headers";
-		qDebug() << _data;
 		_headers = decode->decode(_data);
 		if (decode->error())
 			qDebug() << "send" << COMPRESSION_ERROR;
-		for (HPACKTableEntry entry : _headers)
-			qDebug() << entry.name << ":" << entry.value;
 	}
 }
 
@@ -185,8 +176,6 @@ Http2Stream::Http2Stream(QSettings *config, HttpRequest::Protocol protocol, cons
 	, _root(0)
 {
 	Q_ASSERT(protocol == HttpRequest::HTTP_2_0);
-	
-	qDebug() << "Created new Http2Stream with id" << streamId;
 	
 	if (streamId == 0)
 		_root = this;
@@ -249,10 +238,6 @@ void Http2Stream::recv(const QByteArray &data)
 
 void Http2Stream::recvFrame(const Frame &frame)
 {
-	qDebug() << static_cast<FrameType>(frame.type())
-			 << QByteArray::number(frame.flags(), 2).data()
-			 << frame.streamId()
-			 << frame.data();
 	if (frame.streamId() != _streamId)
 	{
 		if (streamId() == 0)
@@ -409,11 +394,13 @@ void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const
 		entries << HPACKTableEntry{ key.toLower(), headers.value(key) };
 	if (contentLength >= 0)
 		entries << HPACKTableEntry{ "content-length", QByteArray::number(contentLength) };
-	for (HPACKTableEntry entry : entries)
-		qDebug() << entry.name << entry.value;
 	QByteArray bytes = _root->encode.encode(entries);
-	qDebug() << "encoded bytes:" << bytes;
 	connectionHandler->send(Frame(HEADERS, 0x4, streamId(), bytes).serialize());
+}
+
+void Http2Stream::sendBody(const QByteArray &data, bool lastPart)
+{
+	connectionHandler->send(Frame(DATA, lastPart?0x1:0, streamId(), data).serialize());
 }
 
 void Http2Stream::setParent(Http2Stream *parent)
