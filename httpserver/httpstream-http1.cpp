@@ -2,6 +2,8 @@
 #include "httprequesthandler.h"
 #include "httpstream.h"
 
+#include <algorithm>
+
 #include <QBuffer>
 #include <QRegularExpression>
 
@@ -16,12 +18,13 @@ Http1Stream::Http1Stream(QSettings *config, HttpRequest::Protocol protocol, cons
 void Http1Stream::recv(const QByteArray &data)
 {
 	_buffer.append(data);
+	
 	QBuffer buf(&_buffer);
 	buf.open(QIODevice::ReadOnly);
 	QByteArray line;
-	while (!(line = buf.readLine()).isEmpty())
+	while (_state != BODY && !(line = buf.readLine()).isEmpty())
 	{
-		qDebug() << "Http1Stream::recv: state:" << state() << "; line:" << line;
+//		qDebug() << "Http1Stream::recv: state:" << state() << "; line:" << line;
 		switch (_state)
 		{
 		case IDLE:
@@ -83,7 +86,7 @@ void Http1Stream::recv(const QByteArray &data)
 					case HttpRequest::POST:
 					case HttpRequest::OPTIONS:
 					case HttpRequest::PUT:
-						if (_currentRequest->getHeaderMap().keys().contains("Content-Length"))
+						if (_currentRequest->headerMap().keys().contains("content-length"))
 						{
 							_state = BODY;
 							break;
@@ -98,9 +101,6 @@ void Http1Stream::recv(const QByteArray &data)
 				}
 			}
 			break;
-		case BODY:
-			qDebug() << "TODO: Accept http 1 body";
-			break;
 		default:
 			qWarning() << "received data in a state where no data was expected";
 			return;
@@ -108,14 +108,26 @@ void Http1Stream::recv(const QByteArray &data)
 	}
 	_buffer = _buffer.mid(buf.pos());
 	
+	if (_state == BODY)
+	{
+		int toRead = _currentRequest->header("content-length").toInt() - _currentRequest->body().size();
+		int read = std::min(toRead, _buffer.size());
+		qDebug() << "recv body: read:" << read << "/" << toRead;
+		_currentRequest->appendBody(_buffer.mid(0, read));
+		_buffer = _buffer.mid(read);
+		if (toRead == read)
+			_state = RESPONDING;
+	}
+	
 	if (_state == RESPONDING)
 	{
+		_currentRequest->decodeBody();
 		HttpResponse response(this);
 		requestHandler->service(*_currentRequest, response);
 	}
 }
 
-void Http1Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength)
+void Http1Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const QList<HttpCookie> &cookies, const HttpResponseStatus &status, int contentLength)
 {
 	QByteArray b;
 	HttpResponseStatus s = status.status(protocol());
@@ -128,6 +140,8 @@ void Http1Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const
 	_chunked = h["transfer-encoding"].contains("chunked");
 	for (QByteArray key : h.keys())
 		b.append(key + ": " + h[key] + "\r\n");
+	for (HttpCookie cookie : cookies)
+		b.append("Set-Cookie: " + cookie.toByteArray() + "\r\n");
 	b.append("\r\n");
 	connectionHandler->send(b);
 }

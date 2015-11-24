@@ -48,7 +48,7 @@ void HttpResponse::write(QByteArray data, bool lastPart)
 	Q_ASSERT(!_sentLastPart);
 	if (!_sentHeaders)
 	{
-		_stream->sendHeaders(headers(), status(), lastPart?data.length():-1);
+		_stream->sendHeaders(headers(), cookies().values(), status(), lastPart?data.length():-1);
 		_sentHeaders = true;
 	}
 	_stream->sendBody(data, lastPart);
@@ -64,8 +64,8 @@ bool HttpResponse::hasSentLastPart() const
 void HttpResponse::setCookie(const HttpCookie &cookie)
 {
 	Q_ASSERT(_sentHeaders == false);
-	if (!cookie.getName().isEmpty())
-		_cookies.insert(cookie.getName(), cookie);
+	if (!cookie.name().isEmpty())
+		_cookies.insert(cookie.name(), cookie);
 }
 
 QMap<QByteArray, HttpCookie> &HttpResponse::cookies()

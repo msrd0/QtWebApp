@@ -414,7 +414,7 @@ void Http2Stream::recvFrame(const Frame &frame)
 	}
 }
 
-void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength)
+void Http2Stream::sendHeaders(const QMap<QByteArray, QByteArray> &headers, const QList<HttpCookie> &cookies, const HttpResponseStatus &status, int contentLength)
 {
 	QList<HPACKTableEntry> entries;
 	HPACKTableEntry statusEntry{ ":status", QByteArray::number(status.code()) };

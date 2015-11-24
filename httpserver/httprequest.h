@@ -82,19 +82,22 @@ public:
 	  @return If the header occurs multiple times, only the last
 	  one is returned.
 	*/
-	QByteArray getHeader(const QByteArray &name) const;
+	QByteArray header(const QByteArray &name) const;
 	
 	/**
 	  Get the values of a HTTP request header.
 	  @param name Name of the header
 	*/
-	QList<QByteArray> getHeaders(const QByteArray &name) const;
+	QList<QByteArray> headers(const QByteArray &name) const;
 	
 	/** Get all HTTP request headers */
-	QMultiMap<QByteArray, QByteArray> getHeaderMap() const;
+	QMultiMap<QByteArray, QByteArray> headerMap() const;
 	
 	/** Inserts the request header. */
 	void insertHeader(const QByteArray &name, const QByteArray &value);
+	
+	/** Decodes the content of the request body. */
+	void decodeBody();
 	
 	/**
 	  Get the value of a HTTP request parameter.
@@ -102,19 +105,22 @@ public:
 	  @return If the parameter occurs multiple times, only the last
 	  one is returned.
 	*/
-	QByteArray getParameter(const QByteArray &name) const;
+	QByteArray parameter(const QByteArray &name) const;
 	
 	/**
 	  Get the values of a HTTP request parameter.
 	  @param name Name of the parameter
 	*/
-	QList<QByteArray> getParameters(const QByteArray &name) const;
+	QList<QByteArray> parameters(const QByteArray &name) const;
 	
 	/** Get all HTTP request parameters */
-	QMultiMap<QByteArray, QByteArray> getParameterMap() const;
+	QMultiMap<QByteArray, QByteArray> parameterMap() const;
 	
 	/** Get the HTTP request body  */
-	QByteArray getBody() const;
+	QByteArray body() const;
+	
+	/** Add the data to the HTTP request body */
+	void appendBody(const QByteArray &data);
 	
 	/**
 	  Decode an URL parameter.
@@ -132,19 +138,22 @@ public:
 	  For uploaded files, the method getParameters() returns
 	  the original fileName as provided by the calling web browser.
 	*/
-	QTemporaryFile *getUploadedFile(const QByteArray fieldName);
+	QTemporaryFile *uploadedFile(const QByteArray fieldName);
 	
 	/**
 	  Get the value of a cookie
 	  @param name Name of the cookie
 	*/
-	QByteArray getCookie(const QByteArray &name) const;
+	QByteArray cookie(const QByteArray &name) const;
 	
 	/** Get the map of cookies */
-	QMap<QByteArray, QByteArray> &getCookieMap();
+	QMap<QByteArray, QByteArray> &cookieMap();
+	
+protected:
+	/** Decode the url-encoded string. */
+	QByteArray decode(const QByteArray &in) const;
 	
 private:
-
 	/** Request headers */
 	QMultiMap<QByteArray, QByteArray> _headers;
 	

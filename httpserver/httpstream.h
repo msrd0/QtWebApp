@@ -12,6 +12,7 @@
 #include <QSettings>
 
 class HttpConnectionHandler;
+class HttpCookie;
 class HttpRequestHandler;
 
 /** Reads an unsigned 8bit integer from data. */
@@ -57,7 +58,7 @@ public:
 	virtual void recv(const QByteArray &data) = 0;
 	
 	/** Sends the headers from the HttpResponse to the Client. */
-	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1) = 0;
+	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const QList<HttpCookie> &cookies, const HttpResponseStatus &status, int contentLength = -1) = 0;
 	
 	/** Sends the part of the body to the client. If this is the last part that will be sent, the lastPart flag will be set to true. */
 	virtual void sendBody(const QByteArray &data, bool lastPart = false) = 0;
@@ -116,7 +117,7 @@ public:
 	
 	virtual void recv(const QByteArray &data);
 	
-	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1);
+	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const QList<HttpCookie> &cookies, const HttpResponseStatus &status, int contentLength = -1);
 	
 	virtual void sendBody(const QByteArray &data, bool lastPart = false);
 	
@@ -355,7 +356,7 @@ public:
 	virtual void recv(const QByteArray &data);
 	void recvFrame(const Frame &frame);
 	
-	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const HttpResponseStatus &status, int contentLength = -1);
+	virtual void sendHeaders(const QMap<QByteArray, QByteArray> &headers, const QList<HttpCookie> &cookies, const HttpResponseStatus &status, int contentLength = -1);
 	
 	virtual void sendBody(const QByteArray &data, bool lastPart = false);
 	

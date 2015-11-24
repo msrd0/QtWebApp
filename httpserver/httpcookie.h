@@ -33,7 +33,7 @@ public:
 	  @param domain Optional domain for that the cookie will be sent. Defaults to the current domain
 	  @param secure If true, the cookie will only be sent on secure connections
 	*/
-	HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path = "/", const QByteArray comment = QByteArray(), const QByteArray domain = QByteArray(), const bool secure = false, const bool httponly = false);
+	HttpCookie(const QByteArray _name, const QByteArray _value, const int _maxAge, const QByteArray _path = "/", const QByteArray _comment = QByteArray(), const QByteArray _domain = QByteArray(), const bool _secure = false, const bool httponly = false);
 	
 	/**
 	  Create a cookie from a string.
@@ -51,67 +51,67 @@ public:
 	static QList<QByteArray> splitCSV(const QByteArray source);
 	
 	/** Set the name of this cookie */
-	void setName(const QByteArray name);
+	void setName(const QByteArray _name);
 	
 	/** Set the value of this cookie */
-	void setValue(const QByteArray value);
+	void setValue(const QByteArray _value);
 	
 	/** Set the comment of this cookie */
-	void setComment(const QByteArray comment);
+	void setComment(const QByteArray _comment);
 	
 	/** Set the domain of this cookie */
-	void setDomain(const QByteArray domain);
+	void setDomain(const QByteArray _domain);
 	
 	/** Set the maximum age of this cookie in seconds. 0=discard immediately */
-	void setMaxAge(const int maxAge);
+	void setMaxAge(const int _maxAge);
 	
 	/** Set the path for that the cookie will be sent, default="/" which means the whole domain */
-	void setPath(const QByteArray path);
+	void setPath(const QByteArray _path);
 	
 	/** Set secure mode, so that the cookie will only be sent on secure connections */
-	void setSecure(const bool secure);
+	void setSecure(const bool _secure);
 	
 	/** Set httponly mode, so that the cookie can only be access from javascript. */
 	void setHttpOnly(const bool httponly);
 	
 	/** Get the name of this cookie */
-	QByteArray getName() const;
+	QByteArray name() const;
 	
 	/** Get the value of this cookie */
-	QByteArray getValue() const;
+	QByteArray value() const;
 	
 	/** Get the comment of this cookie */
-	QByteArray getComment() const;
+	QByteArray comment() const;
 	
 	/** Get the domain of this cookie */
-	QByteArray getDomain() const;
+	QByteArray domain() const;
 	
 	/** Set the maximum age of this cookie in seconds. */
-	int getMaxAge() const;
+	int maxAge() const;
 	
 	/** Set the path of this cookie */
-	QByteArray getPath() const;
+	QByteArray path() const;
 	
 	/** Get the secure flag of this cookie */
-	bool isSecure() const;
+	bool secure() const;
 	
 	/** Get the httponly flag of this cookie */
-	bool isHttpOnly() const;
+	bool httpOnly() const;
 	
 	/** Returns always 1 */
-	int getVersion() const;
+	int version() const;
 	
 private:
 
-	QByteArray name;
-	QByteArray value;
-	QByteArray comment;
-	QByteArray domain;
-	int maxAge;
-	QByteArray path;
-	bool secure;
-	bool httpOnly;
-	int version;
+	QByteArray _name;
+	QByteArray _value;
+	QByteArray _comment;
+	QByteArray _domain;
+	int _maxAge;
+	QByteArray _path;
+	bool _secure;
+	bool _httpOnly;
+	int _version;
 	
 };
 

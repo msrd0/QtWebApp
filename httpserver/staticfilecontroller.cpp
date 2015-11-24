@@ -40,7 +40,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 {
 	QString path = request.path();
 	// Check whether the browsers cache is up to date
-	if (!request.getHeader("If-None-Match").isEmpty() && request.getHeader("If-None-Match") == ("\"" + etag.value(path) + "\""))
+	if (!request.header("If-None-Match").isEmpty() && request.header("If-None-Match") == ("\"" + etag.value(path) + "\""))
 	{
 		response.setStatus(NOT_MODIFIED);
 		return;

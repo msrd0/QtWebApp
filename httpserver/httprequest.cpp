@@ -5,9 +5,14 @@
 
 #include "httpcookie.h"
 #include "httprequest.h"
+
 #include <QDir>
-#include <QList>
 #include <QHostAddress>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QList>
+#include <QRegularExpression>
+#include <QTextCodec>
 
 HttpRequest::HttpRequest(Protocol protocol, const QHostAddress &address)
 	: _protocol(protocol)
@@ -66,59 +71,139 @@ QString HttpRequest::protocolStr() const
 	}
 }
 
-QByteArray HttpRequest::getHeader(const QByteArray &name) const
+QByteArray HttpRequest::header(const QByteArray &name) const
 {
 	return _headers.value(name.toLower());
 }
 
-QList<QByteArray> HttpRequest::getHeaders(const QByteArray &name) const
+QList<QByteArray> HttpRequest::headers(const QByteArray &name) const
 {
 	return _headers.values(name.toLower());
 }
 
-QMultiMap<QByteArray, QByteArray> HttpRequest::getHeaderMap() const
+QMultiMap<QByteArray, QByteArray> HttpRequest::headerMap() const
 {
 	return _headers;
 }
 
 void HttpRequest::insertHeader(const QByteArray &name, const QByteArray &value)
- {
-//	qDebug() << name << value;
-	_headers.insert(name.toLower(), value);
+{
+	if (name.toLower() == "cookie")
+	{
+		for (QByteArray val : value.split(';'))
+		{
+			HttpCookie cookie(val);
+			_cookies.insert(cookie.name(), cookie.value());
+		}
+	}
+	else
+		_headers.insert(name.toLower(), value);
 }
 
-QByteArray HttpRequest::getParameter(const QByteArray &name) const
+QByteArray HttpRequest::parameter(const QByteArray &name) const
 {
 	return _parameters.value(name);
 }
 
-QList<QByteArray> HttpRequest::getParameters(const QByteArray &name) const
+QList<QByteArray> HttpRequest::parameters(const QByteArray &name) const
 {
 	return _parameters.values(name);
 }
 
-QMultiMap<QByteArray, QByteArray> HttpRequest::getParameterMap() const
+QMultiMap<QByteArray, QByteArray> HttpRequest::parameterMap() const
 {
 	return _parameters;
 }
 
-QByteArray HttpRequest::getBody() const
+QByteArray HttpRequest::body() const
 {
 	return _bodyData;
 }
 
-QTemporaryFile *HttpRequest::getUploadedFile(const QByteArray fieldName)
+void HttpRequest::appendBody(const QByteArray &data)
+{
+	_bodyData.append(data);
+}
+
+void HttpRequest::decodeBody()
+{
+	if (body().isEmpty())
+		return;
+	
+	QByteArray contentType = header("content-type").toLower();
+	static QRegularExpression codecRegex(".+;\\s*encoding=(\\S+).*");
+	QRegularExpressionMatch codecMatch = codecRegex.match(contentType);
+	QTextCodec *codec = QTextCodec::codecForName(codecMatch.hasMatch() ? codecMatch.captured(1).toLatin1() : "iso-8859-15");
+	QString content = codec->toUnicode(body());
+	
+	if (contentType.startsWith("application/x-www-form-urlencoded"))
+	{
+		QStringList params = content.split('&');
+		for (QString param : params)
+		{
+			QString name, value;
+			int equals = param.indexOf('=');
+			if (equals >= 0)
+			{
+				name = param.mid(0, equals);
+				value = param.mid(equals+1);
+			}
+			else
+				name = param;
+			_parameters.insert(decode(name.toUtf8()), decode(value.toUtf8()));
+		}
+	}
+	
+	else if (contentType.startsWith("application/json"))
+	{
+		QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8());
+		if (doc.isObject())
+		{
+			QJsonObject obj = doc.object();
+			for (QString key : obj.keys())
+			{
+				QJsonValue val = obj.value(key);
+				if (!val.isArray() && !val.isObject())
+					_parameters.insert(key.toUtf8(), val.toVariant().toByteArray());
+				else
+					qWarning() << "received json body that contains nested elements";
+			}
+		}
+		else
+			qWarning() << "received json body which is not an json object";
+	}
+	
+	else
+	{
+		qWarning() << "received body with unknown content type " << contentType;
+	}
+}
+
+QByteArray HttpRequest::decode(const QByteArray &in) const
+{
+	QByteArray out(in);
+	int index;
+	do
+	{
+		index = out.indexOf('%');
+		out.replace(index, 3, QByteArray().append((char)(out.mid(index+1,2).toInt(0,16))));
+	}
+	while (index >= 0);
+	return out;
+}
+
+QTemporaryFile *HttpRequest::uploadedFile(const QByteArray fieldName)
 {
 	return _uploadedFiles.value(fieldName);
 }
 
-QByteArray HttpRequest::getCookie(const QByteArray &name) const
+QByteArray HttpRequest::cookie(const QByteArray &name) const
 {
 	return _cookies.value(name);
 }
 
 /** Get the map of cookies */
-QMap<QByteArray, QByteArray> &HttpRequest::getCookieMap()
+QMap<QByteArray, QByteArray> &HttpRequest::cookieMap()
 {
 	return _cookies;
 }
