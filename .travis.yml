@@ -11,5 +11,6 @@ before_install:
 
 script:
     - qmake -qt=qt5 -v
-    - test $CC = clang && qmake -qt=qt5 -spec linux-clang || qmake -qt=qt5 -spec linux-c++
+    - echo CC=$CC
+    - test $CC = clang && qmake -qt=qt5 -spec linux-clang || qmake -qt=qt5 -spec linux-g++
     - make
