@@ -4,11 +4,12 @@ TARGET = QtWebApp
 TEMPLATE = lib
 QT -= gui
 QT += network
+CONFIG += c++11
+
 VERSION = 1.5.8
 
 mac {
    QMAKE_MAC_SDK = macosx10.10
-   QMAKE_CXXFLAGS += -std=c++11
    QMAKE_LFLAGS_SONAME  = -Wl,-install_name,/usr/local/lib/
 }
 
