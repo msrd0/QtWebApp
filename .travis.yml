@@ -1,4 +1,5 @@
 language: c++
+
 compiler:
     - clang
     - gcc
@@ -10,5 +11,5 @@ before_install:
 
 script:
     - qmake -qt=qt5 -v
-    - qmake -qt=qt5 QMAKE_CXX=$CXX QMAKE_CC=$CC
+    - test $CC = clang && qmake -qt=qt5 -spec linux-clang || qmake -qt=qt5 -spec linux-c++
     - make
