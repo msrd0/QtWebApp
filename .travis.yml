@@ -23,16 +23,17 @@ matrix:
 #                      - clang-3.7
     
 sudo: false
-addons:
-    apt:
-        sources:
-            - ubuntu-sdk-team
-        packages:
-            - qt5-qmake
-            - qtbase5-dev
-            - qtdeclarative5-dev
-            - libqt5webkit5-dev
-            - libsqlite3-dev
+global:
+    addons:
+        apt:
+            sources:
+                - ubuntu-sdk-team
+            packages:
+                - qt5-qmake
+                - qtbase5-dev
+                - qtdeclarative5-dev
+                - libqt5webkit5-dev
+                - libsqlite3-dev
 
 #before_install:
 #    - sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
