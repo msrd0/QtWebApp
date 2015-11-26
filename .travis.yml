@@ -1,8 +1,26 @@
 language: c++
 
-compiler:
-    - clang
-    - gcc
+matrix:
+    include:
+        - os: linux
+          compiler: gcc
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - gcc-4.8
+                      - g++-4.8
+
+# disable clang because of bugs in qt 5.0.2
+#        - os: linux
+#          compiler: clang
+#          addons:
+#              apt:
+#                  sources:
+#                      - llvm-toolchain-precise-3.7
+#                  packages:
+#                      - clang-3.7
     
 sudo: false
 addons:
@@ -24,5 +42,7 @@ addons:
 script:
     - qmake -qt=qt5 -v
     - echo CC=$CC
-    - test $CC = clang && qmake -qt=qt5 -spec linux-clang || qmake -qt=qt5 -spec linux-g++
+    - test $CC = clang \
+        && qmake -qt=qt5 -spec linux-clang QMAKE_CXX=clang++-3.7 QMAKE_CC=clang-3.7 \
+        || qmake -qt=qt5 -spec linux-g++ QMAKE_CXX=g++-4.8 QMAKE_CC=gcc-4.8
     - make
