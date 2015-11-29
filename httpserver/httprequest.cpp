@@ -182,6 +182,7 @@ void HttpRequest::decodeBody()
 QByteArray HttpRequest::decode(const QByteArray &in) const
 {
 	QByteArray out(in);
+	out.replace('+', ' ');
 	int index;
 	do
 	{
