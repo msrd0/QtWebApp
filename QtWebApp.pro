@@ -23,7 +23,6 @@ win32 {
 
 DISTFILES += doc/* mainpage.dox Doxyfile
 
-include(qtservice/qtservice.pri)
 include(logging/logging.pri)
 include(httpserver/httpserver.pri)
 include(templateengine/templateengine.pri)
