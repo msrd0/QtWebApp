@@ -173,9 +173,84 @@ void HttpRequest::decodeBody()
 			qWarning() << "received json body which is not an json object";
 	}
 	
+	else if (contentType.startsWith("multipart/form-data"))
+	{
+		static QRegularExpression regex("^multipart\\/form-data(;.*)*;\\s*boundary=(?P<boundary>\\S+).*", QRegularExpression::CaseInsensitiveOption);
+		QRegularExpressionMatch match = regex.match(contentType);
+		if (!match.hasMatch())
+		{
+			qWarning() << "received multipart without boundary: " << contentType;
+			return;
+		}
+		QString boundary = match.captured("boundary").toLower();
+		static QRegularExpression dispRegex("^Content-Disposition:\\s+(?P<type>\\S+)(;.*)*;\\s*name=\"(?P<name>[^\"]+)\".*", QRegularExpression::CaseInsensitiveOption);
+		QByteArray fieldName, fileName;
+		QByteArray val;
+		QTemporaryFile *file = 0;
+		QString line;
+		int index = -1;
+		int lastIndex = 0;
+		while ((index = content.indexOf("\r\n", lastIndex)) >= 0)
+		{
+			line = content.mid(lastIndex, index - lastIndex);
+			lastIndex = index + 2;
+			
+			if (line.toLower().startsWith("--" + boundary))
+			{
+				if (!fieldName.isEmpty())
+					_parameters.insert(fieldName, val);
+				fieldName = "";
+				fileName = "";
+				val = "";
+				if (file)
+				{
+					file->close();
+					delete file;
+				}
+				file = 0;
+			}
+			else if (line.toLower().startsWith("content-disposition"))
+			{
+				match = dispRegex.match(line);
+				if (!match.hasMatch())
+					qWarning() << "Unknown Content-Disposition Header: " << line;
+				else if (match.captured("type") == "form-data")
+					fieldName = codec->fromUnicode(match.captured("name"));
+				else
+					qWarning() << "Unknown type in Content-Disposition Header: " << line;
+			}
+			else if (fileName.isEmpty())
+				val += codec->fromUnicode(line);
+			else
+			{
+				if (!file)
+				{
+					file = new QTemporaryFile;
+					_uploadedFiles.insert(fieldName, file);
+					file->open();
+				}
+				file->write(codec->fromUnicode(line) + "\r\n");
+			}
+		}
+		
+		if (!fieldName.isEmpty())
+			_parameters.insert(fieldName, val);
+		if (file)
+		{
+			file->close();
+			delete file;
+		}
+		
+		qDebug() << "params:" << _parameters;
+		qDebug() << "files :" << _uploadedFiles;
+	}
+	
 	else
 	{
 		qWarning() << "received body with unknown content type " << contentType;
+#ifdef QT_DEBUG
+		qWarning() << content;
+#endif
 	}
 }
 
@@ -191,6 +266,11 @@ QByteArray HttpRequest::decode(const QByteArray &in) const
 	}
 	while (index >= 0);
 	return out;
+}
+
+void HttpRequest::setPath(const QByteArray &path)
+{
+	_path = decode(path);
 }
 
 QTemporaryFile *HttpRequest::uploadedFile(const QByteArray fieldName)

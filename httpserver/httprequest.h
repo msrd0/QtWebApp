@@ -63,10 +63,10 @@ public:
 	void setMethod(Method method) { _method = method; }
 	
 	/** Get the decoded path of the HTTP request (e.g. "/index.html") */
-	QString path() const { return _path; }
+	QByteArray path() const { return _path; }
 	
 	/** Set the decoded path of the HTTP request. */
-	void setPath(const QString &path) { _path = path; }
+	void setPath(const QByteArray &path);
 	
 	/** Get the protocol. */
 	Protocol protocol() const { return _protocol; }
@@ -173,7 +173,7 @@ private:
 	Method _method;
 	
 	/** Request path (in raw encoded format) */
-	QString _path;
+	QByteArray _path;
 	
 	/** Request protocol. */
 	Protocol _protocol;

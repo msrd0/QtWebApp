@@ -69,7 +69,7 @@ private:
 	{
 		QByteArray document;
 		qint64 created;
-		QString filename;
+		QByteArray filename;
 	};
 	
 	/** Timeout for each cached file */
@@ -88,7 +88,7 @@ private:
 	QMutex mutex;
 	
 	/** Set a content-type header in the response depending on the ending of the filename */
-	void setContentType(QString file, HttpResponse &response) const;
+	void setContentType(QByteArray file, HttpResponse &response) const;
 };
 
 #endif // STATICFILECONTROLLER_H

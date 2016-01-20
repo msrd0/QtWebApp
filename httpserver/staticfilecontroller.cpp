@@ -38,7 +38,7 @@ StaticFileController::StaticFileController(QSettings *settings, QObject *parent)
 
 void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 {
-	QString path = request.path();
+	QByteArray path = request.path();
 	// Check whether the browsers cache is up to date
 	if (!request.header("If-None-Match").isEmpty() && request.header("If-None-Match") == ("\"" + etag.value(path) + "\""))
 	{
@@ -52,7 +52,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 	if (entry && (cacheTimeout == 0 || entry->created > now - cacheTimeout))
 	{
 		QByteArray document = entry->document; //copy the cached document, because other threads may destroy the cached entry immediately after mutex unlock.
-		QString filename = entry->filename;
+		QByteArray filename = entry->filename;
 		response.setHeader("ETag", "\"" + etag.value(path) + "\"");
 		mutex.unlock();
 		setContentType(filename, response);
@@ -123,7 +123,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 	}
 }
 
-void StaticFileController::setContentType(QString fileName, HttpResponse &response) const
+void StaticFileController::setContentType(QByteArray fileName, HttpResponse &response) const
 {
 	if (fileName.endsWith(".png"))
 		response.setHeader("Content-Type", "image/png");

@@ -34,7 +34,7 @@ void Http1Stream::recv(const QByteArray &data)
 				
 				_currentRequest = new HttpRequest(protocol(), address());
 				QRegularExpression regex("(?P<method>GET|POST|OPTIONS|PUT|DELETE|HEAD|TRACE|CONNECT)\\s+(?<path>\\S+)\\s+HTTP/1.([01])\r\n");
-				QRegularExpressionMatch match = regex.match(line);
+				QRegularExpressionMatch match = regex.match(QString::fromLocal8Bit(line));
 				if (!match.hasMatch())
 				{
 					connectionHandler->changeProtocol(HttpRequest::UNKNOWN);
@@ -62,7 +62,7 @@ void Http1Stream::recv(const QByteArray &data)
 					connectionHandler->changeProtocol(HttpRequest::UNKNOWN);
 					return;
 				}
-				_currentRequest->setPath(match.captured("path"));
+				_currentRequest->setPath(match.captured("path").toLocal8Bit());
 			}
 			_state = HEADERS;
 			break;
