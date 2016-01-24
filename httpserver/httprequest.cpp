@@ -270,7 +270,21 @@ QByteArray HttpRequest::decode(const QByteArray &in) const
 
 void HttpRequest::setPath(const QByteArray &path)
 {
-	_path = decode(path);
+	_path = path;
+	if (_path.indexOf('?' > 0))
+	{
+		QByteArray paramss = _path.mid(_path.indexOf('?') + 1);
+		_path = _path.mid(0, _path.indexOf('?'));
+		QList<QByteArray> params = paramss.split('&');
+		for (auto param : params)
+		{
+			if (param.indexOf('=') > 0)
+				_parameters.insert(decode(param.mid(0, param.indexOf('='))), decode(param.mid(param.indexOf('=') + 1)));
+			else
+				_parameters.insert(decode(param), "");
+		}
+	}
+	_path = decode(_path);
 }
 
 QTemporaryFile *HttpRequest::uploadedFile(const QByteArray fieldName)
