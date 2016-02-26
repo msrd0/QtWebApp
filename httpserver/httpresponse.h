@@ -70,10 +70,9 @@ public:
 	*/
 	void setStatus(int statusCode, QByteArray description = QByteArray());
 	
-	int getStatusCode() const
-	{
-		return statusCode;
-	}
+	/** Return the status code. */
+	int getStatusCode() const;
+	
 	QByteArray getStatusText() const
 	{
 		return statusText;
@@ -113,6 +112,19 @@ public:
 	*/
 	void redirect(const QByteArray &url);
 	
+	/**
+	 * Flush the output buffer (of the underlying socket).
+	 * You normally don't need to call this method because flush is
+	 * automatically called after HttpRequestHandler::service() returns.
+	 */
+	void flush();
+	
+	/**
+	 * May be used to check whether the connection to the web client has been lost.
+	 * This might be useful to cancel the generation of large or slow responses.
+	 */
+	bool isConnected() const;
+	
 private:
 
 	/** Request headers */
@@ -132,6 +144,9 @@ private:
 	
 	/** Indicator whether the body has been sent completely */
 	bool sentLastPart;
+	
+	/** Whether the response is sent in chunked mode. */
+	bool chunkedMode;
 	
 	/** Cookies */
 	QMap<QByteArray, HttpCookie> cookies;

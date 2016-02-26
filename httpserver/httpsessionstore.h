@@ -77,13 +77,15 @@ public:
 	/** Delete a session */
 	void removeSession(HttpSession session);
 	
+protected:
+	
+	/** Storage for the sessions */
+	QMap<QByteArray, HttpSession> sessions;
+	
 private:
 
 	/** Configuration settings */
 	QSettings *settings;
-	
-	/** Storage for the sessions */
-	QMap<QByteArray, HttpSession> sessions;
 	
 	/** Timer to remove expired sessions */
 	QTimer cleanupTimer;
@@ -100,7 +102,7 @@ private:
 private slots:
 
 	/** Called every minute to cleanup expired sessions. */
-	void timerEvent();
+	void sessionTimerEvent();
 };
 
 #endif // HTTPSESSIONSTORE_H

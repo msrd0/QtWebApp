@@ -7,10 +7,11 @@
 #define HTTPREQUEST_H
 
 #include <QByteArray>
-#include <QTcpSocket>
+#include <QHostAddress>
 #include <QMap>
 #include <QMultiMap>
 #include <QSettings>
+#include <QTcpSocket>
 #include <QTemporaryFile>
 #include <QUuid>
 #include "httpglobal.h"
@@ -142,6 +143,13 @@ public:
 	/** Get the map of cookies */
 	QMap<QByteArray, QByteArray> &getCookieMap();
 	
+	/**	      
+	  Get the address of the connected client.
+	  Note that multiple clients may have the same IP address, if they
+	  share an internet connection (which is very common).
+	*/
+	QHostAddress getPeerAddress() const;
+	
 private:
 
 	/** Request headers */
@@ -176,6 +184,9 @@ private:
 	  @see RequestStatus
 	*/
 	RequestStatus status;
+	
+	/** Address of the connected peer. */
+	QHostAddress peerAddress;
 	
 	/** Maximum size of requests in bytes. */
 	int maxSize;

@@ -1,6 +1,34 @@
 Dont forget to update the release number also in
 QtWebApp.pro and httpserver/httpglobal.cpp.
 
+1.6.1
+25.01.2016
+Fixed parser of boundary value in multi-part request, which caused that
+QHttpMultipart did not work on client side.
+
+1.6.0
+29.12.2015
+Much better output buffering, reduces the number of small IP packages.
+
+1.5.13
+29.12.2015
+Improved performance a little.
+Add support for old HTTP 1.0 clients.
+Add HttpResposne::flush() and HttpResponse::isConnected() which are helpful to support
+SSE from HTML 5 specification.
+
+1.5.12
+11.12.2015
+Fix program crash when using SSL with a variable sized thread pool on Windows.
+Changed name of HttpSessionStore::timerEvent() to fix compiler warnings since Qt 5.0.
+Add HttpRequest::getRawPath().
+HttpSessionStore::sessions is now protected.
+
+1.5.11
+21.11.2015
+Fix project file for Mac OS.
+Add HttpRequest::getPeerAddress() and HttpResponse::getStatusCode().
+
 1.5.10
 01.09.2015
 Modified StaticFileController to support ressource files (path starting with ":/" or "qrc://").

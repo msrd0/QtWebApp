@@ -12,6 +12,7 @@ HttpResponse::HttpResponse(QTcpSocket *socket)
 	statusText = "OK";
 	sentHeaders = false;
 	sentLastPart = false;
+	chunkedMode = false;
 }
 
 void HttpResponse::setHeader(QByteArray name, QByteArray value)
@@ -35,6 +36,11 @@ void HttpResponse::setStatus(int statusCode, QByteArray description)
 {
 	this->statusCode = statusCode;
 	statusText = description;
+}
+
+int HttpResponse::getStatusCode() const
+{
+	return this->statusCode;
 }
 
 void HttpResponse::writeHeaders()
@@ -70,8 +76,9 @@ bool HttpResponse::writeToSocket(QByteArray data)
 	char *ptr = data.data();
 	while (socket->isOpen() && remaining > 0)
 	{
-		// Wait until the previous buffer content is written out, otherwise it could become very large
-		socket->waitForBytesWritten(-1);
+		// If the output buffer has become large, then wait until it has been sent.
+		if (socket->bytesToWrite() > 16384)
+			socket->waitForBytesWritten(-1);
 		int written = socket->write(ptr, remaining);
 		if (written == -1)
 			return false;
@@ -84,38 +91,48 @@ bool HttpResponse::writeToSocket(QByteArray data)
 void HttpResponse::write(QByteArray data, bool lastPart)
 {
 	Q_ASSERT(sentLastPart == false);
+	
+	// Send HTTP headers, if not already done (that happens only on the first call to write())	
 	if (sentHeaders == false)
 	{
-		QByteArray connectionMode = headers.value("Connection");
-		if (!headers.contains("Content-Length") && !headers.contains("Transfer-Encoding") && connectionMode != "close" && connectionMode != "Close")
+		// If the whole response is generated with a single call to write(), then we know the total
+		// size of the response and therefore can set the Content-Length header automatically.
+		if (lastPart)
+			// Automatically set the Content-Length header
+			headers.insert("Content-Length", QByteArray::number(data.size()));
+		// else if we will not close the connection at the end, ten we must use the chunked mode
+		else
 		{
-			if (!lastPart)
+			bool connectionClose = QString::compare(headers.value("Connection"), "close", Qt::CaseInsensitive) == 0;
+			if (!connectionClose)
 				headers.insert("Transfer-Encoding", "chunked");
 			else
-				headers.insert("Content-Length", QByteArray::number(data.size()));
+				chunkedMode = true;
 		}
 		writeHeaders();
 	}
-	bool chunked = headers.value("Transfer-Encoding") == "chunked" || headers.value("Transfer-Encoding") == "Chunked";
-	if (chunked)
+	
+	// Send data
+	if (data.size() > 0)
 	{
-		if (data.size() > 0)
+		if (chunkedMode)
 		{
-			QByteArray buffer = QByteArray::number(data.size(), 16);
-			buffer.append("\r\n");
-			writeToSocket(buffer);
+			QByteArray size = QByteArray::number(data.size(), 16);
+			writeToSocket(size);
+			writeToSocket("\r\n");
 			writeToSocket(data);
 			writeToSocket("\r\n");
 		}
+		else
+			writeToSocket("\r\n");
 	}
-	else
-		writeToSocket(data);
+	
+	// Only for the last chunk, send the terminating marker and flush the buffer.
 	if (lastPart)
 	{
-		if (chunked)
+		if (chunkedMode)
 			writeToSocket("0\r\n\r\n");
-		else if (!headers.contains("Content-Length"))
-			socket->disconnectFromHost();
+		socket->flush();
 		sentLastPart = true;
 	}
 }
@@ -144,4 +161,14 @@ void HttpResponse::redirect(const QByteArray &url)
 	setStatus(303, "See Other");
 	setHeader("Location", url);
 	write("Redirect", true);
+}
+
+void HttpResponse::flush()
+{
+	socket->flush();
+}
+
+bool HttpResponse::isConnected() const
+{
+	return socket->isOpen();
 }

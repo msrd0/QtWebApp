@@ -40,6 +40,7 @@ void HttpRequest::readRequest(QTcpSocket *socket)
 			method = list.at(0).trimmed();
 			path = list.at(1);
 			version = list.at(2);
+			peerAddress = socket->peerAddress();
 			status = waitForHeader;
 		}
 	}
@@ -81,7 +82,11 @@ void HttpRequest::readHeader(QTcpSocket *socket)
 		{
 			int posi = contentType.indexOf("boundary=");
 			if (posi >= 0)
+			{
 				boundary = contentType.mid(posi + 9);
+				if (boundary.startsWith('"') && boundary.endWith('"'))
+					boundary = boundary.mid(1, boundary.length() - 2);
+			}
 		}
 		QByteArray contentLength = getHeader("Content-Length");
 		if (!contentLength.isEmpty())
@@ -252,6 +257,10 @@ QByteArray HttpRequest::getPath() const
 	return urlDecode(path);
 }
 
+const QByteArray& HttpRequest::getRawPath() const
+{
+	return path;
+}
 
 QByteArray HttpRequest::getVersion() const
 {

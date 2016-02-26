@@ -39,7 +39,6 @@ HttpConnectionHandler::~HttpConnectionHandler()
 {
 	quit();
 	wait();
-	delete socket;
 }
 
 
@@ -72,6 +71,8 @@ void HttpConnectionHandler::run()
 		qCritical("HttpConnectionHandler (%p): an uncatched exception occured in the thread", this);
 	}
 	socket->close();
+	delete socket;
+	readTimer.stop();
 }
 
 
@@ -175,7 +176,26 @@ void HttpConnectionHandler::read()
 		if (currentRequest->getStatus() == HttpRequest::complete)
 		{
 			readTimer.stop();
+
+			// Copy the Connection:close header to the response
 			HttpResponse response(socket);
+			bool closeConnection = QString::compare(currentRequest->getHeader("Connection"), "close", Qt::CaseInsensitive) == 0;
+			if (closeConnection)
+			    response.setHeader("Connection", "close");
+			
+			// In case of HTTP/1.0 protocol add the Connection:close header.
+			// This ensures that the HttpResponse does not activate chunked mode, which is not supported by HTTP/1.0
+			else
+			{
+				bool http10 = QString::compare(currentRequest->getVersion(), "HTTP/1.0", Qt::CaseInsensitive) == 0;
+				if (http10)
+				{
+					closeConnection = true;
+					response.setHeader("Connection", "close");
+				}
+			}
+			
+			// Call the request mapper
 			try
 			{
 				requestHandler->service(*currentRequest, response);
@@ -189,9 +209,29 @@ void HttpConnectionHandler::read()
 			if (!response.hasSentLastPart())
 				response.write(QByteArray(), true);
 				
-			// Close the connection after delivering the response, if requested
-			if (((QString::compare(currentRequest->getVersion(), "http/1.0", Qt::CaseInsensitive) == 0) && !currentRequest->getHeaderMap().keys().contains("Connection")) ||
-			        (QString::compare(currentRequest->getHeader("Connection"), "close", Qt::CaseInsensitive) == 0))
+			// Find out whether the connection must be closed
+			if (!closeConnection)
+			{
+				// Maybe the request handler or mapper added a Connection:close header in the meantime
+				bool closeResponse = QString::compare(response.getHeaders().value("Connection"), "close", Qt::CaseInsensitive) == 0;
+				if (closeResponse)
+					closeConnection = true;
+				else
+				{
+					// If we have no Content-Length header and did not use chunked mode, then we have to close the
+					// connection to tell the HTTP client that the end of the response has been reached.
+					bool hasContentLength = response.getHeaders().contains("Content-Length");
+					if (!hasContentLength)
+					{
+						bool hasChunkedMode = QString::compare(response.getHeaders().value("Transfer-Encoding", "chunked", Qt::CaseInsensitive)) == 0;
+						if (!hasChunkedMode)
+							closeConnection = true;
+					}
+				}
+			}
+			
+			// Close the connection or prepare for the next request on the same connection.
+			if (closeConnection)
 			{
 				socket->flush();
 				socket->disconnectFromHost();
@@ -202,7 +242,6 @@ void HttpConnectionHandler::read()
 				int readTimeout = settings->value("readTimeout", 10000).toInt();
 				readTimer.start(readTimeout);
 			}
-			// Prepare for next request
 			delete currentRequest;
 			currentRequest = 0;
 		}

@@ -6,7 +6,7 @@ QT -= gui
 QT += network
 CONFIG += c++11
 
-VERSION = 1.5.8
+VERSION = 1.6.1
 
 clang {
 	QMAKE_CXXFLAGS_RELEASE -= -fvar-tracking-assignments -Og

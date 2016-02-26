@@ -10,7 +10,7 @@ HttpSessionStore::HttpSessionStore(QSettings *settings, QObject *parent)
 	: QObject(parent)
 {
 	this->settings = settings;
-	connect(&cleanupTimer, SIGNAL(timeout()), this, SLOT(timerEvent()));
+	connect(&cleanupTimer, SIGNAL(timeout()), this, SLOT(sessionTimerEvent()));
 	cleanupTimer.start(60000);
 	cookieName = settings->value("cookieName", "sessionid").toByteArray();
 	expirationTime = settings->value("expirationTime", 3600000).toInt();
@@ -95,9 +95,8 @@ HttpSession HttpSessionStore::getSession(const QByteArray id)
 	return session;
 }
 
-void HttpSessionStore::timerEvent()
+void HttpSessionStore::sessionTimerEvent()
 {
-	// Todo: find a way to delete sessions only if no controller is accessing them
 	mutex.lock();
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
 	QMap<QByteArray, HttpSession>::iterator i = sessions.begin();
