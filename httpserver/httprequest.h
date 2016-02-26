@@ -73,6 +73,9 @@ public:
 	/** Get the decoded path of the HTPP request (e.g. "/index.html") */
 	QByteArray getPath() const;
 	
+	/** Get the raw path of the HTTP request (e.g. "/file%20with%20spaces.html") */
+	const QByteArray& getRawPath() const;
+	
 	/** Get the version of the HTPP request (e.g. "HTTP/1.1") */
 	QByteArray getVersion() const;
 	

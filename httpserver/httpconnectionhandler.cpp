@@ -223,7 +223,7 @@ void HttpConnectionHandler::read()
 					bool hasContentLength = response.getHeaders().contains("Content-Length");
 					if (!hasContentLength)
 					{
-						bool hasChunkedMode = QString::compare(response.getHeaders().value("Transfer-Encoding", "chunked", Qt::CaseInsensitive)) == 0;
+						bool hasChunkedMode = QString::compare(response.getHeaders().value("Transfer-Encoding"), "chunked", Qt::CaseInsensitive) == 0;
 						if (!hasChunkedMode)
 							closeConnection = true;
 					}

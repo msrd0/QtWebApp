@@ -84,7 +84,7 @@ void HttpRequest::readHeader(QTcpSocket *socket)
 			if (posi >= 0)
 			{
 				boundary = contentType.mid(posi + 9);
-				if (boundary.startsWith('"') && boundary.endWith('"'))
+				if (boundary.startsWith('"') && boundary.endsWith('"'))
 					boundary = boundary.mid(1, boundary.length() - 2);
 			}
 		}
