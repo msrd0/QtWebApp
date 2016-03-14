@@ -1,3 +1,7 @@
+## NOTE: The current version seems to be broken! Use commit b33e41b7db92a258bc01b23b227ae3dcac0c77d1
+
+After downloading the git repository, do `git checkout b33e41b7db92a258bc01b23b227ae3dcac0c77d1`. This is the version before I merged some updates from the original library, which somehow broke the sending of the body of web pages.
+
 # QtWebApp [![Build Status](https://img.shields.io/travis/msrd0/QtWebApp/master.svg)](https://travis-ci.org/msrd0/QtWebApp) [![License](https://img.shields.io/badge/license-GPL3-blue.svg)](https://github.com/msrd0/QtWebApp/blob/master/LICENSE)
 
 QtWebApp is a HTTP server library in C++, inspired by Java Servlets. This is a fork of
