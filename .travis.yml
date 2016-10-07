@@ -1,0 +1,19 @@
+language: c++
+sudo: required
+dist: trusty
+
+compiler:
+  - gcc
+  - clang
+
+addons:
+    apt:
+        packages:
+          - qt5-default
+
+script:
+  - mkdir build
+  - pushd build
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
+  - make -j2
+  - sudo make install
