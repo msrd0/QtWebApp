@@ -1,0 +1,39 @@
+
+if (NOT QtWebApp_FIND_COMPONENTS)
+	set(QtWebApp_NOT_FOUND_MESSAGE "The QtWebApp package requires at least one component")
+	set(QtWebApp_FOUND False)
+	return()
+endif()
+
+set(_req)
+if (QtWebApp_FIND_REQUIRED)
+	set(_req REQUIRED)
+endif()
+
+# TODO: Qt5Network is not required for all modules
+find_package(Qt5 ${_req} COMPONENTS Core Network)
+
+set(QtWebApp_LIBRARIES Qt5::Core Qt5::Network)
+set(QtWebApp_INCLUDE_DIRS)
+
+foreach(module ${QtWebApp_FIND_COMPONENTS})
+	set(_lib "@CMAKE_INSTALL_PREFIX@/lib/libQtWebApp${module}.so.@qtwebapp_MAJOR@")
+	if(EXISTS "${_lib}")
+		add_library(QtWebApp${module} SHARED IMPORTED)
+		set_target_properties(QtWebApp${module} PROPERTIES
+				VERSION "@qtwebapp_VERSION@"
+				SOVERSION "@qtwebapp_MAJOR@"
+			)
+		set(QtWebApp_LIBRARIES ${QtWebApp_LIBRARIES} QtWebApp${module})
+		string(TOLOWER ${module} _lower_module)
+		set(QtWebApp_INCLUDE_DIRS ${QtWebApp_INCLUDE_DIRS} @CMAKE_INSTALL_PREFIX@/include/qtwebapp/${_lower_module})
+	elseif(NOT QtWebApp_FIND_REQUIRED)
+		set(QtWebApp_NOT_FOUND_MESSAGE "Unable to find libQtWebApp${module}.so.@qtwebapp_MAJOR@")
+		set(QtWebApp_FOUND False)
+		return()
+	else()
+		message(WARNING "Unable to find libQtWebApp${module}.so.@qtwebapp_MAJOR@")
+	endif()
+endforeach()
+
+mark_as_advanced(QtWebApp_INCLUDE_DIRS QtWebApp_LIBRARIES)
