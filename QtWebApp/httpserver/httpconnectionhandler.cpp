@@ -129,9 +129,8 @@ void HttpConnectionHandler::setBusy()
 void HttpConnectionHandler::readTimeout()
 {
     qDebug("HttpConnectionHandler (%p): read timeout occured",this);
-
-    //Commented out because QWebView cannot handle this.
-    //socket->write("HTTP/1.1 408 request timeout\r\nConnection: close\r\n\r\n408 request timeout\r\n");
+    
+    socket->write("HTTP/1.1 408 request timeout\r\nConnection: close\r\n\r\n408 request timeout\r\n");
 
     socket->flush();
     socket->disconnectFromHost();
