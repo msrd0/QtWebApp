@@ -12,8 +12,6 @@ addons:
           - qt5-default
 
 script:
-  - mkdir build
-  - pushd build
-  - cmake -DCMAKE_BUILD_TYPE=Release ..
+  - pushd QtWebApp
+  - qmake
   - make -j2
-  - sudo make install
