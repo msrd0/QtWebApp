@@ -23,6 +23,7 @@ foreach(module ${QtWebApp_FIND_COMPONENTS})
 		set_target_properties(QtWebApp${module} PROPERTIES
 				VERSION "@qtwebapp_VERSION@"
 				SOVERSION "@qtwebapp_MAJOR@"
+				IMPORTED_LOCATION "${_lib}"
 			)
 		set(QtWebApp_LIBRARIES ${QtWebApp_LIBRARIES} QtWebApp${module})
 		string(TOLOWER ${module} _lower_module)

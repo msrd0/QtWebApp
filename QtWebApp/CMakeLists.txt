@@ -8,9 +8,11 @@ set(qtwebapp_VERSION ${qtwebapp_MAJOR}.${qtwebapp_MINOR}.${qtwebapp_PATCH})
 
 find_package(Qt5 REQUIRED COMPONENTS Core Network)
 
+set(CMAKE_AUTOMOC ON)
+
 add_definitions(-DQTWEBAPPLIB_EXPORT)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSUPERVERBOSE")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -DSUPERVERBOSE")
 # just to avoid any further issues with this - it might work with older versions, but
 # it's hard to find a compiler that doesn't support it nowadays
 set(CMAKE_CXX_STANDARD 11)
