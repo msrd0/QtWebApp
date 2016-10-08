@@ -1,8 +1,9 @@
+# QtWebApp [![Build Status](https://img.shields.io/travis/msrd0/QtWebApp/master.svg)](https://travis-ci.org/msrd0/QtWebApp) [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 This library was forked from http://stefanfrings.de/qtwebapp/index-en.html
 
 **NOTE: I changed the license from LGPL to GPL**
 
-# QtWebApp [![Build Status](https://img.shields.io/travis/msrd0/QtWebApp/master.svg)](https://travis-ci.org/msrd0/QtWebApp) [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 QtWebApp is a library to develop server-side web applications in C++. It depends on Qt5.
 
@@ -12,7 +13,7 @@ The library comes with 3 components:
 - TemplateEngine
 - Logging
 
-# Usage
+## Usage
 
 This short example demonstrates how to use the library:
 
@@ -51,7 +52,7 @@ target_link_libraries(thinkofabettername ${QtWebApp_LIBRARIES})
 # ...
 ```
 
-# Build
+## Build
 
 QtWebApp uses CMake as the build system. To compile, simply run:
 
