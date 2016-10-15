@@ -41,15 +41,18 @@ script:
   - ls ../libqtwebapp*
 
 after_success:
-  - mkdir mount
-  - sshfs alarmpi-debian@msrd0.duckdns.org:/srv/debian -o BatchMode=yes mount
-  - rm mount/pool/main/all/libq/libqtwebapp* mount/pool/main/amd64/libq/libqtwebapp*
-  - cp ../libqtwebapp*all*.deb mount/pool/main/all/libq/
-  - cp ../libqtwebapp*amd64*.deb mount/pool/main/amd64/libq/
-  - mount/bin/genpackages.sh mount
-  - mount/bin/genrelease.sh mount
-  - ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/sign.sh
-  - sudo umount mount
+# if this is a release, then push the build to my server
+  - git describe --tags --candidates=0 && (
+         mkdir mount
+      && sshfs alarmpi-debian@msrd0.duckdns.org:/srv/debian -o BatchMode=yes mount
+      && rm mount/pool/main/all/libq/libqtwebapp* mount/pool/main/amd64/libq/libqtwebapp*
+      && cp ../libqtwebapp*all*.deb mount/pool/main/all/libq/
+      && cp ../libqtwebapp*amd64*.deb mount/pool/main/amd64/libq/
+      && mount/bin/genpackages.sh mount
+      && mount/bin/genrelease.sh mount
+      && ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/sign.sh
+      && sudo umount mount
+    )
 
 after_script:
   - rm ~/.ssh/alarmpi-debian*
