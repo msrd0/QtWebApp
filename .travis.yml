@@ -1,20 +1,28 @@
 language: c++
 sudo: required
-dist: trusty
+dist: precise
 
-compiler:
-  - gcc
-  - clang
+compiler: gcc
 
 addons:
     apt:
+        sources:
+          - kalakris-cmake
+          - sourceline: 'ppa:immerrr-k/qt5-backport'
         packages:
+          - cmake
+          - debhelper
+          - dpkg-dev
           - qt5-default
 
 script:
-  - cd QtWebApp
+# try to compile at "as it is"
+  - pushd QtWebApp
   - mkdir build
-  - pushd build
+  - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release ..
   - make -j2
-  - sudo make install
+  - popd
+# and then try to compile it as a debian package
+  - dpkg-buildpackage -us -uc
+  - ls ../libqtwebapp*
