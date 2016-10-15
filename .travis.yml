@@ -13,7 +13,7 @@ addons:
           - cmake
           - debhelper
           - dpkg-dev
-          - qt5-default
+          - qtbase5-dev
 
 script:
 # try to compile at "as it is"
