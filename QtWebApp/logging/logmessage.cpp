@@ -41,17 +41,22 @@ QString LogMessage::toString(const QString& msgFormat, const QString& timestampF
     switch (type)
     {
         case QtDebugMsg:
-            decorated.replace("{type}","DEBUG");
+            decorated.replace("{type}","DEBUG   ");
             break;
         case QtWarningMsg:
-            decorated.replace("{type}","WARNING");
+            decorated.replace("{type}","WARNING ");
             break;
         case QtCriticalMsg:
             decorated.replace("{type}","CRITICAL");
             break;
         case QtFatalMsg:
-            decorated.replace("{type}","FATAL");
+            decorated.replace("{type}","FATAL   ");
             break;
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+        case QtInfoMsg:
+            decorated.replace("{type}","INFO    ");
+            break;
+    #endif
         default:
             decorated.replace("{type}",typeNr);
     }
