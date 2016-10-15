@@ -59,6 +59,13 @@
 #include <QSettings>
 #include <QProcess>
 
+/** Alias type definition, for compatibility to different Qt versions */
+#if QT_VERSION >= 0x050000
+    typedef qintptr tSocketDescriptor;
+#else
+    typedef int tSocketDescriptor;
+#endif
+
 static QString encodeName(const QString &name, bool allowUpper = false)
 {
     QString n = name.toLower();
@@ -281,7 +288,7 @@ public:
     QtServiceBase::ServiceFlags serviceFlags;
 
 protected:
-    void incomingConnection(int socketDescriptor);
+    void incomingConnection(tSocketDescriptor socketDescriptor) Q_DECL_OVERRIDE;
 
 private slots:
     void slotReady();
@@ -303,7 +310,7 @@ QtServiceSysPrivate::~QtServiceSysPrivate()
 	delete[] ident;
 }
 
-void QtServiceSysPrivate::incomingConnection(int socketDescriptor)
+void QtServiceSysPrivate::incomingConnection(tSocketDescriptor socketDescriptor)
 {
     QTcpSocket *s = new QTcpSocket(this);
     s->setSocketDescriptor(socketDescriptor);
