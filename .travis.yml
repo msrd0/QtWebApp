@@ -16,15 +16,19 @@ addons:
           - dpkg-dev
           - qtchooser
           - qt5-default
+          - sshfs
 
 before_script:
+  - ls -l ~/.ssh/
   - openssl aes-256-cbc -K $encrypted_f039ccdac5d1_key -iv $encrypted_f039ccdac5d1_iv -in .travis-keys.tar.xz.enc -out .travis-keys.tar.xz -d
   - tar xfa .travis-keys.tar.xz
   - mv alarmpi-debian* ~/.ssh/
+  - touch ~/.ssh/config
   - echo "Host msrd0.duckdns.org" >>~/.ssh/config
   - echo "  IdentityFile ~/.ssh/alarmpi-debian" >>~/.ssh/config
   - touch ~/.ssh/known_hosts
   - echo "msrd0.duckdns.org ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEzeA2g5Gybu8BrDCJ7mSZewolPRzpDXMf/WdAPfFBtTU0f3eJ3JUABws3YokqVfh8FZl2/25Jb/C2hZynzTjKo=" >>~/.ssh/known_hosts
+  - ls -l ~/.ssh/
 
 script:
 # try to compile "as it is"
