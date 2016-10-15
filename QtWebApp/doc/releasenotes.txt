@@ -1,6 +1,12 @@
 Dont forget to update the release number also in
 QtWebApp.pro and httpserver/httpglobal.cpp.
 
+1.6.7
+10.10.2016
+Fix type of socketDescriptor un qtservice library.
+Add support for INFO log messages (new since QT 5.5).
+Improve indentation of log messages.
+
 1.6.6
 25.07.2016
 Removed useless mutex from TemplateLoader.

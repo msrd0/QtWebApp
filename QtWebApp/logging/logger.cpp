@@ -62,7 +62,7 @@ void Logger::msgHandler(const QtMsgType type, const QString &message, const QStr
     }
 
     // Abort the program after logging a fatal message
-    if (type>=QtFatalMsg)
+    if (type==QtFatalMsg)
     {
         abort();
     }
