@@ -48,9 +48,10 @@ after_success:
       && rm mount/pool/main/all/libq/libqtwebapp* mount/pool/main/amd64/libq/libqtwebapp*
       && cp ../libqtwebapp*all*.deb mount/pool/main/all/libq/
       && cp ../libqtwebapp*amd64*.deb mount/pool/main/amd64/libq/
+      && ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/sign.sh
       && mount/bin/genpackages.sh mount
       && mount/bin/genrelease.sh mount
-      && ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/sign.sh
+      && ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/signrelease.sh
       && sudo umount mount
     )
 
