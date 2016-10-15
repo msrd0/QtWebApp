@@ -14,6 +14,7 @@ addons:
           - debhelper
           - dpkg-dev
           - qtchooser
+          - qt5-default
 
 script:
 # try to compile at "as it is"
