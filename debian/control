@@ -17,6 +17,6 @@ Description: QtWebApp is a HTTP server library in C++
 Package: libqtwebapp-dev
 Section: libdevel
 Architecture: all
-Depends: libqtwebapp
+Depends: libqtwebapp (= ${binary:Version})
 Description: QtWebApp development files
  QtWebApp development files
