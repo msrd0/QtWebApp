@@ -14,7 +14,7 @@ endif()
 find_package(Qt5 ${_req} COMPONENTS Core Network)
 
 set(QtWebApp_LIBRARIES Qt5::Core Qt5::Network)
-set(QtWebApp_INCLUDE_DIRS)
+set(QtWebApp_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include/qtwebapp)
 
 foreach(module ${QtWebApp_FIND_COMPONENTS})
 	set(_lib "@CMAKE_INSTALL_PREFIX@/lib/libQtWebApp${module}.so.@qtwebapp_MAJOR@")
