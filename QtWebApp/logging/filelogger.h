@@ -14,6 +14,8 @@
 #include "logglobal.h"
 #include "logger.h"
 
+namespace stefanfrings {
+
 /**
   Logger that uses a text file for output. Settings are read from a
   config file using a QSettings object. Config settings can be changed at runtime.
@@ -119,5 +121,7 @@ private:
     void refreshSettings();
 
 };
+
+} // end of namespace
 
 #endif // FILELOGGER_H

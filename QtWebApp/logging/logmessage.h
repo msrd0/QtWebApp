@@ -11,6 +11,8 @@
 #include <QHash>
 #include "logglobal.h"
 
+namespace stefanfrings {
+
 /**
   Represents a single log message together with some data
   that are used to decorate the log message.
@@ -89,5 +91,7 @@ private:
     int line;
 
 };
+
+} // end of namespace
 
 #endif // LOGMESSAGE_H

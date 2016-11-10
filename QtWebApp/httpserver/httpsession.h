@@ -11,6 +11,8 @@
 #include <QReadWriteLock>
 #include "httpglobal.h"
 
+namespace stefanfrings {
+
 /**
   This class stores data for a single HTTP session.
   A session can store any number of key/value pairs. This class uses implicit
@@ -114,5 +116,7 @@ private:
     HttpSessionData* dataPtr;
 
 };
+
+} // end of namespace
 
 #endif // HTTPSESSION_H

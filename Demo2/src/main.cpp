@@ -10,6 +10,8 @@
 #include <logging/filelogger.h>
 #include "requesthandler.h"
 
+using namespace stefanfrings;
+
 /** Logger class */
 FileLogger* logger;
 

@@ -7,6 +7,8 @@
 #include <QDir>
 #include "httpconnectionhandlerpool.h"
 
+using namespace stefanfrings;
+
 HttpConnectionHandlerPool::HttpConnectionHandlerPool(QSettings* settings, HttpRequestHandler* requestHandler)
     : QObject()
 {

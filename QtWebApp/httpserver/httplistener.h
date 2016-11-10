@@ -14,6 +14,8 @@
 #include "httpconnectionhandlerpool.h"
 #include "httprequesthandler.h"
 
+namespace stefanfrings {
+
 /**
   Listens for incoming TCP connections and and passes all incoming HTTP requests to your implementation of HttpRequestHandler,
   which processes the request and generates the response (usually a HTML document).
@@ -94,5 +96,7 @@ signals:
     void handleConnection(tSocketDescriptor socketDescriptor);
 
 };
+
+} // end of namespace
 
 #endif // HTTPLISTENER_H

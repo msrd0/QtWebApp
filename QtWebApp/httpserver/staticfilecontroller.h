@@ -13,6 +13,8 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
+namespace stefanfrings {
+
 /**
   Delivers static files. It is usually called by the applications main request handler when
   the caller requests a path that is mapped to static files.
@@ -83,5 +85,7 @@ private:
     /** Set a content-type header in the response depending on the ending of the filename */
     void setContentType(QString file, HttpResponse& response) const;
 };
+
+} // end of namespace
 
 #endif // STATICFILECONTROLLER_H

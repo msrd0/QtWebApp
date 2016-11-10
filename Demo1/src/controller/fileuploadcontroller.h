@@ -10,6 +10,8 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
+using namespace stefanfrings;
+
 /**
   This controller displays a HTML form for file upload and recieved the file.
 */

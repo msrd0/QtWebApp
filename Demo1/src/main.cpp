@@ -12,6 +12,8 @@
 #include "filelogger.h"
 #include "requestmapper.h"
 
+using namespace stefanfrings;
+
 /** Cache for template files */
 TemplateCache* templateCache;
 

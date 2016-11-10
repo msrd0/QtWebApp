@@ -8,6 +8,8 @@
 #include <QDir>
 #include "httpcookie.h"
 
+using namespace stefanfrings;
+
 HttpRequest::HttpRequest(QSettings* settings)
 {
     status=waitForRequest;
@@ -15,7 +17,9 @@ HttpRequest::HttpRequest(QSettings* settings)
     expectedBodySize=0;
     maxSize=settings->value("maxRequestSize","16000").toInt();
     maxMultiPartSize=settings->value("maxMultiPartSize","1000000").toInt();
+    tempFile=NULL;
 }
+
 
 void HttpRequest::readRequest(QTcpSocket* socket)
 {
@@ -166,18 +170,23 @@ void HttpRequest::readBody(QTcpSocket* socket)
         #ifdef SUPERVERBOSE
             qDebug("HttpRequest: receiving multipart body");
         #endif
-        if (!tempFile.isOpen())
+        // Create an object for the temporary file, if not already present
+        if (tempFile == NULL)
         {
-            tempFile.open();
+            tempFile = new QTemporaryFile;
+        }
+        if (!tempFile->isOpen())
+        {
+            tempFile->open();
         }
         // Transfer data in 64kb blocks
-        int fileSize=tempFile.size();
+        int fileSize=tempFile->size();
         int toRead=expectedBodySize-fileSize;
         if (toRead>65536)
         {
             toRead=65536;
         }
-        fileSize+=tempFile.write(socket->read(toRead));
+        fileSize+=tempFile->write(socket->read(toRead));
         if (fileSize>=maxMultiPartSize)
         {
             qWarning("HttpRequest: received too many multipart bytes");
@@ -188,13 +197,13 @@ void HttpRequest::readBody(QTcpSocket* socket)
         #ifdef SUPERVERBOSE
             qDebug("HttpRequest: received whole multipart body");
         #endif
-            tempFile.flush();
-            if (tempFile.error())
+            tempFile->flush();
+            if (tempFile->error())
             {
                 qCritical("HttpRequest: Error writing temp file for multipart body");
             }
             parseMultiPartFile();
-            tempFile.close();
+            tempFile->close();
             status=complete;
         }
     }
@@ -395,18 +404,18 @@ QByteArray HttpRequest::urlDecode(const QByteArray source)
 void HttpRequest::parseMultiPartFile()
 {
     qDebug("HttpRequest: parsing multipart temp file");
-    tempFile.seek(0);
+    tempFile->seek(0);
     bool finished=false;
-    while (!tempFile.atEnd() && !finished && !tempFile.error())
+    while (!tempFile->atEnd() && !finished && !tempFile->error())
     {
         #ifdef SUPERVERBOSE
             qDebug("HttpRequest: reading multpart headers");
         #endif
         QByteArray fieldName;
         QByteArray fileName;
-        while (!tempFile.atEnd() && !finished && !tempFile.error())
+        while (!tempFile->atEnd() && !finished && !tempFile->error())
         {
-            QByteArray line=tempFile.readLine(65536).trimmed();
+            QByteArray line=tempFile->readLine(65536).trimmed();
             if (line.startsWith("Content-Disposition:"))
             {
                 if (line.contains("form-data"))
@@ -443,9 +452,9 @@ void HttpRequest::parseMultiPartFile()
         #endif
         QTemporaryFile* uploadedFile=0;
         QByteArray fieldValue;
-        while (!tempFile.atEnd() && !finished && !tempFile.error())
+        while (!tempFile->atEnd() && !finished && !tempFile->error())
         {
-            QByteArray line=tempFile.readLine(65536);
+            QByteArray line=tempFile->readLine(65536);
             if (line.startsWith("--"+boundary))
             {
                 // Boundary found. Until now we have collected 2 bytes too much,
@@ -502,9 +511,9 @@ void HttpRequest::parseMultiPartFile()
             }
         }
     }
-    if (tempFile.error())
+    if (tempFile->error())
     {
-        qCritical("HttpRequest: cannot read temp file, %s",qPrintable(tempFile.errorString()));
+        qCritical("HttpRequest: cannot read temp file, %s",qPrintable(tempFile->errorString()));
     }
     #ifdef SUPERVERBOSE
         qDebug("HttpRequest: finished parsing multipart temp file");
@@ -516,8 +525,19 @@ HttpRequest::~HttpRequest()
     foreach(QByteArray key, uploadedFiles.keys())
     {
         QTemporaryFile* file=uploadedFiles.value(key);
-        file->close();
+        if (file->isOpen())
+        {
+            file->close();
+        }
         delete file;
+    }
+    if (tempFile != NULL)
+    {
+        if (tempFile->isOpen())
+        {
+            tempFile->close();
+        }
+        delete tempFile;
     }
 }
 

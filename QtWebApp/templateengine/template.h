@@ -14,6 +14,8 @@
 #include <QString>
 #include "templateglobal.h"
 
+namespace stefanfrings {
+
 /**
  Enhanced version of QString for template processing. Templates
  are usually loaded from files, but may also be loaded from
@@ -164,5 +166,7 @@ private:
     /** Enables warnings, if true */
     bool warnings;
 };
+
+} // end of namespace
 
 #endif // TEMPLATE_H

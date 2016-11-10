@@ -1,9 +1,18 @@
 Dont forget to update the release number also in
 QtWebApp.pro and httpserver/httpglobal.cpp.
 
+1.7.1
+10.11.2016
+Fixed a possible memory leak in case of broken Multipart HTTP Requests.
+
+1.7.0
+08.11.2016
+Introduced namespace "stefanfrings".
+Improved performance a little.
+
 1.6.7
 10.10.2016
-Fix type of socketDescriptor un qtservice library.
+Fix type of socketDescriptor in qtservice library.
 Add support for INFO log messages (new since QT 5.5).
 Improve indentation of log messages.
 

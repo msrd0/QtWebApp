@@ -10,6 +10,8 @@
 #include <QByteArray>
 #include "httpglobal.h"
 
+namespace stefanfrings {
+
 /**
   HTTP cookie as defined in RFC 2109. This class can also parse
   RFC 2965 cookies, but skips fields that are not defined in RFC
@@ -115,5 +117,7 @@ private:
     int version;
 
 };
+
+} // end of namespace
 
 #endif // HTTPCOOKIE_H

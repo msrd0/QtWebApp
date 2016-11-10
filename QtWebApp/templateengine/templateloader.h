@@ -13,6 +13,8 @@
 #include "templateglobal.h"
 #include "template.h"
 
+namespace stefanfrings {
+
 /**
   Loads localized versions of template files. If the caller requests a file with the
   name "index" and the suffix is ".tpl" and the requested locale is "de_DE, de, en-US",
@@ -79,5 +81,7 @@ protected:
     /** Codec for decoding the files */
     QTextCodec* textCodec;
 };
+
+} // end of namespace
 
 #endif // TEMPLATELOADER_H

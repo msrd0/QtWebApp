@@ -5,6 +5,8 @@
 #include "templateglobal.h"
 #include "templateloader.h"
 
+namespace stefanfrings {
+
 /**
   Caching template loader, reduces the amount of I/O and improves performance
   on remote file systems. The cache has a limited size, it prefers to keep
@@ -76,5 +78,7 @@ private:
     /** Used to synchronize threads */
     QMutex mutex;
 };
+
+} // end of namespace
 
 #endif // TEMPLATECACHE_H

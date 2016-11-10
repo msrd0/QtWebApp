@@ -8,6 +8,8 @@
 
 #include <httpserver/httprequesthandler.h>
 
+using namespace stefanfrings;
+
 /**
   The request handler receives incoming HTTP requests and generates responses.
 */
