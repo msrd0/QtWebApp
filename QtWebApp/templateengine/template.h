@@ -14,7 +14,7 @@
 #include <QString>
 #include "templateglobal.h"
 
-namespace stefanfrings {
+namespace qtwebapp {
 
 /**
  Enhanced version of QString for template processing. Templates

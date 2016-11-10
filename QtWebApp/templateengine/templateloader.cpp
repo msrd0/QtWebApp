@@ -10,7 +10,7 @@
 #include <QDir>
 #include <QSet>
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 TemplateLoader::TemplateLoader(QSettings* settings, QObject* parent)
     : QObject(parent)

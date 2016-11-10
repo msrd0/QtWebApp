@@ -15,7 +15,7 @@
 #include "logglobal.h"
 #include "logmessage.h"
 
-namespace stefanfrings {
+namespace qtwebapp {
 
 /**
   Decorates and writes log messages to the console, stderr.

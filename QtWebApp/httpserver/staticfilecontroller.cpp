@@ -10,7 +10,7 @@
 #include <QDir>
 #include <QFileInfo>
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 StaticFileController::StaticFileController(QSettings* settings, QObject* parent)
     :HttpRequestHandler(parent)

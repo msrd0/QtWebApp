@@ -11,7 +11,7 @@
 #include <QHash>
 #include "logglobal.h"
 
-namespace stefanfrings {
+namespace qtwebapp {
 
 /**
   Represents a single log message together with some data

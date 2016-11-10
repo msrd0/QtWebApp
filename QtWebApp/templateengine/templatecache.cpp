@@ -3,7 +3,7 @@
 #include <QStringList>
 #include <QSet>
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 TemplateCache::TemplateCache(QSettings* settings, QObject* parent)
     :TemplateLoader(settings,parent)

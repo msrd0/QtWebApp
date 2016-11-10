@@ -5,7 +5,7 @@
 
 #include "dualfilelogger.h"
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 DualFileLogger::DualFileLogger(QSettings* firstSettings, QSettings* secondSettings, const int refreshInterval, QObject* parent)
     :Logger(parent)

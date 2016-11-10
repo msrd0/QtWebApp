@@ -11,7 +11,7 @@
 #include <QThread>
 #include <QObject>
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 Logger* Logger::defaultLogger=0;
 

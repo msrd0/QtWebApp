@@ -6,7 +6,7 @@
 #include "template.h"
 #include <QFileInfo>
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 Template::Template(QString source, QString sourceName)
     : QString(source)

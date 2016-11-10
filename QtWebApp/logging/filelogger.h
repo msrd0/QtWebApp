@@ -14,7 +14,7 @@
 #include "logglobal.h"
 #include "logger.h"
 
-namespace stefanfrings {
+namespace qtwebapp {
 
 /**
   Logger that uses a text file for output. Settings are read from a
