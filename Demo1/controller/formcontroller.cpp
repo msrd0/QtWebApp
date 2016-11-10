@@ -5,6 +5,8 @@
 
 #include "formcontroller.h"
 
+using namespace qtwebapp;
+
 FormController::FormController()
 {}
 

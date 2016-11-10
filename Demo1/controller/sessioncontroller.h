@@ -10,13 +10,11 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
-using namespace stefanfrings;
-
 /**
   This controller demonstrates how to use sessions.
 */
 
-class SessionController : public HttpRequestHandler {
+class SessionController : public qtwebapp::HttpRequestHandler {
     Q_OBJECT
     Q_DISABLE_COPY(SessionController)
 public:
@@ -25,7 +23,7 @@ public:
     SessionController();
 
     /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
 };
 
 #endif // SESSIONCONTROLLER_H

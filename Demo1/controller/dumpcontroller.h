@@ -10,13 +10,11 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
-using namespace stefanfrings;
-
 /**
   This controller dumps the received HTTP request in the response.
 */
 
-class DumpController : public HttpRequestHandler {
+class DumpController : public qtwebapp::HttpRequestHandler {
     Q_OBJECT
     Q_DISABLE_COPY(DumpController)
 public:
@@ -25,7 +23,7 @@ public:
     DumpController();
 
     /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
 };
 
 #endif // DUMPCONTROLLER_H

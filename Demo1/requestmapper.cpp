@@ -13,6 +13,8 @@
 #include "controller/fileuploadcontroller.h"
 #include "controller/sessioncontroller.h"
 
+using namespace qtwebapp;
+
 /** Redirects log messages to a file */
 extern FileLogger* logger;
 

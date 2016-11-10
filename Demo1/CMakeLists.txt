@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 2.8.11)
+project("QtWebApp Demo 1")
+
+set(CMAKE_AUTOMOC ON)
+
+find_package(Qt5 REQUIRED COMPONENTS Core Network)
+find_package(QtWebApp REQUIRED COMPONENTS HttpServer Logging TemplateEngine)
+include_directories(${QtWebApp_INCLUDE_DIRS})
+
+add_executable(demo1
+	controller/dumpcontroller.cpp
+	controller/dumpcontroller.h
+	controller/fileuploadcontroller.cpp
+	controller/fileuploadcontroller.h
+	controller/formcontroller.cpp
+	controller/formcontroller.h
+	controller/sessioncontroller.cpp
+	controller/sessioncontroller.h
+	controller/templatecontroller.cpp
+	controller/templatecontroller.h
+	documentcache.h
+	main.cpp
+	requestmapper.cpp
+	requestmapper.h
+)
+target_link_libraries(demo1 ${QtWebApp_LIBRARIES})

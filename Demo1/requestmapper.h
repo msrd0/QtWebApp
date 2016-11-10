@@ -8,14 +8,12 @@
 
 #include "httprequesthandler.h"
 
-using namespace stefanfrings;
-
 /**
   The request mapper dispatches incoming HTTP requests to controller classes
   depending on the requested path.
 */
 
-class RequestMapper : public HttpRequestHandler {
+class RequestMapper : public qtwebapp::HttpRequestHandler {
     Q_OBJECT
     Q_DISABLE_COPY(RequestMapper)
 public:
@@ -36,7 +34,7 @@ public:
       @param request The received HTTP request
       @param response Must be used to return the response
     */
-    void service(HttpRequest& request, HttpResponse& response);
+    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
 
 };
 

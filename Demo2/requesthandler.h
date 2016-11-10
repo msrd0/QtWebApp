@@ -8,13 +8,11 @@
 
 #include <httpserver/httprequesthandler.h>
 
-using namespace stefanfrings;
-
 /**
   The request handler receives incoming HTTP requests and generates responses.
 */
 
-class RequestHandler : public HttpRequestHandler {
+class RequestHandler : public qtwebapp::HttpRequestHandler {
     Q_OBJECT
     Q_DISABLE_COPY(RequestHandler)
 public:
@@ -35,7 +33,7 @@ public:
       @param request The received HTTP request
       @param response Must be used to return the response
     */
-    void service(HttpRequest& request, HttpResponse& response);
+    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
 
 };
 

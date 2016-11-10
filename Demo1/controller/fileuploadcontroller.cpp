@@ -5,6 +5,8 @@
 
 #include "fileuploadcontroller.h"
 
+using namespace qtwebapp;
+
 FileUploadController::FileUploadController()
 {}
 

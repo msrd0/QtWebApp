@@ -6,6 +6,7 @@
 #include <logging/filelogger.h>
 #include "requesthandler.h"
 
+using namespace qtwebapp;
 
 /** Logger class */
 extern FileLogger* logger;

@@ -10,14 +10,12 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
-using namespace stefanfrings;
-
 /**
   This controller displays a HTML form for file upload and recieved the file.
 */
 
 
-class FileUploadController : public HttpRequestHandler {
+class FileUploadController : public qtwebapp::HttpRequestHandler {
     Q_OBJECT
     Q_DISABLE_COPY(FileUploadController)
 public:
@@ -26,7 +24,7 @@ public:
     FileUploadController();
 
     /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
 };
 
 #endif // FILEUPLOADCONTROLLER_H

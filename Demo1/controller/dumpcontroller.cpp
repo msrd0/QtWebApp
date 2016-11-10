@@ -7,6 +7,8 @@
 #include <QVariant>
 #include <QDateTime>
 
+using namespace qtwebapp;
+
 DumpController::DumpController()
 {}
 

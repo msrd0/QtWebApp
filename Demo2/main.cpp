@@ -10,7 +10,7 @@
 #include <logging/filelogger.h>
 #include "requesthandler.h"
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 /** Logger class */
 FileLogger* logger;

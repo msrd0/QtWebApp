@@ -10,14 +10,12 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
-using namespace stefanfrings;
-
 /**
   This controller displays a HTML form and dumps the submitted input.
 */
 
 
-class FormController : public HttpRequestHandler {
+class FormController : public qtwebapp::HttpRequestHandler {
     Q_OBJECT
     Q_DISABLE_COPY(FormController)
 public:
@@ -26,7 +24,7 @@ public:
     FormController();
 
     /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
 };
 
 #endif // FORMCONTROLLER_H

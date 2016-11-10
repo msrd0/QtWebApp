@@ -12,7 +12,7 @@
 #include "filelogger.h"
 #include "requestmapper.h"
 
-using namespace stefanfrings;
+using namespace qtwebapp;
 
 /** Cache for template files */
 TemplateCache* templateCache;

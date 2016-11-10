@@ -7,6 +7,8 @@
 #include "templatecache.h"
 #include "template.h"
 
+using namespace qtwebapp;
+
 /** Cache for template files */
 extern TemplateCache* templateCache;
 

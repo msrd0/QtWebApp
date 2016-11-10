@@ -7,6 +7,8 @@
 #include "sessioncontroller.h"
 #include "httpsessionstore.h"
 
+using namespace qtwebapp;
+
 /** Storage for session cookies */
 extern HttpSessionStore* sessionStore;
 
