@@ -15,6 +15,8 @@
 #include "httpresponse.h"
 #include "httprequest.h"
 
+namespace stefanfrings {
+
 /**
   Stores HTTP sessions and deletes them when they have expired.
   The following configuration settings are required in the config file:
@@ -102,5 +104,7 @@ private slots:
     /** Called every minute to cleanup expired sessions. */
     void sessionTimerEvent();
 };
+
+} // end of namespace
 
 #endif // HTTPSESSIONSTORE_H

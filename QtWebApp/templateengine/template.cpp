@@ -6,6 +6,8 @@
 #include "template.h"
 #include <QFileInfo>
 
+using namespace stefanfrings;
+
 Template::Template(QString source, QString sourceName)
     : QString(source)
 {

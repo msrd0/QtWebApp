@@ -8,6 +8,8 @@
 #include "httpconnectionhandlerpool.h"
 #include <QCoreApplication>
 
+using namespace stefanfrings;
+
 HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject *parent)
     : QTcpServer(parent)
 {
@@ -72,11 +74,8 @@ void HttpListener::incomingConnection(tSocketDescriptor socketDescriptor) {
     // Let the handler process the new connection.
     if (freeHandler)
     {
-        // The descriptor is passed via signal/slot because the handler lives in another
-        // thread and cannot open the socket when directly called by another thread.
-        connect(this,SIGNAL(handleConnection(tSocketDescriptor)),freeHandler,SLOT(handleConnection(tSocketDescriptor)));
-        emit handleConnection(socketDescriptor);
-        disconnect(this,SIGNAL(handleConnection(tSocketDescriptor)),freeHandler,SLOT(handleConnection(tSocketDescriptor)));
+        // The descriptor is passed via event queue because the handler lives in another thread
+        QMetaObject::invokeMethod(freeHandler, "handleConnection", Qt::QueuedConnection, Q_ARG(tSocketDescriptor, socketDescriptor));
     }
     else
     {

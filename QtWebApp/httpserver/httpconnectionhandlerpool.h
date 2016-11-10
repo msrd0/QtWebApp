@@ -8,6 +8,8 @@
 #include "httpglobal.h"
 #include "httpconnectionhandler.h"
 
+namespace stefanfrings {
+
 /**
   Pool of http connection handlers. The size of the pool grows and
   shrinks on demand.
@@ -91,5 +93,7 @@ private slots:
     void cleanup();
 
 };
+
+} // end of namespace
 
 #endif // HTTPCONNECTIONHANDLERPOOL_H

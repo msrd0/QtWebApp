@@ -7,7 +7,7 @@ Demo1 shows how to use the library by including the source code into your
 project. This does not depend on the shared library.
 
 Demo2 shows how to link against the shared library.
-Build the project QtWebApp to generate the shared library..
+Build the project QtWebApp to generate the shared library.
 
 Demo3 shows how to use the qtservice component to start the application
 as a Windows Service or Unix daemon.

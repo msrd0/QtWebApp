@@ -11,6 +11,8 @@
 #include <QThread>
 #include <QObject>
 
+using namespace stefanfrings;
+
 Logger* Logger::defaultLogger=0;
 
 

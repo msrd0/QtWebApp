@@ -3,6 +3,8 @@
 #include <QStringList>
 #include <QSet>
 
+using namespace stefanfrings;
+
 TemplateCache::TemplateCache(QSettings* settings, QObject* parent)
     :TemplateLoader(settings,parent)
 {

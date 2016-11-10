@@ -15,6 +15,8 @@
 #include "logglobal.h"
 #include "logmessage.h"
 
+namespace stefanfrings {
+
 /**
   Decorates and writes log messages to the console, stderr.
   <p>
@@ -180,5 +182,7 @@ private:
     QThreadStorage<QList<LogMessage*>*> buffers;
 
 };
+
+} // end of namespace
 
 #endif // LOGGER_H

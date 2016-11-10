@@ -5,6 +5,8 @@
 
 #include "startup.h"
 
+using namespace stefanfrings;
+
 /**
   Entry point of the program.
 */

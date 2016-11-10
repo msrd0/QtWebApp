@@ -10,6 +10,8 @@
 #include "qtservice.h"
 #include "httplistener.h"
 
+using namespace stefanfrings;
+
 /**
   Helper class to install and run the application as a windows
   service.

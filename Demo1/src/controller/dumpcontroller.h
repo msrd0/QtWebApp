@@ -10,6 +10,8 @@
 #include "httpresponse.h"
 #include "httprequesthandler.h"
 
+using namespace stefanfrings;
+
 /**
   This controller dumps the received HTTP request in the response.
 */

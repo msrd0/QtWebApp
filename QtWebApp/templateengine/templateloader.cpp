@@ -10,6 +10,8 @@
 #include <QDir>
 #include <QSet>
 
+using namespace stefanfrings;
+
 TemplateLoader::TemplateLoader(QSettings* settings, QObject* parent)
     : QObject(parent)
 {

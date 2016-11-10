@@ -17,6 +17,8 @@
 #include "httprequest.h"
 #include "httprequesthandler.h"
 
+namespace stefanfrings {
+
 /** Alias type definition, for compatibility to different Qt versions */
 #if QT_VERSION >= 0x050000
     typedef qintptr tSocketDescriptor;
@@ -116,5 +118,7 @@ private slots:
     void disconnected();
 
 };
+
+} // end of namespace
 
 #endif // HTTPCONNECTIONHANDLER_H

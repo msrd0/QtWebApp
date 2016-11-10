@@ -8,4 +8,4 @@ stefan@stefanfrings.de
 http://www.stefanfrings.de
 
 The qtservice module had been originally published by Trolltech under the LGPL license as well,
-but is now re-ublished by Digia under the less restrictive BSD License. 
+but is now re-published by Digia under the less restrictive BSD License. 

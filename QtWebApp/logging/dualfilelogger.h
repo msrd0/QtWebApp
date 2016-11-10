@@ -13,6 +13,8 @@
 #include "logger.h"
 #include "filelogger.h"
 
+namespace stefanfrings {
+
 /**
   Logs messages into two log files simultaneously.
   May be used to create two logfiles with different configuration settings.
@@ -66,5 +68,7 @@ private:
     FileLogger* secondLogger;
 
 };
+
+} // end of namespace
 
 #endif // DUALFILELOGGER_H

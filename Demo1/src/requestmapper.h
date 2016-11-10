@@ -8,6 +8,8 @@
 
 #include "httprequesthandler.h"
 
+using namespace stefanfrings;
+
 /**
   The request mapper dispatches incoming HTTP requests to controller classes
   depending on the requested path.

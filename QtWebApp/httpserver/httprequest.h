@@ -16,6 +16,8 @@
 #include <QUuid>
 #include "httpglobal.h"
 
+namespace stefanfrings {
+
 /**
   This object represents a single HTTP request. It reads the request
   from a TCP socket and provides getters for the individual parts
@@ -207,9 +209,9 @@ private:
     QByteArray boundary;
 
     /** Temp file, that is used to store the multipart/form-data body */
-    QTemporaryFile tempFile;
+    QTemporaryFile* tempFile;
 
-    /** Parset he multipart body, that has been stored in the temp file. */
+    /** Parse the multipart body, that has been stored in the temp file. */
     void parseMultiPartFile();
 
     /** Sub-procedure of readFromSocket(), read the first line of a request. */
@@ -231,5 +233,7 @@ private:
     QByteArray lineBuffer;
 
 };
+
+} // end of namespace
 
 #endif // HTTPREQUEST_H
