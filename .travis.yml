@@ -45,7 +45,7 @@ script:
   - ls libqtwebapp*
 
 after_success:
-  - make
+  - travis_wait make
   - test -d mount && sudo umount mount || true
 
 after_script:
