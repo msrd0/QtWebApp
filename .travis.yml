@@ -33,11 +33,11 @@ before_script:
 
 
 script:
-  - version=$(cat debian/changelog | grep -E '^intranet \(.+\) precise' | head -n1 | tr -d '(' | tr '-' ' ' | awk '{print $2}')
-  - echo "QSL $version"
-  - wget "https://msrd0.duckdns.org/git/msrd0/KFG-Intranet/archive/v${version}.tar.gz"
+  - version=$(cat debian/changelog | grep -E '^libqtwebapp \(.+\) precise' | head -n1 | tr -d '(' | tr '-' ' ' | awk '{print $2}')
+  - echo "QtWebApp $version"
+  - wget "https://github.com/msrd0/QtWebApp/archive/v${version}.tar.gz"
   - tar xfz "v${version}.tar.gz"
-  - pushd "kfg-intranet"
+  - pushd "QtWebApp-v${version}"
   - cp -R ../debian .
   - dpkg-buildpackage -us -uc
   - popd
