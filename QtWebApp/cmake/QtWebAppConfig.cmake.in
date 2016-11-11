@@ -1,4 +1,6 @@
 
+include("@CMAKE_INSTALL_PREFIX@/lib/cmake/QtWebApp/QtWebAppConfigVersion.cmake")
+
 if (NOT QtWebApp_FIND_COMPONENTS)
 	set(QtWebApp_NOT_FOUND_MESSAGE "The QtWebApp package requires at least one component")
 	set(QtWebApp_FOUND False)
