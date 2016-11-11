@@ -1,0 +1,7 @@
+.travis-keys.tar.xz
+
+debian/files
+debian/*.log
+debian/*.substvars
+debian/*/
+obj-*/
