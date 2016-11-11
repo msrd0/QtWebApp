@@ -38,7 +38,7 @@ script:
   - wget "https://github.com/msrd0/QtWebApp/archive/v${version}.tar.gz"
   - tar xfz "v${version}.tar.gz"
   - ls -l
-  - pushd "QtWebApp-v${version}"
+  - pushd "QtWebApp-${version}"
   - cp -R ../debian .
   - dpkg-buildpackage -us -uc
   - popd
