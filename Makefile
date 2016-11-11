@@ -14,7 +14,7 @@ clean:
 
 copy:
 	cp libqtwebapp*all*.deb mount/pool/main/all/libq/
-	cp libqtwebapp*amd64*.deb mount/pool/main/amd64/all/libq/
+	cp libqtwebapp*amd64*.deb mount/pool/main/amd64/libq/
 
 sign:
 	ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v \
