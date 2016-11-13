@@ -2,9 +2,6 @@
 
 This library was forked from http://stefanfrings.de/qtwebapp/index-en.html
 
-**NOTE: I changed the license from LGPL to GPL**
-
-
 QtWebApp is a library to develop server-side web applications in C++. It depends on Qt5.
 
 The library comes with 3 components:
