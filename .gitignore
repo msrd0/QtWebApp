@@ -1,4 +1,6 @@
 build/
+build-*/
 *~
 \#*
 .travis-keys.tar.xz
+*.user
