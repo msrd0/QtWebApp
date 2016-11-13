@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.1)
 project(QtWebApp)
 
 set(qtwebapp_MAJOR 1)
@@ -12,8 +12,6 @@ set(CMAKE_AUTOMOC ON)
 
 add_definitions(-DQTWEBAPPLIB_EXPORT)
 
-# just to avoid any further issues with this - it might work with older versions, but
-# it's hard to find a compiler that doesn't support it nowadays
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
