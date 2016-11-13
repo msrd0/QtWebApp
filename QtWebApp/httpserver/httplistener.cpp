@@ -28,7 +28,9 @@ HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandl
 HttpListener::~HttpListener()
 {
     close();
+#ifdef CMAKE_DEBUG
     qDebug("HttpListener: destroyed");
+#endif
 }
 
 
@@ -53,7 +55,9 @@ void HttpListener::listen()
 
 void HttpListener::close() {
     QTcpServer::close();
+#ifdef CMAKE_DEBUG
     qDebug("HttpListener: closed");
+#endif
     if (pool) {
         delete pool;
         pool=NULL;
@@ -80,7 +84,7 @@ void HttpListener::incomingConnection(tSocketDescriptor socketDescriptor) {
     else
     {
         // Reject the connection
-        qDebug("HttpListener: Too many incoming connections");
+        qWarning("HttpListener: Too many incoming connections");
         QTcpSocket* socket=new QTcpSocket(this);
         socket->setSocketDescriptor(socketDescriptor);
         connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));

@@ -3,10 +3,9 @@
   @author Stefan Frings
 */
 
-#ifndef HTTPREQUESTHANDLER_H
-#define HTTPREQUESTHANDLER_H
+#pragma once
 
-#include "httpglobal.h"
+#include "qtwebappglobal.h"
 #include "httprequest.h"
 #include "httpresponse.h"
 
@@ -24,7 +23,7 @@ namespace qtwebapp {
    @see StaticFileController which delivers static local files.
 */
 
-class DECLSPEC HttpRequestHandler : public QObject {
+class QTWEBAPP_EXPORT HttpRequestHandler : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(HttpRequestHandler)
 public:
@@ -33,10 +32,10 @@ public:
      * Constructor.
      * @param parent Parent object.
      */
-    HttpRequestHandler(QObject* parent=NULL);
-
-    /** Destructor */
-    virtual ~HttpRequestHandler();
+    HttpRequestHandler(QObject *parent = 0)
+		: QObject(parent)
+	{
+	}
 
     /**
       Generate a response for an incoming HTTP request.
@@ -44,10 +43,8 @@ public:
       @param response Must be used to return the response
       @warning This method must be thread safe
     */
-    virtual void service(HttpRequest& request, HttpResponse& response);
+    virtual void service(HttpRequest& request, HttpResponse& response) = 0;
 
 };
 
 } // end of namespace
-
-#endif // HTTPREQUESTHANDLER_H

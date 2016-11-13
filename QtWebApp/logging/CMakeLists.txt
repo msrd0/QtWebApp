@@ -2,7 +2,6 @@ set(logging_HEADERS
 		dualfilelogger.h
 		filelogger.h
 		logger.h
-		logglobal.h
 		logmessage.h
 	)
 set(logging_SOURCES

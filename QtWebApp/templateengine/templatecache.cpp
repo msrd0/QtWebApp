@@ -10,7 +10,9 @@ TemplateCache::TemplateCache(QSettings* settings, QObject* parent)
 {
     cache.setMaxCost(settings->value("cacheSize","1000000").toInt());
     cacheTimeout=settings->value("cacheTime","60000").toInt();
+#ifdef CMAKE_DEBUG
     qDebug("TemplateCache: timeout=%i, size=%i",cacheTimeout,cache.maxCost());
+#endif
 }
 
 QString TemplateCache::tryFile(QString localizedName)
@@ -18,7 +20,9 @@ QString TemplateCache::tryFile(QString localizedName)
     qint64 now=QDateTime::currentMSecsSinceEpoch();
     mutex.lock();
     // search in cache
+#ifdef CMAKE_DEBUG
     qDebug("TemplateCache: trying cached %s",qPrintable(localizedName));
+#endif
     CacheEntry* entry=cache.object(localizedName);
     if (entry && (cacheTimeout==0 || entry->created>now-cacheTimeout))
     {

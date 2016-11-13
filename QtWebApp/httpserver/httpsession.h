@@ -3,13 +3,13 @@
   @author Stefan Frings
 */
 
-#ifndef HTTPSESSION_H
-#define HTTPSESSION_H
+#pragma once
+
+#include "qtwebappglobal.h"
 
 #include <QByteArray>
-#include <QVariant>
 #include <QReadWriteLock>
-#include "httpglobal.h"
+#include <QVariant>
 
 namespace qtwebapp {
 
@@ -20,7 +20,7 @@ namespace qtwebapp {
   @see HttpSessionStore should be used to create and get instances of this class.
 */
 
-class DECLSPEC HttpSession {
+class QTWEBAPP_EXPORT HttpSession {
 
 public:
 
@@ -118,5 +118,3 @@ private:
 };
 
 } // end of namespace
-
-#endif // HTTPSESSION_H

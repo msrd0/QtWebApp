@@ -84,7 +84,9 @@ HttpSession::~HttpSession()
         dataPtr->lock.unlock();
         if (refCount==0)
         {
+#ifdef CMAKE_DEBUG
             qDebug("HttpSession: deleting data");
+#endif
             delete dataPtr;
         }
     }

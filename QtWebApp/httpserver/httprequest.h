@@ -3,18 +3,18 @@
   @author Stefan Frings
 */
 
-#ifndef HTTPREQUEST_H
-#define HTTPREQUEST_H
+#pragma once
+
+#include "qtwebappglobal.h"
 
 #include <QByteArray>
 #include <QHostAddress>
-#include <QTcpSocket>
 #include <QMap>
 #include <QMultiMap>
 #include <QSettings>
+#include <QTcpSocket>
 #include <QTemporaryFile>
 #include <QUuid>
-#include "httpglobal.h"
 
 namespace qtwebapp {
 
@@ -35,7 +35,7 @@ namespace qtwebapp {
   The body is always a little larger than the file itself.
 */
 
-class DECLSPEC HttpRequest {
+class QTWEBAPP_EXPORT HttpRequest {
     Q_DISABLE_COPY(HttpRequest)
     friend class HttpSessionStore;
 
@@ -235,5 +235,3 @@ private:
 };
 
 } // end of namespace
-
-#endif // HTTPREQUEST_H

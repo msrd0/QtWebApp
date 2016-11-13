@@ -17,7 +17,9 @@ HttpSessionStore::HttpSessionStore(QSettings* settings, QObject* parent)
     cleanupTimer.start(60000);
     cookieName=settings->value("cookieName","sessionid").toByteArray();
     expirationTime=settings->value("expirationTime",3600000).toInt();
+#ifdef CMAKE_DEBUG
     qDebug("HttpSessionStore: Sessions expire after %i milliseconds",expirationTime);
+#endif
 }
 
 HttpSessionStore::~HttpSessionStore()
@@ -77,7 +79,9 @@ HttpSession HttpSessionStore::getSession(HttpRequest& request, HttpResponse& res
         QByteArray cookieComment=settings->value("cookieComment").toByteArray();
         QByteArray cookieDomain=settings->value("cookieDomain").toByteArray();
         HttpSession session(true);
+#ifdef CMAKE_DEBUG
         qDebug("HttpSessionStore: create new session with ID %s",session.getId().data());
+#endif
         sessions.insert(session.getId(),session);
         response.setCookie(HttpCookie(cookieName,session.getId(),expirationTime/1000,cookiePath,cookieComment,cookieDomain));
         mutex.unlock();

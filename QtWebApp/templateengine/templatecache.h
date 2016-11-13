@@ -1,9 +1,9 @@
-#ifndef TEMPLATECACHE_H
-#define TEMPLATECACHE_H
+#pragma once
+
+#include "qtwebappglobal.h"
+#include "templateloader.h"
 
 #include <QCache>
-#include "templateglobal.h"
-#include "templateloader.h"
 
 namespace qtwebapp {
 
@@ -41,7 +41,7 @@ namespace qtwebapp {
   @see TemplateLoader
 */
 
-class DECLSPEC TemplateCache : public TemplateLoader {
+class QTWEBAPP_EXPORT TemplateCache : public TemplateLoader {
     Q_OBJECT
     Q_DISABLE_COPY(TemplateCache)
 public:
@@ -80,5 +80,3 @@ private:
 };
 
 } // end of namespace
-
-#endif // TEMPLATECACHE_H

@@ -3,13 +3,12 @@
   @author Stefan Frings
 */
 
-#ifndef LOGMESSAGE_H
-#define LOGMESSAGE_H
+#pragma once
 
-#include <QtGlobal>
+#include "qtwebappglobal.h"
+
 #include <QDateTime>
 #include <QHash>
-#include "logglobal.h"
 
 namespace qtwebapp {
 
@@ -33,7 +32,7 @@ namespace qtwebapp {
   - {line}      Line number where the message was generated
 */
 
-class DECLSPEC LogMessage
+class QTWEBAPP_EXPORT LogMessage
 {
     Q_DISABLE_COPY(LogMessage)
 public:
@@ -93,5 +92,3 @@ private:
 };
 
 } // end of namespace
-
-#endif // LOGMESSAGE_H

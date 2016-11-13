@@ -2,7 +2,6 @@ set(httpserver_HEADERS
 		httpconnectionhandler.h
 		httpconnectionhandlerpool.h
 		httpcookie.h
-		httpglobal.h
 		httplistener.h
 		httprequest.h
 		httprequesthandler.h
@@ -12,13 +11,12 @@ set(httpserver_HEADERS
 		staticfilecontroller.h
 	)
 set(httpserver_SOURCES
+		global.cpp
 		httpconnectionhandler.cpp
 		httpconnectionhandlerpool.cpp
 		httpcookie.cpp
-		httpglobal.cpp
 		httplistener.cpp
 		httprequest.cpp
-		httprequesthandler.cpp
 		httpresponse.cpp
 		httpsession.cpp
 		httpsessionstore.cpp

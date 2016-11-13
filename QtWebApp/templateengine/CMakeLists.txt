@@ -1,6 +1,5 @@
 set(templateengine_HEADERS
 		templatecache.h
-		templateglobal.h
 		template.h
 		templateloader.h
 	)

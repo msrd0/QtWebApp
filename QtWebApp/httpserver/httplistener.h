@@ -3,16 +3,16 @@
   @author Stefan Frings
 */
 
-#ifndef HTTPLISTENER_H
-#define HTTPLISTENER_H
+#pragma once
 
-#include <QTcpServer>
-#include <QSettings>
-#include <QBasicTimer>
-#include "httpglobal.h"
+#include "qtwebappglobal.h"
 #include "httpconnectionhandler.h"
 #include "httpconnectionhandlerpool.h"
 #include "httprequesthandler.h"
+
+#include <QBasicTimer>
+#include <QSettings>
+#include <QTcpServer>
 
 namespace qtwebapp {
 
@@ -41,62 +41,60 @@ namespace qtwebapp {
   @see HttpRequest for description of config settings maxRequestSize and maxMultiPartSize
 */
 
-class DECLSPEC HttpListener : public QTcpServer {
-    Q_OBJECT
-    Q_DISABLE_COPY(HttpListener)
+class QTWEBAPP_EXPORT HttpListener : public QTcpServer {
+	Q_OBJECT
+	Q_DISABLE_COPY(HttpListener)
 public:
-
-    /**
-      Constructor.
-      Creates a connection pool and starts listening on the configured host and port.
-      @param settings Configuration settings for the HTTP server. Must not be 0.
-      @param requestHandler Processes each received HTTP request, usually by dispatching to controller classes.
-      @param parent Parent object.
-      @warning Ensure to close or delete the listener before deleting the request handler.
-    */
-    HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
-
-    /** Destructor */
-    virtual ~HttpListener();
-
-    /**
-      Restart listeing after close().
-    */
-    void listen();
-
-    /**
-     Closes the listener, waits until all pending requests are processed,
-     then closes the connection pool.
-    */
-    void close();
-
+	
+	/**
+	  Constructor.
+	  Creates a connection pool and starts listening on the configured host and port.
+	  @param settings Configuration settings for the HTTP server. Must not be 0.
+	  @param requestHandler Processes each received HTTP request, usually by dispatching to controller classes.
+	  @param parent Parent object.
+	  @warning Ensure to close or delete the listener before deleting the request handler.
+	*/
+	HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
+	
+	/** Destructor */
+	virtual ~HttpListener();
+	
+	/**
+	  Restart listeing after close().
+	*/
+	void listen();
+	
+	/**
+	 Closes the listener, waits until all pending requests are processed,
+	 then closes the connection pool.
+	*/
+	void close();
+	
 protected:
-
-    /** Serves new incoming connection requests */
-    void incomingConnection(tSocketDescriptor socketDescriptor);
-
+	
+	/** Serves new incoming connection requests */
+	void incomingConnection(tSocketDescriptor socketDescriptor);
+	
 private:
-
-    /** Configuration settings for the HTTP server */
-    QSettings* settings;
-
-    /** Point to the reuqest handler which processes all HTTP requests */
-    HttpRequestHandler* requestHandler;
-
-    /** Pool of connection handlers */
-    HttpConnectionHandlerPool* pool;
-
+	
+	/** Configuration settings for the HTTP server */
+	QSettings* settings;
+	
+	/** Point to the reuqest handler which processes all HTTP requests */
+	HttpRequestHandler* requestHandler;
+	
+	/** Pool of connection handlers */
+	HttpConnectionHandlerPool* pool;
+	
 signals:
-
-    /**
-      Sent to the connection handler to process a new incoming connection.
-      @param socketDescriptor references the accepted connection.
-    */
-
-    void handleConnection(tSocketDescriptor socketDescriptor);
-
+	
+	/**
+	  Sent to the connection handler to process a new incoming connection.
+	  @param socketDescriptor references the accepted connection.
+	*/
+	
+	void handleConnection(tSocketDescriptor socketDescriptor);
+	
 };
 
 } // end of namespace
-
-#endif // HTTPLISTENER_H

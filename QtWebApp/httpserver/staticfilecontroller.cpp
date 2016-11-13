@@ -31,11 +31,15 @@ StaticFileController::StaticFileController(QSettings* settings, QObject* parent)
             docroot=QFileInfo(configFile.absolutePath(),docroot).absoluteFilePath();
         }
     }
+#ifdef CMAKE_DEBUG
     qDebug("StaticFileController: docroot=%s, encoding=%s, maxAge=%i",qPrintable(docroot),qPrintable(encoding),maxAge);
+#endif
     maxCachedFileSize=settings->value("maxCachedFileSize","65536").toInt();
     cache.setMaxCost(settings->value("cacheSize","1000000").toInt());
     cacheTimeout=settings->value("cacheTime","60000").toInt();
+#ifdef CMAKE_DEBUG
     qDebug("StaticFileController: cache timeout=%i, size=%i",cacheTimeout,cache.maxCost());
+#endif
 }
 
 
@@ -59,7 +63,9 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
         QByteArray filename=entry->filename;
 		response.setHeader("ETag", "\"" + etag.value(path) + "\"");
         mutex.unlock();
+#ifdef CMAKE_DEBUG
         qDebug("StaticFileController: Cache hit for %s",path.data());
+#endif
         setContentType(filename,response);
         response.setHeader("Cache-Control","max-age="+QByteArray::number(maxAge/1000));
         response.write(document);
@@ -68,7 +74,9 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
     {
         mutex.unlock();
         // The file is not in cache.
+#ifdef CMAKE_DEBUG
         qDebug("StaticFileController: Cache miss for %s",path.data());
+#endif
         // Forbid access to files outside the docroot directory
         if (path.contains("/.."))
         {
@@ -84,7 +92,9 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
         }
         // Try to open the file
         QFile file(docroot+path);
+#ifdef CMAKE_DEBUG
         qDebug("StaticFileController: Open file %s",qPrintable(file.fileName()));
+#endif
         if (file.open(QIODevice::ReadOnly))
         {
             setContentType(path,response);
