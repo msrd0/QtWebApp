@@ -8,10 +8,10 @@
 #include "qtwebappglobal.h"
 #include "httpconnectionhandler.h"
 #include "httpconnectionhandlerpool.h"
+#include "httpserverconfig.h"
 #include "httprequesthandler.h"
 
 #include <QBasicTimer>
-#include <QSettings>
 #include <QTcpServer>
 
 namespace qtwebapp {
@@ -54,7 +54,7 @@ public:
 	  @param parent Parent object.
 	  @warning Ensure to close or delete the listener before deleting the request handler.
 	*/
-	HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent = NULL);
+	HttpListener(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler, QObject* parent = NULL);
 	
 	/** Destructor */
 	virtual ~HttpListener();
@@ -78,7 +78,7 @@ protected:
 private:
 	
 	/** Configuration settings for the HTTP server */
-	QSettings* settings;
+	HttpServerConfig cfg;
 	
 	/** Point to the reuqest handler which processes all HTTP requests */
 	HttpRequestHandler* requestHandler;

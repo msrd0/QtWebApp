@@ -48,7 +48,7 @@ class QTWEBAPP_EXPORT StaticFileController : public HttpRequestHandler  {
 public:
 	
 	/** Constructor */
-	StaticFileController(QSettings* settings, QObject* parent = NULL);
+	StaticFileController(const StaticFileControllerConfig &cfg, QObject* parent = NULL);
 	
 	/** Generates the response */
 	void service(HttpRequest& request, HttpResponse& response);

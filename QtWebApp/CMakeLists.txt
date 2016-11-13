@@ -34,6 +34,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qtwebappglobal.h
 	    DESTINATION include/qtwebapp/)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+add_library(QtWebAppGlobal SHARED qtwebappglobal.cpp)
+target_link_libraries(QtWebAppGlobal Qt5::Core)
+set_target_properties(QtWebAppGlobal PROPERTIES
+		VERSION ${qtwebapp_VERSION}
+		SOVERSION ${qtwebapp_MAJOR}
+	)
+install(TARGETS QtWebAppGlobal
+	    LIBRARY DESTINATION lib)
+
 add_subdirectory(logging)
 add_subdirectory(httpserver)
 add_subdirectory(templateengine)

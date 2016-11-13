@@ -3,6 +3,7 @@ set(httpserver_HEADERS
 		httpconnectionhandlerpool.h
 		httpcookie.h
 		httplistener.h
+		httpserverconfig.h
 		httprequest.h
 		httprequesthandler.h
 		httpresponse.h
@@ -11,11 +12,11 @@ set(httpserver_HEADERS
 		staticfilecontroller.h
 	)
 set(httpserver_SOURCES
-		global.cpp
 		httpconnectionhandler.cpp
 		httpconnectionhandlerpool.cpp
 		httpcookie.cpp
 		httplistener.cpp
+		httpserverconfig.cpp
 		httprequest.cpp
 		httpresponse.cpp
 		httpsession.cpp
@@ -24,7 +25,7 @@ set(httpserver_SOURCES
 	)
 
 add_library(QtWebAppHttpServer SHARED ${httpserver_HEADERS} ${httpserver_SOURCES})
-target_link_libraries(QtWebAppHttpServer Qt5::Core Qt5::Network)
+target_link_libraries(QtWebAppHttpServer QtWebAppGlobal Qt5::Core Qt5::Network)
 set_target_properties(QtWebAppHttpServer PROPERTIES
 		VERSION ${qtwebapp_VERSION}
 		SOVERSION ${qtwebapp_MAJOR}

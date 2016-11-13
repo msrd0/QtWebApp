@@ -11,13 +11,13 @@
 
 using namespace qtwebapp;
 
-HttpRequest::HttpRequest(QSettings* settings)
+HttpRequest::HttpRequest(const HttpServerConfig &cfg)
 {
 	status=waitForRequest;
 	currentSize=0;
 	expectedBodySize=0;
-	maxSize=settings->value("maxRequestSize","16000").toInt();
-	maxMultiPartSize=settings->value("maxMultiPartSize","1000000").toInt();
+	maxSize=cfg.maxRequestSize;
+	maxMultiPartSize=cfg.maxMultipartSize;
 	tempFile=NULL;
 }
 

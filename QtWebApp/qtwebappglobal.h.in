@@ -3,6 +3,7 @@
 #include <sys/types.h>
 
 #include <QtGlobal>
+#include <QVariant>
 
 #define QTWEBAPP_MAJOR @qtwebapp_MAJOR@
 #define QTWEBAPP_MINOR @qtwebapp_MINOR@
@@ -33,4 +34,12 @@
 #  define QTWEBAPP_PRIVATE
 #endif
 
+namespace qtwebapp {
+
+/// The version of QtWebApp.
 QTWEBAPP_EXPORT const char* getQtWebAppLibVersion();
+
+/// Parses the given number by respecting its suffix.
+QTWEBAPP_EXPORT int parseNum(const QVariant &v, int base = 1e3);
+
+}

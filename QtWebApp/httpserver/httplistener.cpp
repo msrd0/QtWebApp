@@ -10,13 +10,12 @@
 
 using namespace qtwebapp;
 
-HttpListener::HttpListener(QSettings* settings, HttpRequestHandler* requestHandler, QObject *parent)
+HttpListener::HttpListener(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler, QObject *parent)
     : QTcpServer(parent)
+	, cfg(cfg)
 {
-    Q_ASSERT(settings!=0);
     Q_ASSERT(requestHandler!=0);
     pool=NULL;
-    this->settings=settings;
     this->requestHandler=requestHandler;
     // Reqister type of socketDescriptor for signal/slot handling
     qRegisterMetaType<tSocketDescriptor>("tSocketDescriptor");
@@ -38,17 +37,15 @@ void HttpListener::listen()
 {
     if (!pool)
     {
-        pool=new HttpConnectionHandlerPool(settings,requestHandler);
+        pool=new HttpConnectionHandlerPool(cfg, requestHandler);
     }
-    QString host = settings->value("host").toString();
-    int port=settings->value("port").toInt();
-    QTcpServer::listen(host.isEmpty() ? QHostAddress::Any : QHostAddress(host), port);
+    QTcpServer::listen(cfg.host, cfg.port);
     if (!isListening())
     {
-        qCritical("HttpListener: Cannot bind on port %i: %s",port,qPrintable(errorString()));
+        qCritical("HttpListener: Cannot bind on port %i: %s",cfg.port,qPrintable(errorString()));
     }
     else {
-        qDebug("HttpListener: Listening on port %i",port);
+        qDebug("HttpListener: Listening on port %i", serverPort());
     }
 }
 

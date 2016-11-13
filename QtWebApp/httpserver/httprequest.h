@@ -6,12 +6,12 @@
 #pragma once
 
 #include "qtwebappglobal.h"
+#include "httpserverconfig.h"
 
 #include <QByteArray>
 #include <QHostAddress>
 #include <QMap>
 #include <QMultiMap>
-#include <QSettings>
 #include <QTcpSocket>
 #include <QTemporaryFile>
 #include <QUuid>
@@ -48,7 +48,7 @@ public:
       Constructor.
       @param settings Configuration settings
     */
-    HttpRequest(QSettings* settings);
+    HttpRequest(const HttpServerConfig &cfg);
 
     /**
       Destructor.

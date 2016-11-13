@@ -6,10 +6,10 @@
 #pragma once
 
 #include "qtwebappglobal.h"
+#include "httpserverconfig.h"
 #include "httprequest.h"
 #include "httprequesthandler.h"
 
-#include <QSettings>
 #include <QTcpSocket>
 #include <QThread>
 #include <QTimer>
@@ -59,7 +59,7 @@ public:
 	  @param requestHandler Handler that will process each incoming HTTP request
 	  @param sslConfiguration SSL (HTTPS) will be used if not NULL
 	*/
-	HttpConnectionHandler(QSettings* settings, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration=NULL);
+	HttpConnectionHandler(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration=NULL);
 	
 	/** Destructor */
 	virtual ~HttpConnectionHandler();
@@ -72,8 +72,8 @@ public:
 	
 private:
 	
-	/** Configuration settings */
-	QSettings* settings;
+	/** Configuration */
+	HttpServerConfig cfg;
 	
 	/** TCP socket of the current connection  */
 	QTcpSocket* socket;

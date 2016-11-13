@@ -8,12 +8,11 @@
 
 using namespace qtwebapp;
 
-HttpConnectionHandler::HttpConnectionHandler(QSettings* settings, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration)
+HttpConnectionHandler::HttpConnectionHandler(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration)
 	: QThread()
+	, cfg(cfg)
 {
-	Q_ASSERT(settings!=0);
 	Q_ASSERT(requestHandler!=0);
-	this->settings=settings;
 	this->requestHandler=requestHandler;
 	this->sslConfiguration=sslConfiguration;
 	currentRequest=0;
@@ -121,8 +120,7 @@ void HttpConnectionHandler::handleConnection(tSocketDescriptor socketDescriptor)
 #endif
 	
 	// Start timer for read timeout
-	int readTimeout=settings->value("readTimeout",10000).toInt();
-	readTimer.start(readTimeout);
+	readTimer.start(cfg.readTimeout);
 	// delete previous request
 	delete currentRequest;
 	currentRequest=0;
@@ -175,7 +173,7 @@ void HttpConnectionHandler::read()
 		// Create new HttpRequest object if necessary
 		if (!currentRequest)
 		{
-			currentRequest=new HttpRequest(settings);
+			currentRequest=new HttpRequest(cfg);
 		}
 		
 		// Collect data for the request object
@@ -186,8 +184,7 @@ void HttpConnectionHandler::read()
 			{
 				// Restart timer for read timeout, otherwise it would
 				// expire during large file uploads.
-				int readTimeout=settings->value("readTimeout",10000).toInt();
-				readTimer.start(readTimeout);
+				readTimer.start(cfg.readTimeout);
 			}
 		}
 		
@@ -284,8 +281,7 @@ void HttpConnectionHandler::read()
 			else
 			{
 				// Start timer for next request
-				int readTimeout=settings->value("readTimeout",10000).toInt();
-				readTimer.start(readTimeout);
+				readTimer.start(cfg.readTimeout);
 			}
 			delete currentRequest;
 			currentRequest=0;
