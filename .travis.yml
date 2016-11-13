@@ -1,8 +1,6 @@
 language: c++
-
-#sudo: required
-#dist: precise
-sudo: false
+sudo: required
+dist: precise
 
 compiler:
  - gcc
