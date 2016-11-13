@@ -12,10 +12,19 @@ addons:
         sources:
           - kalakris-cmake
           - sourceline: 'ppa:immerrr-k/qt5-backport'
+          - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
           - cmake
+          - g++-5
+          - gcc-5
           - qtchooser
           - qt5-default
+
+before_install:
+  - test $CC  == gcc && export CC=/usr/bin/gcc-5
+  - test $CXX == g++ && export CXX=/usr/bin/g++-5
+  - $CC --version
+  - $CXX --version
 
 script:
   - pushd QtWebApp
