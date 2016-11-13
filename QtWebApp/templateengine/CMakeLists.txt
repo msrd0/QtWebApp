@@ -1,11 +1,13 @@
 set(templateengine_HEADERS
-		templatecache.h
 		template.h
+		templatecache.h
+		templateengineconfig.h
 		templateloader.h
 	)
 set(templateengine_SOURCES
-		templatecache.cpp
 		template.cpp
+		templatecache.cpp
+		templateengineconfig.cpp
 		templateloader.cpp
 	)
 

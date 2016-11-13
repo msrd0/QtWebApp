@@ -7,6 +7,7 @@
 
 #include "qtwebappglobal.h"
 #include "template.h"
+#include "templateengineconfig.h"
 
 #include <QMutex>
 #include <QSettings>
@@ -47,7 +48,7 @@ public:
 	  @param settings configurations settings
 	  @param parent parent object
 	*/
-	TemplateLoader(QSettings* settings, QObject* parent=0);
+	TemplateLoader(const TemplateEngineConfig &cfg, QObject* parent=0);
 	
 	/** Destructor */
 	virtual ~TemplateLoader();

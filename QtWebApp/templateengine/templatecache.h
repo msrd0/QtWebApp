@@ -1,6 +1,7 @@
 #pragma once
 
 #include "qtwebappglobal.h"
+#include "templateengineconfig.h"
 #include "templateloader.h"
 
 #include <QCache>
@@ -51,7 +52,7 @@ public:
       @param settings configurations settings
       @param parent Parent object
     */
-    TemplateCache(QSettings* settings, QObject* parent=0);
+    TemplateCache(const TemplateEngineConfig &cfg, QObject* parent=0);
 
 protected:
 
