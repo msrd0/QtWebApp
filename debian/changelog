@@ -1,8 +1,14 @@
+libqtwebapp (1.7.1-2) precise; urgency=low
+
+  * Update debian/copyright
+  
+ -- Dominic Meiser <meiserdo@web.de>  Sun, 13 Nov 2016 21:36:00 +0100
+
 libqtwebapp (1.7.1-1) precise; urgency=low
 
   * Version 1.7.1
   
- -- Dominic Meiser <meiserdo@web.de>  Sun, 13 Now 2016 21:10:00 +0100
+ -- Dominic Meiser <meiserdo@web.de>  Sun, 13 Nov 2016 21:10:00 +0100
 
 libqtwebapp (1.6.7-1) precise; urgency=low
 
