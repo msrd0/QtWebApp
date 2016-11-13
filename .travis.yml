@@ -10,7 +10,7 @@ addons:
     ssh_known_hosts: msrd0.duckdns.org
     apt:
         sources:
-          - kalakris-cmake
+          - sourceline: 'ppa:george-edison55/precise-backports'
           - sourceline: 'ppa:immerrr-k/qt5-backport'
           - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
@@ -21,10 +21,11 @@ addons:
           - qt5-default
 
 before_install:
-  - test $CC  == gcc && export CC=/usr/bin/gcc-5
-  - test $CXX == g++ && export CXX=/usr/bin/g++-5
+  - test $CC  == gcc && export CC=/usr/bin/gcc-5  || true
+  - test $CXX == g++ && export CXX=/usr/bin/g++-5 || true
   - $CC --version
   - $CXX --version
+  - cmake --version
 
 script:
   - pushd QtWebApp
