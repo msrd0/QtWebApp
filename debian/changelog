@@ -1,3 +1,9 @@
+libqtwebapp (1.7.1-1) precise; urgency=low
+
+  * Version 1.7.1
+  
+ -- Dominic Meiser <meiserdo@web.de>  Sun, 13 Now 2016 21:10:00 +0100
+
 libqtwebapp (1.6.7-1) precise; urgency=low
 
   * Version 1.6.7
