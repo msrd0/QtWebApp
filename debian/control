@@ -1,7 +1,7 @@
 Source: libqtwebapp
 Priority: optional
 Maintainer: Dominic Meiser <meiserdo@web.de>
-Build-Depends: debhelper (>= 9), qtbase5-dev, cmake (>= 2.8.11)
+Build-Depends: debhelper (>= 9), qtbase5-dev, cmake (>= 3.1)
 Standards-Version: 3.9.8
 Section: libs
 Homepage: https://github.com/msrd0/QtWebApp

@@ -11,13 +11,17 @@ addons:
     ssh_known_hosts: msrd0.duckdns.org
     apt:
         sources:
-          - kalakris-cmake
+          - sourceline: 'ppa:george-edison55/precise-backports'
           - sourceline: 'ppa:immerrr-k/qt5-backport'
+          - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
           - apt-utils
+          - cmake-data
           - cmake
           - debhelper
           - dpkg-dev
+          - g++-5
+          - gcc-5
           - qtchooser
           - qt5-default
           - sshfs
@@ -30,6 +34,8 @@ before_script:
   - touch ~/.ssh/config
   - echo "Host msrd0.duckdns.org" >>~/.ssh/config
   - echo "  IdentityFile ~/.ssh/alarmpi-debian" >>~/.ssh/config
+  - export CC=/usr/bin/gcc-5
+  - export CXX=/usr/bin/g++-5
 
 
 script:
