@@ -2,7 +2,9 @@ language: c++
 sudo: required
 dist: precise
 
-compiler: gcc
+compiler:
+ - gcc
+ - clang
 
 addons:
     ssh_known_hosts: msrd0.duckdns.org
@@ -11,49 +13,14 @@ addons:
           - kalakris-cmake
           - sourceline: 'ppa:immerrr-k/qt5-backport'
         packages:
-          - apt-utils
           - cmake
-          - debhelper
-          - dpkg-dev
           - qtchooser
           - qt5-default
-          - sshfs
-
-before_script:
-  - dig +short myip.opendns.com @resolver1.opendns.com
-  - openssl aes-256-cbc -K $encrypted_f039ccdac5d1_key -iv $encrypted_f039ccdac5d1_iv -in .travis-keys.tar.xz.enc -out .travis-keys.tar.xz -d
-  - tar xfa .travis-keys.tar.xz
-  - mv alarmpi-debian* ~/.ssh/
-  - touch ~/.ssh/config
-  - echo "Host msrd0.duckdns.org" >>~/.ssh/config
-  - echo "  IdentityFile ~/.ssh/alarmpi-debian" >>~/.ssh/config
 
 script:
-# try to compile "as it is"
   - pushd QtWebApp
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release ..
   - make -j2
   - popd
-# and then try to compile it as a debian package
-  - dpkg-buildpackage -us -uc
-  - ls ../libqtwebapp*
-
-after_success:
-# if this is a release, then push the build to my server
-  - git describe --tags --candidates=0 && (
-         mkdir mount
-      && sshfs alarmpi-debian@msrd0.duckdns.org:/srv/debian -o BatchMode=yes mount
-      && rm mount/pool/main/all/libq/libqtwebapp* mount/pool/main/amd64/libq/libqtwebapp*
-      && cp ../libqtwebapp*all*.deb mount/pool/main/all/libq/
-      && cp ../libqtwebapp*amd64*.deb mount/pool/main/amd64/libq/
-      && ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/sign.sh
-      && mount/bin/genpackages.sh mount
-      && mount/bin/genrelease.sh mount
-      && ssh alarmpi-debian@msrd0.duckdns.org -o BatchMode=yes -v /srv/debian/bin/signrelease.sh
-      && sudo umount mount
-    )
-
-after_script:
-  - rm ~/.ssh/alarmpi-debian*
