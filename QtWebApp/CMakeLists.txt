@@ -15,8 +15,10 @@ add_definitions(-DQTWEBAPPLIB_EXPORT)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Werror=format -Werror=return-type")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=format -Werror=return-type")
+if(CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Werror=format -Werror=return-type")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=format -Werror=return-type")
+endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=undefined")
@@ -39,6 +41,8 @@ set_target_properties(QtWebAppGlobal PROPERTIES
 		SOVERSION ${qtwebapp_MAJOR}
 	)
 install(TARGETS QtWebAppGlobal
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION lib
 	    LIBRARY DESTINATION lib)
 
 add_subdirectory(logging)
