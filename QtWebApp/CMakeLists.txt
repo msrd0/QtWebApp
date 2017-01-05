@@ -33,12 +33,17 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qtwebappglobal.h
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(QtWebAppGlobal SHARED qtwebappglobal.cpp)
+target_include_directories(QtWebAppGlobal PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+	$<INSTALL_INTERFACE:include/qtwebapp>
+)
 target_link_libraries(QtWebAppGlobal Qt5::Core)
 set_target_properties(QtWebAppGlobal PROPERTIES
 		VERSION ${qtwebapp_VERSION}
 		SOVERSION ${qtwebapp_MAJOR}
 	)
 install(TARGETS QtWebAppGlobal
+		EXPORT QtWebAppTargets
 	    LIBRARY DESTINATION lib)
 
 add_subdirectory(logging)
@@ -50,3 +55,7 @@ configure_file(cmake/QtWebAppConfigVersion.cmake.in QtWebAppConfigVersion.cmake 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QtWebAppConfig.cmake
 	          ${CMAKE_CURRENT_BINARY_DIR}/QtWebAppConfigVersion.cmake
         DESTINATION lib/cmake/QtWebApp)
+
+
+install(EXPORT QtWebAppTargets
+		DESTINATION lib/cmake/QtWebApp)

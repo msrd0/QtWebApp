@@ -25,6 +25,10 @@ set(httpserver_SOURCES
 	)
 
 add_library(QtWebAppHttpServer SHARED ${httpserver_HEADERS} ${httpserver_SOURCES})
+target_include_directories(QtWebAppHttpServer PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+	$<INSTALL_INTERFACE:include/qtwebapp/httpserver>
+)
 target_link_libraries(QtWebAppHttpServer QtWebAppGlobal Qt5::Core Qt5::Network)
 set_target_properties(QtWebAppHttpServer PROPERTIES
 		VERSION ${qtwebapp_VERSION}
@@ -32,9 +36,7 @@ set_target_properties(QtWebAppHttpServer PROPERTIES
 	)
 
 install(TARGETS QtWebAppHttpServer
-#         EXPORT QtWebAppHttpServer
+        EXPORT QtWebAppTargets
         LIBRARY DESTINATION lib)
 install(FILES ${httpserver_HEADERS}
         DESTINATION include/qtwebapp/httpserver)
-# install(EXPORT QtWebAppHttpServer
-#         DESTINATION /usr/lib/cmake/QtWebAppHttpServer)

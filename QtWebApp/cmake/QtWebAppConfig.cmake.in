@@ -1,5 +1,6 @@
 
-include("@CMAKE_INSTALL_PREFIX@/lib/cmake/QtWebApp/QtWebAppConfigVersion.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/QtWebAppConfigVersion.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/QtWebAppTargets.cmake")
 
 if (NOT QtWebApp_FIND_COMPONENTS)
 	set(QtWebApp_NOT_FOUND_MESSAGE "The QtWebApp package requires at least one component")
@@ -21,29 +22,11 @@ if (NOT ${Qt5_FOUND})
 endif()
 
 set(QtWebApp_LIBRARIES Qt5::Core Qt5::Network)
-set(QtWebApp_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include/qtwebapp)
 
 set(_comps Global ${QtWebApp_FIND_COMPONENTS})
 
 foreach(module ${_comps})
-	set(_lib "@CMAKE_INSTALL_PREFIX@/lib/libQtWebApp${module}.so.@qtwebapp_MAJOR@")
-	if(EXISTS "${_lib}")
-		add_library(QtWebApp${module} SHARED IMPORTED)
-		set_target_properties(QtWebApp${module} PROPERTIES
-				VERSION "@qtwebapp_VERSION@"
-				SOVERSION "@qtwebapp_MAJOR@"
-				IMPORTED_LOCATION "${_lib}"
-			)
-		set(QtWebApp_LIBRARIES ${QtWebApp_LIBRARIES} QtWebApp${module})
-		if(NOT module EQUAL "Global")
-			string(TOLOWER ${module} _lower_module)
-			set(QtWebApp_INCLUDE_DIRS ${QtWebApp_INCLUDE_DIRS} @CMAKE_INSTALL_PREFIX@/include/qtwebapp/${_lower_module})
-		endif()
-	else()
-		set(QtWebApp_NOT_FOUND_MESSAGE "Unable to find libQtWebApp${module}.so.@qtwebapp_MAJOR@")
-		set(QtWebApp_FOUND False)
-		return()
-	endif()
+	set(QtWebApp_LIBRARIES ${QtWebApp_LIBRARIES} QtWebApp${module})
 endforeach()
 
-mark_as_advanced(QtWebApp_INCLUDE_DIRS QtWebApp_LIBRARIES)
+mark_as_advanced(QtWebApp_LIBRARIES)

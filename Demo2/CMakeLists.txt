@@ -5,7 +5,6 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Network)
 find_package(QtWebApp REQUIRED COMPONENTS HttpServer Logging)
-include_directories(${QtWebApp_INCLUDE_DIRS})
 
 add_executable(demo2
 	main.cpp
