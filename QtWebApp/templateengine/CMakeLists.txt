@@ -24,6 +24,8 @@ set_target_properties(QtWebAppTemplateEngine PROPERTIES
 
 install(TARGETS QtWebAppTemplateEngine
         EXPORT QtWebAppTargets
-        LIBRARY DESTINATION lib)
+		LIBRARY DESTINATION lib
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION lib)
 install(FILES ${templateengine_HEADERS}
         DESTINATION include/qtwebapp/templateengine)

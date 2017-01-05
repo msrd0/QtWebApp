@@ -23,7 +23,9 @@ set_target_properties(QtWebAppLogging PROPERTIES
 	)
 
 install(TARGETS QtWebAppLogging
-        EXPORT QtWebAppTargets
-        LIBRARY DESTINATION lib)
+		EXPORT QtWebAppTargets
+		LIBRARY DESTINATION lib
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION lib)
 install(FILES ${logging_HEADERS}
         DESTINATION include/qtwebapp/logging)

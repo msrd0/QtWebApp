@@ -36,7 +36,9 @@ set_target_properties(QtWebAppHttpServer PROPERTIES
 	)
 
 install(TARGETS QtWebAppHttpServer
-        EXPORT QtWebAppTargets
-        LIBRARY DESTINATION lib)
+		EXPORT QtWebAppTargets
+        LIBRARY DESTINATION lib
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION lib)
 install(FILES ${httpserver_HEADERS}
         DESTINATION include/qtwebapp/httpserver)
