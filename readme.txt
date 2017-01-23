@@ -32,6 +32,8 @@ generated with Doxygen.
 
 Please read also the other documents in the QtWebApp/doc folder.
 
+If you need WebSockets then check this fork of my project: https://github.com/samiavasil/QtWebApp
+
 Stefan Frings
 http://stefanfrings.de
 

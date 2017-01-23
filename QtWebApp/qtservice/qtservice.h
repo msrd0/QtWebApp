@@ -160,7 +160,7 @@ private:
 };
 
 template <typename Application>
-class DECLSPEC QtService : public QtServiceBase
+class QtService : public QtServiceBase
 {
 public:
     QtService(int argc, char **argv, const QString &name)
