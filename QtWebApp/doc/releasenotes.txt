@@ -1,6 +1,10 @@
 Dont forget to update the release number also in
 QtWebApp.pro and httpserver/httpglobal.cpp.
 
+1.7.2
+17.01.2016
+Fixed compile error with MSVC.
+
 1.7.1
 10.11.2016
 Fixed a possible memory leak in case of broken Multipart HTTP Requests.
