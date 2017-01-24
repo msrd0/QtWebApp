@@ -41,6 +41,32 @@ void HttpServerConfig::parseSettings(const QSettings &settings)
 
 // ###########################################################################################
 
+HttpSessionStoreConfig::HttpSessionStoreConfig()
+{
+}
+
+HttpSessionStoreConfig::HttpSessionStoreConfig(const QSettings &settings)
+{
+	parseSettings(settings);
+}
+
+HttpSessionStoreConfig::HttpSessionStoreConfig(QSettings *settings)
+{
+	parseSettings(*settings);
+}
+
+void HttpSessionStoreConfig::parseSettings(const QSettings &settings)
+{
+	expirationTime = parseNum(settings.value("expirationTime", expirationTime), 1000);
+	cookieName = settings.value("cookieName", cookieName).toByteArray();
+	
+	cookiePath = settings.value("cookiePath", cookiePath).toByteArray();
+	cookieComment = settings.value("cookieComment", cookieComment).toByteArray();
+	cookieDomain = settings.value("cookieDomain", cookieDomain).toByteArray();
+}
+
+// ###########################################################################################
+
 StaticFileControllerConfig::StaticFileControllerConfig()
 {
 }

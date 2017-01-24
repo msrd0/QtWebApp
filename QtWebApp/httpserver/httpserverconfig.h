@@ -59,6 +59,40 @@ private:
 };
 
 /**
+ * This class stores all configuration information for the `HttpSessionStore`
+ * class. It can be either created as a standard object and filled from
+ * c++ code, or be constructed from a `QSettings` object. See `HttpSessionStore`
+ * for an example of such a configuration file.
+ */
+class QTWEBAPP_EXPORT HttpSessionStoreConfig
+{
+public:
+	/** Creates a config with all standard values. */
+	HttpSessionStoreConfig();
+	/** Reads the configuration from the `QSettings` object. */
+	HttpSessionStoreConfig(const QSettings &settings);
+	/** Reads the configuration frem the `QSettings` pointer. */
+	HttpSessionStoreConfig(QSettings *settings);
+	
+	/// The expiration time of the cookie.
+	int expirationTime = 3600e3;
+	/// The name of the cookie.
+	QByteArray cookieName = "sessionid";
+	
+	/// The url path where the session is valid. This is usefull when you have
+	/// data not related to the session in `/static/` and session related data in
+	/// `/content/` or similar.
+	QByteArray cookiePath = "/";
+	/// The comment of the cookie.
+	QByteArray cookieComment;
+	/// The domain of the cookie.
+	QByteArray cookieDomain;
+	
+private:
+	void parseSettings(const QSettings &settings);
+};
+
+/**
  * This class stores all configuration information for the `StaticFileController`
  * class. It can be either created as a astandard object and filled from c++
  * code, or be constructed from a `QSettings` object. See `StaticFileController`

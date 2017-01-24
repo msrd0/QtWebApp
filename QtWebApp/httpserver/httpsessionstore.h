@@ -38,7 +38,7 @@ class QTWEBAPP_EXPORT HttpSessionStore : public QObject {
 public:
 	
 	/** Constructor. */
-	HttpSessionStore(QSettings* settings, QObject* parent=NULL);
+	HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject* parent=NULL);
 	
 	/** Destructor */
 	virtual ~HttpSessionStore();
@@ -85,16 +85,10 @@ protected:
 private:
 	
 	/** Configuration settings */
-	QSettings* settings;
+	HttpSessionStoreConfig cfg;
 	
 	/** Timer to remove expired sessions */
 	QTimer cleanupTimer;
-	
-	/** Name of the session cookie */
-	QByteArray cookieName;
-	
-	/** Time when sessions expire (in ms)*/
-	int expirationTime;
 	
 	/** Used to synchronize threads */
 	QMutex mutex;
