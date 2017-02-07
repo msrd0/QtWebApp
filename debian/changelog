@@ -1,3 +1,9 @@
+libqtwebapp (1.7.2-2) precise; urgency=low
+
+  * Version 1.7.2
+
+ -- Dominic Meiser <meiserdo@web.de>  Tue, 07 Feb 2017 17:56:00 +0100
+
 libqtwebapp (1.7.1-2) precise; urgency=low
 
   * Update debian/copyright
