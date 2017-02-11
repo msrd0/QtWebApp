@@ -8,7 +8,7 @@
 #define QTWEBAPP_MAJOR @qtwebapp_MAJOR@
 #define QTWEBAPP_MINOR @qtwebapp_MINOR@
 #define QTWEBAPP_PATCH @qtwebapp_PATCH@
-#define QTWEBAPP_VERSION ((@qtwebapp_MAJOR@ << 16) | (@qtwebapp_MINOR@ << 8) | @qslwebapp_PATCH@)
+#define QTWEBAPP_VERSION ((@qtwebapp_MAJOR@ << 16) | (@qtwebapp_MINOR@ << 8) | @qtwebapp_PATCH@)
 #define QTWEBAPP_VERSION_STR "@qtwebapp_VERSION@"
 
 #if defined _WIN32 || defined __CYGWIN__
