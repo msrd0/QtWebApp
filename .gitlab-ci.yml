@@ -1,0 +1,12 @@
+image: ilssim/cmake-boost-qt5
+
+build:
+  stage: build
+  script:
+    - pushd QtWebApp
+    - qmake
+    - make
+    - popd
+  cache:
+    paths:
+      - "*.o"
