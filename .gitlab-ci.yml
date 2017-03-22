@@ -1,0 +1,55 @@
+image: ilssim/cmake-boost-qt5
+
+build:
+  stage: build
+  script:
+    - pushd QtWebApp
+    - mkdir build
+    - pushd build
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make
+    - mkdir root
+    - make DESTDIR=root install
+    - pushd root
+    - tar cf ../qtwebapp.tar *
+    - popd # root
+    - xz -k qtwebapp.tar
+    - bzip2 -k qtwebapp.tar
+    - gzip -k qtwebapp.tar
+    - popd # build
+    - popd # QtWebApp
+  artifacts:
+    paths:
+      - QtWebApp/build/qtwebapp.tar
+      - QtWebApp/build/qtwebapp.tar.xz
+      - QtWebApp/build/qtwebapp.tar.bz2
+      - QtWebApp/build/qtwebapp.tar.gz
+  cache:
+    paths:
+      - "*.o"
+
+test:
+  stage: test
+  script:
+    - pushd QtWebApp/build
+    - tar xf qtwebapp.tar -C /
+    - popd # QtWebApp
+    - pushd Demo1
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - popd # Demo1
+    - pushd Demo2
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - popd # Demo2
+  artifacts:
+    paths:
+      - Demo1/build/demo1
+      - Demo2/build/demo2
+  cache:
+    paths:
+      - "*.o"
