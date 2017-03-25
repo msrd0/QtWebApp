@@ -75,7 +75,7 @@ public:
 	HttpSessionStoreConfig(QSettings *settings);
 	
 	/// The expiration time of the cookie.
-	int expirationTime = 3600e3;
+	uint64_t expirationTime = 3600e3;
 	/// The name of the cookie.
 	QByteArray cookieName = "sessionid";
 	
