@@ -29,16 +29,16 @@ INCLUDEPATH += $$PWD/../QtWebApp
 
 # Directory where the release version of the shared library (*.dll or *.so) is stored, and base name of the file.
 CONFIG(release, debug|release) {
-    win32:      LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_0_MinGW_32bit-Release/release/  -lQtWebApp1
-    mac:        LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_0_clang_64bit-Release/          -lQtWebApp
-    unix:!mac:  LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_0_GCC_64bit-Debug/              -lQtWebApp
+    win32:      LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_1_MinGW_32bit-Release/release/  -lQtWebApp1
+    mac:        LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_1_clang_64bit-Release/          -lQtWebApp
+    unix:!mac:  LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_1_GCC_64bit-Debug/              -lQtWebApp
 }
 
 # Directory where the debug version of the shared library (*.dll or *.so) is stored, and base name of the file.
 CONFIG(debug, debug|release) {
-    win32:      LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_0_MinGW_32bit-Debug/debug/      -lQtWebAppd1
-    mac:        LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_0_clang_64bit-Debug/            -lQtWebApp_debug
-    unix:!mac:  LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_0_GCC_64bit-Debug/              -lQtWebAppd
+    win32:      LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_1_MinGW_32bit-Debug/debug/      -lQtWebAppd1
+    mac:        LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_1_clang_64bit-Debug/            -lQtWebApp_debug
+    unix:!mac:  LIBS += -L$$PWD/../build-QtWebApp-Desktop_Qt_5_7_1_GCC_64bit-Debug/              -lQtWebAppd
 }
 
 win32 {

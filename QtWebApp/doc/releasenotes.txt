@@ -1,8 +1,12 @@
 Dont forget to update the release number also in
 QtWebApp.pro and httpserver/httpglobal.cpp.
 
+1.7.3
+25.04.2017
+Wait until all data are sent before closing connections.
+
 1.7.2
-17.01.2016
+17.01.2017
 Fixed compile error with MSVC.
 
 1.7.1
