@@ -44,7 +44,6 @@ You can the compile it using cmake, like this:
 # ...
 find_package(QtWebApp REQUIRED COMPONENTS HttpServer)
 add_executable(thinkofabettername main.cpp)
-target_include_dirs(thinkofabettername PUBLIC ${QtWebApp_INCLUDE_DIRS})
 target_link_libraries(thinkofabettername ${QtWebApp_LIBRARIES})
 # ...
 ```
