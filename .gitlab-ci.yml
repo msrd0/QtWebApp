@@ -1,4 +1,4 @@
-image: ilssim/cmake-boost-qt5
+image: msrd0/ubuntu-cmake-qt5
 
 build:
   stage: build
@@ -11,21 +11,20 @@ build:
     - mkdir root
     - make DESTDIR=root install
     - pushd root
-    - tar cf ../qtwebapp.tar *
+    - tar cfj ../../../qtwebapp.tar.bz2 --owner=root --group=root *
     - popd # root
-    - xz qtwebapp.tar
     - popd # build
     - popd # QtWebApp
-    - mv QtWebApp/build/qtwebapp.tar.xz .
   artifacts:
     paths:
-      - qtwebapp.tar.xz
+      - qtwebapp.tar.bz2
 
-test:
+demos:
   stage: test
+  before_script:
+    - sudo tar xfj qtwebapp.tar.bz2 -C /
+    - sudo ldconfig
   script:
-    - xz -d qtwebapp.tar.xz
-    - tar xf qtwebapp.tar -C /
     - pushd Demo1
     - mkdir build
     - cd build
