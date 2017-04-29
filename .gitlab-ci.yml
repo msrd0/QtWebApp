@@ -13,27 +13,19 @@ build:
     - pushd root
     - tar cf ../qtwebapp.tar *
     - popd # root
-    - xz -k qtwebapp.tar
-    - bzip2 -k qtwebapp.tar
-    - gzip -k qtwebapp.tar
+    - xz qtwebapp.tar
     - popd # build
     - popd # QtWebApp
+    - mv QtWebApp/build/qtwebapp.tar.xz .
   artifacts:
     paths:
-      - QtWebApp/build/qtwebapp.tar
-      - QtWebApp/build/qtwebapp.tar.xz
-      - QtWebApp/build/qtwebapp.tar.bz2
-      - QtWebApp/build/qtwebapp.tar.gz
-  cache:
-    paths:
-      - "*.o"
+      - qtwebapp.tar.xz
 
 test:
   stage: test
   script:
-    - pushd QtWebApp/build
+    - xz -d qtwebapp.tar.xz
     - tar xf qtwebapp.tar -C /
-    - popd # QtWebApp
     - pushd Demo1
     - mkdir build
     - cd build
@@ -46,10 +38,8 @@ test:
     - cmake ..
     - make
     - popd # Demo2
+    - mv Demo1/build/demo1 Demo2/build/demo2 .
   artifacts:
     paths:
-      - Demo1/build/demo1
-      - Demo2/build/demo2
-  cache:
-    paths:
-      - "*.o"
+      - demo1
+      - demo2
