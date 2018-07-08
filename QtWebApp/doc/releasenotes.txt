@@ -1,6 +1,10 @@
 Dont forget to update the release number also in
 QtWebApp.pro and httpserver/httpglobal.cpp.
 
+1.7.4
+24.05.2018
+Fixed two possible null-pointer references in case of broken HTTP requests.
+
 1.7.3
 25.04.2017
 Wait until all data are sent before closing connections.

@@ -25,8 +25,8 @@
       - automatic backups and file rotation
       - configurable message format, see LogMessage
       - messages may contain thread-local info variables
-      - optional ring-buffer for writing debug messages in case of errors
-      - they are configurable at runtime without program restart
+      - optional ring-buffer to improve performance and reduce disk usage
+      - apply configuration changes without restart
   - The QtService class
       - Runs the application as a Windows service or Unix daemon
 
