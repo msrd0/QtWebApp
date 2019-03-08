@@ -2,6 +2,8 @@ image: msrd0/cmake-qt5:alpine
 
 build:
   stage: build
+  before_script:
+    - apk add --no-cache tar
   script:
     - pushd QtWebApp
     - mkdir build
@@ -11,18 +13,18 @@ build:
     - mkdir root
     - make DESTDIR=root install
     - pushd root
-    - tar cfj ../../../qtwebapp.tar.bz2 --owner=root --group=root *
+    - tar cfJ ../../../qtwebapp.tar.xz --owner=root --group=root *
     - popd # root
     - popd # build
     - popd # QtWebApp
   artifacts:
     paths:
-      - qtwebapp.tar.bz2
+      - qtwebapp.tar.xz
 
 demos:
   stage: test
   before_script:
-    - sudo tar xfj qtwebapp.tar.bz2 -C /
+    - sudo tar xfJ qtwebapp.tar.xz -C /
     - sudo ldconfig
   script:
     - pushd Demo1
