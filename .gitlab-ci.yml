@@ -3,7 +3,7 @@ image: msrd0/cmake-qt5:alpine
 build:
   stage: build
   before_script:
-    - sudo apk add --no-cache tar
+    - sudo apk add --no-cache tar xz
   script:
     - pushd QtWebApp
     - mkdir build
