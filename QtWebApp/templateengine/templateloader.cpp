@@ -40,7 +40,7 @@ TemplateLoader::TemplateLoader(const TemplateEngineConfig &cfg, QObject* parent)
 TemplateLoader::~TemplateLoader()
 {}
 
-QString TemplateLoader::tryFile(QString localizedName)
+QString TemplateLoader::tryFile(const QString &localizedName)
 {
 	QString fileName=templatePath+"/"+localizedName+fileNameSuffix;
 #ifdef CMAKE_DEBUG
@@ -64,7 +64,7 @@ QString TemplateLoader::tryFile(QString localizedName)
 	return "";
 }
 
-Template TemplateLoader::getTemplate(QString templateName, QString locales)
+Template TemplateLoader::getTemplate(const QString &templateName, const QString &locales)
 {
 	QSet<QString> tried; // used to suppress duplicate attempts
 	QStringList locs=locales.split(',',QString::SkipEmptyParts);

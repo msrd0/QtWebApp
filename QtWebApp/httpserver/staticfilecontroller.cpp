@@ -139,7 +139,7 @@ void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 	}
 }
 
-void StaticFileController::setContentType(const QString fileName, HttpResponse &response) const
+void StaticFileController::setContentType(const QString &fileName, HttpResponse &response) const
 {
 	if (fileName.endsWith(".png"))
 	{
