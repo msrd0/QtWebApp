@@ -25,7 +25,7 @@ demos:
   stage: test
   before_script:
     - sudo tar xfJ qtwebapp.tar.xz -C /
-    - sudo ldconfig
+    - sudo ldconfig /usr/local/lib/
   script:
     - pushd Demo1
     - mkdir build
