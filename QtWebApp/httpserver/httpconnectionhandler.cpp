@@ -227,7 +227,7 @@ void HttpConnectionHandler::read()
 			}
 			catch (...)
 			{
-				qCritical("HttpConnectionHandler (%p): An uncatched exception occured in the request handler",qCritical("HttpConnectionHandler (%p): An uncatched exception occured in the request handler",
+				qCritical("HttpConnectionHandler (%p): An uncatched exception occured in the request handler",
 						static_cast<void*>(this));
 			}
 			
