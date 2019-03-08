@@ -3,7 +3,7 @@
 TARGET = QtWebApp
 TEMPLATE = lib
 QT -= gui
-VERSION = 1.7.4
+VERSION = 1.7.8
 
 mac {
    QMAKE_MAC_SDK = macosx10.10

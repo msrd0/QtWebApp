@@ -58,11 +58,13 @@ public:
       @param settings Configuration settings, usually stored in an INI file. Must not be 0.
       Settings are read from the current group, so the caller must have called settings->beginGroup().
       Because the group must not change during runtime, it is recommended to provide a
-      separate QSettings instance to the logger that is not used by other parts of the program.
+      separate QSettings instance that is not used by other parts of the program.
+      The FileLogger does not take over ownership of the QSettings instance, so the caller
+      should destroy it during shutdown.
       @param refreshInterval Interval of checking for changed config settings in msec, or 0=disabled
       @param parent Parent object
     */
-    FileLogger(QSettings* settings, const int refreshInterval=10000, QObject* parent = 0);
+    FileLogger(QSettings* settings, const int refreshInterval=10000, QObject* parent = nullptr);
 
     /**
       Destructor. Closes the file.

@@ -13,7 +13,7 @@
 
 using namespace stefanfrings;
 
-Logger* Logger::defaultLogger=0;
+Logger* Logger::defaultLogger=nullptr;
 
 
 QThreadStorage<QHash<QString,QString>*> Logger::logVars;
@@ -92,11 +92,11 @@ Logger::~Logger()
     if (defaultLogger==this)
     {
 #if QT_VERSION >= 0x050000
-        qInstallMessageHandler(0);
+        qInstallMessageHandler(nullptr);
 #else
-        qInstallMsgHandler(0);
+        qInstallMsgHandler(nullptr);
 #endif
-        defaultLogger=0;
+        defaultLogger=nullptr;
     }
 }
 

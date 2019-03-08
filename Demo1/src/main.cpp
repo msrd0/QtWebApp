@@ -26,7 +26,6 @@ StaticFileController* staticFileController;
 /** Redirects log messages to a file */
 FileLogger* logger;
 
-
 /** Search the configuration file */
 QString searchConfigFile()
 {
@@ -65,7 +64,6 @@ QString searchConfigFile()
         qWarning("%s/%s not found",qPrintable(dir),qPrintable(fileName));
     }
     qFatal("Cannot find config file %s",qPrintable(fileName));
-    return 0;
 }
 
 
@@ -111,8 +109,6 @@ int main(int argc, char *argv[])
     new HttpListener(listenerSettings,new RequestMapper(&app),&app);
 
     qWarning("Application has started");
-
     app.exec();
-
     qWarning("Application has stopped");
 }

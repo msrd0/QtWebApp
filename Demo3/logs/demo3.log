@@ -36,3 +36,9 @@
 28.10.2016 17:05:45.639 0 DEBUG    139755130652480 ServiceHelper: Starting service
 28.10.2016 17:05:45.644 0 DEBUG    139755130652480 HttpListener: Listening on port 8080
 28.10.2016 17:05:45.644 1 WARNING  139755130652480 Startup: Service has started
+18.01.2019 18:16:34.746 0 DEBUG    140353331935104 ServiceHelper: Starting service
+18.01.2019 18:16:34.746 0 DEBUG    140353331935104 HttpListener: Listening on port 8080
+18.01.2019 18:16:34.746 1 WARNING  140353331935104 Startup: Service has started
+18.01.2019 18:18:10.936 0 DEBUG    140674149803904 ServiceHelper: Starting service
+18.01.2019 18:18:10.937 2 CRITICAL 140674149803904 HttpListener: Cannot bind on port 8080: The bound address is already in use
+18.01.2019 18:18:10.937 1 WARNING  140674149803904 Startup: Service has started

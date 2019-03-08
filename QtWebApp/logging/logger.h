@@ -69,7 +69,10 @@ public:
       @param parent Parent object
       @see LogMessage for a description of the message decoration.
     */
-    Logger(const QString msgFormat="{timestamp} {type} {msg}", const QString timestampFormat="dd.MM.yyyy hh:mm:ss.zzz", const QtMsgType minLevel=QtDebugMsg, const int bufferSize=0, QObject* parent = 0);
+    Logger(const QString msgFormat="{timestamp} {type} {msg}",
+           const QString timestampFormat="dd.MM.yyyy hh:mm:ss.zzz",
+           const QtMsgType minLevel=QtDebugMsg, const int bufferSize=0,
+           QObject* parent = nullptr);
 
     /** Destructor */
     virtual ~Logger();
@@ -84,7 +87,8 @@ public:
       @param line Line Number of the source file, where the message was generated (usually filles with the macro __func__ or __FUNCTION__)
       @see LogMessage for a description of the message decoration.
     */
-    virtual void log(const QtMsgType type, const QString& message, const QString &file="", const QString &function="", const int line=0);
+    virtual void log(const QtMsgType type, const QString& message, const QString &file="",
+                     const QString &function="", const int line=0);
 
     /**
       Installs this logger as the default message handler, so it
@@ -149,7 +153,8 @@ private:
       @param function Name of the function where the message was generated (usually filled with the macro __LINE__)
       @param line Line Number of the source file, where the message was generated (usually filles with the macro __func__ or __FUNCTION__)
     */
-    static void msgHandler(const QtMsgType type, const QString &message, const QString &file="", const QString &function="", const int line=0);
+    static void msgHandler(const QtMsgType type, const QString &message, const QString &file="",
+                           const QString &function="", const int line=0);
 
 
 #if QT_VERSION >= 0x050000
