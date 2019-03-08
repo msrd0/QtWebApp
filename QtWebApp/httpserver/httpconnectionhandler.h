@@ -47,7 +47,7 @@ typedef int tSocketDescriptor;
   The readTimeout value defines the maximum time to wait for a complete HTTP request.
   @see HttpRequest for description of config settings maxRequestSize and maxMultiPartSize.
 */
-class QTWEBAPP_EXPORT HttpConnectionHandler : public QThread {
+class QTWEBAPP_EXPORT HttpConnectionHandler : public QObject {
 	Q_OBJECT
 	Q_DISABLE_COPY(HttpConnectionHandler)
 	
@@ -59,7 +59,8 @@ public:
 	  @param requestHandler Handler that will process each incoming HTTP request
 	  @param sslConfiguration SSL (HTTPS) will be used if not NULL
 	*/
-	HttpConnectionHandler(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler, QSslConfiguration* sslConfiguration=NULL);
+	HttpConnectionHandler(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler,
+			const QSslConfiguration* sslConfiguration=nullptr);
 	
 	/** Destructor */
 	virtual ~HttpConnectionHandler();
@@ -78,6 +79,9 @@ private:
 	/** TCP socket of the current connection  */
 	QTcpSocket* socket;
 	
+	/** The thread that processes events of this connection *//** The thread that processes events of this connection */
+	QThread* thread;
+	
 	/** Time for read timeout detection */
 	QTimer readTimer;
 	
@@ -91,10 +95,7 @@ private:
 	bool busy;
 	
 	/** Configuration for SSL */
-	QSslConfiguration* sslConfiguration;
-	
-	/** Executes the threads own event loop */
-	void run();
+	const QSslConfiguration* sslConfiguration;
 	
 	/**  Create SSL or TCP socket */
 	void createSocket();
@@ -105,7 +106,7 @@ public slots:
 	  Received from from the listener, when the handler shall start processing a new connection.
 	  @param socketDescriptor references the accepted connection.
 	*/
-	void handleConnection(tSocketDescriptor socketDescriptor);
+	void handleConnection(const tSocketDescriptor socketDescriptor);
 	
 private slots:
 	
@@ -118,6 +119,8 @@ private slots:
 	/** Received from the socket when a connection has been closed */
 	void disconnected();
 	
+	/** Cleanup after the thread is closed */
+	void thread_done();
 };
 
 } // end of namespace

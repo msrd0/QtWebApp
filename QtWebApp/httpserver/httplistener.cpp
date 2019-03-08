@@ -11,11 +11,11 @@
 using namespace qtwebapp;
 
 HttpListener::HttpListener(const HttpServerConfig &cfg, HttpRequestHandler* requestHandler, QObject *parent)
-    : QTcpServer(parent)
+	: QTcpServer(parent)
 	, cfg(cfg)
 {
-    Q_ASSERT(requestHandler!=0);
-    pool=NULL;
+    Q_ASSERT(requestHandler!=nullptr);
+    pool=nullptr;
     this->requestHandler=requestHandler;
     // Reqister type of socketDescriptor for signal/slot handling
     qRegisterMetaType<tSocketDescriptor>("tSocketDescriptor");
@@ -57,7 +57,7 @@ void HttpListener::close() {
 #endif
     if (pool) {
         delete pool;
-        pool=NULL;
+        pool=nullptr;
     }
 }
 
@@ -66,7 +66,7 @@ void HttpListener::incomingConnection(tSocketDescriptor socketDescriptor) {
     qDebug("HttpListener: New connection");
 #endif
 
-    HttpConnectionHandler* freeHandler=NULL;
+    HttpConnectionHandler* freeHandler=nullptr;
     if (pool)
     {
         freeHandler=pool->getConnectionHandler();

@@ -38,7 +38,7 @@ class QTWEBAPP_EXPORT HttpSessionStore : public QObject {
 public:
 	
 	/** Constructor. */
-	HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject* parent=NULL);
+	HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject* parent=nullptr);
 	
 	/** Destructor */
 	virtual ~HttpSessionStore();
@@ -64,7 +64,7 @@ public:
 	   @return If autoCreate is disabled, the function returns a null session if there is no session.
 	   @see HttpSession::isNull()
 	*/
-	HttpSession getSession(HttpRequest& request, HttpResponse& response, bool allowCreate=true);
+	HttpSession getSession(HttpRequest& request, HttpResponse& response, const bool allowCreate=true);
 	
 	/**
 	   Get a HTTP session by it's ID number.
@@ -76,7 +76,7 @@ public:
 	HttpSession getSession(const QByteArray id);
 	
 	/** Delete a session */
-	void removeSession(HttpSession session);
+	void removeSession(const HttpSession session);
 	
 protected:
 	/** Storage for the sessions */

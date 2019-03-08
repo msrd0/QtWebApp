@@ -18,7 +18,7 @@ HttpRequest::HttpRequest(const HttpServerConfig &cfg)
 	expectedBodySize=0;
 	maxSize=cfg.maxRequestSize;
 	maxMultiPartSize=cfg.maxMultipartSize;
-	tempFile=NULL;
+	tempFile=nullptr;
 }
 
 
@@ -41,13 +41,17 @@ void HttpRequest::readRequest(QTcpSocket* socket)
 	lineBuffer.clear();
 	if (!newData.isEmpty())
 	{
+#ifdef CMAKE_DEBUG
+		qDebug("HttpRequest: from %s: %s",qPrintable(socket->peerAddress().toString()),newData.data());
+#endif
 		QList<QByteArray> list=newData.split(' ');
 		if (list.count()!=3 || !list.at(2).contains("HTTP"))
 		{
 			qWarning("HttpRequest: received broken HTTP request, invalid first line");
 			status=abort;
 		}
-		else {
+		else
+		{
 			method=list.at(0).trimmed();
 			path=list.at(1);
 			version=list.at(2);
@@ -172,7 +176,7 @@ void HttpRequest::readBody(QTcpSocket* socket)
 		qDebug("HttpRequest: receiving multipart body");
 #endif
 		// Create an object for the temporary file, if not already present
-		if (tempFile == NULL)
+		if (tempFile == nullptr)
 		{
 			tempFile = new QTemporaryFile;
 		}
@@ -181,8 +185,8 @@ void HttpRequest::readBody(QTcpSocket* socket)
 			tempFile->open();
 		}
 		// Transfer data in 64kb blocks
-		int fileSize=tempFile->size();
-		int toRead=expectedBodySize-fileSize;
+		qint64 fileSize=tempFile->size();
+		qint64 toRead=expectedBodySize-fileSize;
 		if (toRead>65536)
 		{
 			toRead=65536;
@@ -391,10 +395,11 @@ QByteArray HttpRequest::urlDecode(const QByteArray source)
 	while (percentChar>=0)
 	{
 		bool ok;
-		char byte=buffer.mid(percentChar+1,2).toInt(&ok,16);
+		int hexCode=buffer.mid(percentChar+1,2).toInt(&ok,16);
 		if (ok)
 		{
-			buffer.replace(percentChar,3,(char*)&byte,1);
+			char c=char(hexCode);
+			buffer.replace(percentChar,3,&c,1);
 		}
 		percentChar=buffer.indexOf('%',percentChar+1);
 	}
@@ -453,7 +458,7 @@ void HttpRequest::parseMultiPartFile()
 #ifdef SUPERVERBOSE
 		qDebug("HttpRequest: reading multpart data");
 #endif
-		QTemporaryFile* uploadedFile=0;
+		QTemporaryFile* uploadedFile=nullptr;
 		QByteArray fieldValue;
 		while (!tempFile->atEnd() && !finished && !tempFile->error())
 		{
@@ -474,20 +479,27 @@ void HttpRequest::parseMultiPartFile()
 				else if (!fileName.isEmpty() && !fieldName.isEmpty())
 				{
 					// last field was a file
+					if (uploadedFile)
+					{
 #ifdef SUPERVERBOSE
-					qDebug("HttpRequest: finishing writing to uploaded file");
+						qDebug("HttpRequest: finishing writing to uploaded file");
 #endif
-					uploadedFile->resize(uploadedFile->size()-2);
-					uploadedFile->flush();
-					uploadedFile->seek(0);
-					parameters.insert(fieldName,fileName);
+						uploadedFile->resize(uploadedFile->size()-2);
+						uploadedFile->flush();
+						uploadedFile->seek(0);
+						parameters.insert(fieldName,fileName);
 #ifdef CMAKE_DEBUG
-					qDebug("HttpRequest: set parameter %s=%s",fieldName.data(),fileName.data());
+						qDebug("HttpRequest: set parameter %s=%s",fieldName.data(),fileName.data());
 #endif
-					uploadedFiles.insert(fieldName,uploadedFile);
+						uploadedFiles.insert(fieldName,uploadedFile);
 #ifdef CMAKE_DEBUG
-					qDebug("HttpRequest: uploaded file size is %i",(int) uploadedFile->size());
+						qDebug("HttpRequest: uploaded file size is %i",(int) uploadedFile->size());
 #endif
+					}
+					else
+					{
+						qWarning("HttpRequest: format error, unexpected end of file data");
+					}
 				}
 				if (line.contains(boundary+"--"))
 				{
@@ -540,7 +552,7 @@ HttpRequest::~HttpRequest()
 		}
 		delete file;
 	}
-	if (tempFile != NULL)
+	if (tempFile != nullptr)
 	{
 		if (tempFile->isOpen())
 		{

@@ -39,7 +39,7 @@ StaticFileController::StaticFileController(const StaticFileControllerConfig &cfg
 }
 
 
-void StaticFileController::service(HttpRequest& request, HttpResponse& response)
+void StaticFileController::service(HttpRequest &request, HttpResponse &response)
 {
 	QByteArray path=request.getPath();
 	// Check whether the browsers cache is up to date
@@ -139,7 +139,7 @@ void StaticFileController::service(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-void StaticFileController::setContentType(QString fileName, HttpResponse& response) const
+void StaticFileController::setContentType(const QString fileName, HttpResponse &response) const
 {
 	if (fileName.endsWith(".png"))
 	{
@@ -196,6 +196,14 @@ void StaticFileController::setContentType(QString fileName, HttpResponse& respon
 	else if (fileName.endsWith(".otf"))
 	{
 		response.setHeader("Content-Type", "application/font-otf");
+    }
+    else if (fileName.endsWith(".json"))
+    {
+        response.setHeader("Content-Type", "application/json");
+    }
+    else if (fileName.endsWith(".xml"))
+    {
+        response.setHeader("Content-Type", "text/xml");
 	}
 	// Todo: add all of your content types
 	else

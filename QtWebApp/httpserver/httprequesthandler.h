@@ -28,11 +28,11 @@ class QTWEBAPP_EXPORT HttpRequestHandler : public QObject {
     Q_DISABLE_COPY(HttpRequestHandler)
 public:
 
-    /**
-     * Constructor.
-     * @param parent Parent object.
-     */
-    HttpRequestHandler(QObject *parent = 0)
+	/**
+	 * Constructor.
+	 * @param parent Parent object.
+	 */
+	HttpRequestHandler(QObject *parent = nullptr)
 		: QObject(parent)
 	{
 	}

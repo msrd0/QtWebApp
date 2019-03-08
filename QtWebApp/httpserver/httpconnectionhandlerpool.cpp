@@ -17,7 +17,7 @@ HttpConnectionHandlerPool::HttpConnectionHandlerPool(const HttpServerConfig &cfg
 	, cfg(cfg)
 	, requestHandler(requestHandler)
 {
-	sslConfiguration =  NULL;
+	sslConfiguration = nullptr;
 	loadSslConfig();
 	cleanupTimer.start(cfg.cleanupInterval);
 	connect(&cleanupTimer, SIGNAL(timeout()), SLOT(cleanup()));

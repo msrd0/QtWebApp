@@ -46,7 +46,7 @@ public:
 
     /**
       Constructor.
-      @param settings Configuration settings
+      @param cfg Configuration
     */
     HttpRequest(const HttpServerConfig &cfg);
 
@@ -61,7 +61,7 @@ public:
       until the status is RequestStatus::complete or RequestStatus::abort.
       @param socket Source of the data
     */
-    void readFromSocket(QTcpSocket* socket);
+    void readFromSocket(QTcpSocket *socket);
 
     /**
       Get the status of this reqeust.

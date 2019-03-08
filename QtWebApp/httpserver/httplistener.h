@@ -49,7 +49,7 @@ public:
 	/**
 	  Constructor.
 	  Creates a connection pool and starts listening on the configured host and port.
-	  @param settings Configuration settings for the HTTP server. Must not be 0.
+	  @param cfg The configuration for the HTTP server.
 	  @param requestHandler Processes each received HTTP request, usually by dispatching to controller classes.
 	  @param parent Parent object.
 	  @warning Ensure to close or delete the listener before deleting the request handler.

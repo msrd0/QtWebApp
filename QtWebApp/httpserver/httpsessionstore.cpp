@@ -10,7 +10,7 @@
 using namespace qtwebapp;
 
 HttpSessionStore::HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject* parent)
-    : QObject(parent)
+	: QObject(parent)
 	, cfg(cfg)
 {
     connect(&cleanupTimer,SIGNAL(timeout()),this,SLOT(sessionTimerEvent()));
