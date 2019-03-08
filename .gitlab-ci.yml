@@ -1,4 +1,4 @@
-image: msrd0/ubuntu-cmake-qt5
+image: msrd0/cmake-qt5:alpine
 
 build:
   stage: build
