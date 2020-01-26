@@ -11,23 +11,21 @@
 #include "staticfilecontroller.h"
 #include "filelogger.h"
 
-using namespace stefanfrings;
-
 /**
   Global objects that are shared by multiple source files
   of this project.
 */
 
 /** Cache for template files */
-extern TemplateCache* templateCache;
+extern qtwebapp::TemplateCache *templateCache;
 
 /** Storage for session cookies */
-extern  HttpSessionStore* sessionStore;
+extern qtwebapp::HttpSessionStore *sessionStore;
 
 /** Controller for static files */
-extern  StaticFileController* staticFileController;
+extern qtwebapp::StaticFileController *staticFileController;
 
 /** Redirects log messages to a file */
-extern  FileLogger* logger;
+extern qtwebapp::FileLogger *logger;
 
 #endif // GLOBAL_H
