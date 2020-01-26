@@ -156,10 +156,10 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
 	mutex.lock();
 	
 	// If the buffer is enabled, write the message into it
-	if (bufferSize>0) {
+	if (bufferSize>0)
     {
 		// Create new thread local buffer, if necessary
-		if (!buffers.hasLocalData()) {
+		if (!buffers.hasLocalData())
         {
 			buffers.setLocalData(new QList<LogMessage*>());
 		}
