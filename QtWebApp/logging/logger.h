@@ -26,19 +26,22 @@ namespace qtwebapp {
   variable names in the form  <i>{name}</i> that are filled by values
   taken from a static thread local dictionary.
   <p>
-  The logger keeps a configurable number of messages in a ring-buffer.
-  A log message with a severity >= minLevel flushes the buffer,
-  so the stored messages get written out. If the buffer is disabled, then
-  only messages with severity >= minLevel are written out.
+  The logger can collect a configurable number of messages in thread-local
+  ring buffers. If the buffer is enabled, then a log message with
+  severity >= minLevel flushes the buffer, so the stored messages are
+  written out. There is one exception: INFO messages are treated like DEBUG messages
+  (level 0).
   <p>
-  If you enable the buffer and use minLevel=2, then the application logs
-  only errors together with some buffered debug messages. But as long no
+  Example: If you enable the buffer and use minLevel=2, then the application
+  waits until an error occurs. Then it writes out the error message together
+  with all buffered lower level messages of the same thread. But as long no
   error occurs, nothing gets written out.
   <p>
-  Each thread has it's own buffer.
+  If the buffer is disabled, then only messages with severity >= minLevel
+  are written out.
   <p>
   The logger can be registered to handle messages from
-  the static global functions qDebug(), qWarning(), qCritical() and qFatal().
+  the static global functions qDebug(), qWarning(), qCritical(), qFatal() and qInfo().
   
   @see set() describes how to set logger variables
   @see LogMessage for a description of the message decoration.
@@ -61,9 +64,11 @@ public:
 	
 	/**
 	  Constructor.
+      Possible log levels are: 0=DEBUG, 1=WARNING, 2=CRITICAL, 3=FATAL, 4=INFO
 	  @param msgFormat Format of the decoration, e.g. "{timestamp} {type} thread={thread}: {msg}"
 	  @param timestampFormat Format of timestamp, e.g. "dd.MM.yyyy hh:mm:ss.zzz"
-	  @param minLevel Minimum severity that genertes an output (0=debug, 1=warning, 2=critical, 3=fatal).
+      @param minLevel If bufferSize=0: Messages with lower level discarded.<br>
+                      If buffersize>0: Messages with lower level are buffered, messages with equal or higher level trigger writing the buffered content.
 	  @param bufferSize Size of the backtrace buffer, number of messages per thread. 0=disabled.
 	  @param parent Parent object
 	  @see LogMessage for a description of the message decoration.
@@ -119,7 +124,7 @@ protected:
 	/** Format string of timestamps */
 	QString timestampFormat;
 	
-	/** Minimum level of message types that are written out */
+    /** Minimum level of message types that are written out directly or trigger writing the buffered content. */
 	QtMsgType minLevel;
 	
 	/** Size of backtrace buffer, number of messages per thread. 0=disabled */

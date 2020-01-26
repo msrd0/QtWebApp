@@ -14,8 +14,12 @@
 namespace qtwebapp {
 
 /**
-  Logs messages into two log files simultaneously.
-  May be used to create two logfiles with different configuration settings.
+  Writes log messages into two log files simultaneously.
+  I recommend to configure:
+  - One "main" logfile with minLevel=1 or 2 and bufferSize=0. This file is for the operator to see when a problem occured.
+  - A second "debug" logfile with minLevel=1 or 2 and bufferSize=100. This file is for the developer who may need more details (the debug messages) about the
+  situation that leaded to the error.
+
   @see FileLogger for a description of the two underlying loggers.
 */
 

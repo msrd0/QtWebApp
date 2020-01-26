@@ -14,7 +14,7 @@
 #include <QThread>
 #include <QTimer>
 
-#ifndef QT_NO_OPENSSL
+#ifndef QT_NO_SSL
 #  include <QSslConfiguration>
 #endif
 
@@ -28,7 +28,7 @@ typedef int tSocketDescriptor;
 #endif
 
 /** Alias for QSslConfiguration if OpenSSL is not supported */
-#ifdef QT_NO_OPENSSL
+#ifdef QT_NO_SSL
 #  define QSslConfiguration QObject
 #endif
 

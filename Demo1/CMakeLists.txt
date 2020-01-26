@@ -18,6 +18,8 @@ add_executable(demo1
 	controller/templatecontroller.cpp
 	controller/templatecontroller.h
 	documentcache.h
+	global.cpp
+	global.h
 	main.cpp
 	requestmapper.cpp
 	requestmapper.h

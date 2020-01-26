@@ -4,6 +4,7 @@
 */
 
 #include <QCoreApplication>
+#include "global.h"
 #include "requestmapper.h"
 #include "filelogger.h"
 #include "staticfilecontroller.h"
@@ -14,12 +15,6 @@
 #include "controller/sessioncontroller.h"
 
 using namespace qtwebapp;
-
-/** Redirects log messages to a file */
-extern FileLogger* logger;
-
-/** Controller for static files */
-extern StaticFileController* staticFileController;
 
 RequestMapper::RequestMapper(QObject* parent)
     :HttpRequestHandler(parent)
@@ -42,7 +37,7 @@ void RequestMapper::service(HttpRequest& request, HttpResponse& response)
     // For the following pathes, each request gets its own new instance of the related controller.
 
     if (path.startsWith("/dump"))
-    {
+    {        
         DumpController().service(request, response);
     }
 
