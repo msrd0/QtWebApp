@@ -91,10 +91,9 @@ signals:
 	/**
 	  Sent to the connection handler to process a new incoming connection.
 	  @param socketDescriptor references the accepted connection.
-	*/
-	
-	void handleConnection(tSocketDescriptor socketDescriptor);
-	
+        */
+        void handleConnection(qtwebapp::tSocketDescriptor socketDescriptor);
+
 };
 
 } // end of namespace

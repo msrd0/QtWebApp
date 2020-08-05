@@ -106,7 +106,7 @@ public slots:
 	  Received from from the listener, when the handler shall start processing a new connection.
 	  @param socketDescriptor references the accepted connection.
 	*/
-	void handleConnection(const tSocketDescriptor socketDescriptor);
+	void handleConnection(const qtwebapp::tSocketDescriptor socketDescriptor);
 	
 private slots:
 	
