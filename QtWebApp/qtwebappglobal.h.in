@@ -11,27 +11,10 @@
 #define QTWEBAPP_VERSION ((@qtwebapp_MAJOR@ << 16) | (@qtwebapp_MINOR@ << 8) | @qtwebapp_PATCH@)
 #define QTWEBAPP_VERSION_STR "@qtwebapp_VERSION@"
 
-#if defined _WIN32 || defined __CYGWIN__
-#  ifdef CMAKE_QTWEBAPP_SO
-#    ifdef __GNUC__
-#      define QTWEBAPP_EXPORT __attribute__((dllexport))
-#    else // __GNUC__
-#      define QTWEBAPP_EXPORT __declspec(dllexport)
-#    endif // __GNUC__
-#  else // CMAKE_QTWEBAPP_SO
-#    ifdef __GNUC__
-#      define QTWEBAPP_EXPORT __attribute__((dllimport))
-#    else // __GNUC__
-#      define QTWEBAPP_EXPORT __declspec(dllimport)
-#    endif // __GNUC__
-#  endif // CMAKE_QSL_SO
-#  define QTWEBAPP_PRIVATE
-#elif defined __GNUC__ && __GNUC__ >= 4
-#  define QTWEBAPP_EXPORT __attribute__((visibility("default")))
-#  define QTWEBAPP_PRIVATE __attribute__((visibility("hidden")))
+#ifdef CMAKE_QTWEBAPP_SO
+#  define QTWEBAPP_EXPORT Q_DECL_EXPORT
 #else
-#  define QTWEBAPP_EXPORT
-#  define QTWEBAPP_PRIVATE
+#  define QTWEBAPP_EXPORT Q_DECL_IMPORT
 #endif
 
 namespace qtwebapp {
