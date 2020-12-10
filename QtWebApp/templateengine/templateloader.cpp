@@ -67,7 +67,13 @@ QString TemplateLoader::tryFile(const QString &localizedName)
 Template TemplateLoader::getTemplate(const QString &templateName, const QString &locales)
 {
 	QSet<QString> tried; // used to suppress duplicate attempts
-	QStringList locs=locales.split(',',QString::SkipEmptyParts);
+	QStringList locs = locales.split(',',
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+		Qt::SkipEmptyParts
+#else
+		QString::SkipEmptyParts
+#endif
+	);
 	
 	// Search for exact match
 	foreach (QString loc,locs)
