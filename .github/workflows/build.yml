@@ -1,0 +1,88 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allowfail }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Ubuntu 20.04 GCC"
+            os: ubuntu-20.04
+            cc: "gcc"
+            cxx: "g++"
+            linkflags: ""
+            sudo: "sudo"
+            allowfail: false
+          - name: "Ubuntu 20.04 Clang/LLD"
+            os: ubuntu-20.04
+            cc: "clang"
+            cxx: "clang++"
+            linkflags: "-fuse-ld=lld"
+            sudo: "sudo"
+            allowfail: false
+          - name: "Windows Latest MinGW"
+            os: windows-latest
+            cc: "gcc"
+            cxx: "g++"
+            linkflags: ""
+            sudo: ""
+            allowfail: true
+          - name: "MacOS Latest Clang"
+            os: macos-latest
+            cc: "clang"
+            cxx: "clang++"
+            linkflags: ""
+            sudo: "sudo"
+            allowfail: false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jurplel/install-qt-action@v2
+      
+      - name: Build QtWebApp
+        run: |
+          pushd QtWebApp
+          mkdir build
+          pushd build
+          cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          make
+          ${{ matrix.sudo }} make install
+          popd # build
+          popd # QtWebApp
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          LDFLAGS: ${{ matrix.linkflags }}
+      
+      - name: Build Demo1
+        run: |
+          pushd Demo1
+          mkdir build
+          pushd build
+          cmake -G 'Unix Makefiles' ..
+          make
+          popd # Demo1
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          LDFLAGS: ${{ matrix.linkflags }}
+      
+      - name: Build Demo2
+        run: |
+          pushd Demo2
+          mkdir build
+          pushd build
+          cmake -G 'Unix Makefiles' ..
+          make
+          popd # Demo2
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          LDFLAGS: ${{ matrix.linkflags }}
