@@ -18,21 +18,25 @@ jobs:
             cc: "gcc"
             cxx: "g++"
             linkflags: ""
+            sudo: "sudo"
           - name: "Ubuntu Latest Clang/LLD"
             os: ubuntu-latest
             cc: "clang"
             cxx: "clang++"
             linkflags: "-fuse-ld=lld"
+            sudo: "sudo"
           - name: "Windows Latest MinGW"
             os: windows-latest
             cc: "gcc"
             cxx: "g++"
             linkflags: ""
+            sudo: ""
           - name: "MacOS Latest Clang"
             os: macos-latest
             cc: "clang"
             cxx: "clang++"
             linkflags: ""
+            sudo: "sudo"
     steps:
       - uses: actions/checkout@v2
       - uses: jurplel/install-qt-action@v2
@@ -44,7 +48,7 @@ jobs:
           pushd build
           cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
           make
-          sudo make install
+          ${{ matrix.sudo }} make install
           popd # build
           popd # QtWebApp
         env:
