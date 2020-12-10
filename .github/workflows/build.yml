@@ -1,0 +1,78 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Ubuntu Latest GCC"
+            os: ubuntu-latest
+            cc: "gcc"
+            cxx: "g++"
+            linkflags: ""
+          - name: "Ubuntu Latest Clang/LLD"
+            os: ubuntu-latest
+            cc: "clang"
+            cxx: "clang++"
+            linkflags: "-fuse-ld=lld"
+          - name: "Windows Latest MinGW"
+            os: windows-latest
+            cc: "gcc"
+            cxx: "g++"
+            linkflags: ""
+          - name: "MacOS Latest Clang"
+            os: macos-latest
+            cc: "clang"
+            cxx: "clang++"
+            linkflags: ""
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build QtWebApp
+        run: |
+          pushd QtWebApp
+          mkdir build
+          pushd build
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          make
+          sudo make install
+          popd # build
+          popd # QtWebApp
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          LDFLAGS: ${{ matrix.linkflags }}
+      
+      - name: Build Demo1
+        run: |
+          pushd Demo1
+          mkdir build
+          pushd build
+          cmake ..
+          make
+          popd # Demo1
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          LDFLAGS: ${{ matrix.linkflags }}
+      
+      - name: Build Demo2
+        run: |
+          pushd Demo2
+          mkdir build
+          pushd build
+          cmake ..
+          make
+          popd # Demo2
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          LDFLAGS: ${{ matrix.linkflags }}
