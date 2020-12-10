@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <QDir>
 #include <QSet>
+#include <QRegularExpression>
 
 using namespace qtwebapp;
 
@@ -72,7 +73,7 @@ Template TemplateLoader::getTemplate(const QString &templateName, const QString 
 	// Search for exact match
 	foreach (QString loc,locs)
 	{
-		loc.replace(QRegExp(";.*"),"");
+		loc.replace(QRegularExpression(";.*"), "");
 		loc.replace('-','_');
 		QString localizedName=templateName+"-"+loc.trimmed();
 		if (!tried.contains(localizedName))
@@ -88,7 +89,7 @@ Template TemplateLoader::getTemplate(const QString &templateName, const QString 
 	// Search for correct language but any country
 	foreach (QString loc,locs)
 	{
-		loc.replace(QRegExp("[;_-].*"),"");
+		loc.replace(QRegularExpression("[;_-].*"), "");
 		QString localizedName=templateName+"-"+loc.trimmed();
 		if (!tried.contains(localizedName))
 		{
