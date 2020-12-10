@@ -41,6 +41,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(QtWebAppGlobal SHARED qtwebappglobal.cpp)
 target_include_directories(QtWebAppGlobal PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 	$<INSTALL_INTERFACE:include/qtwebapp>
 )
 target_link_libraries(QtWebAppGlobal Qt5::Core)
