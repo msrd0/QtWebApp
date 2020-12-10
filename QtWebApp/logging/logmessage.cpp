@@ -4,6 +4,7 @@
 */
 
 #include "logmessage.h"
+#include <QTextStream>
 #include <QThread>
 
 using namespace qtwebapp;
@@ -66,9 +67,9 @@ QString LogMessage::toString(const QString& msgFormat, const QString& timestampF
 	decorated.replace("{line}",QString::number(line));
 	
 	QString threadId;
-	threadId.sprintf("%p", QThread::currentThreadId());
-	//threadId.setNum((uintptr_t)QThread::currentThreadId());
-	decorated.replace("{thread}",threadId);
+	QTextStream threadIdStream(&threadId);
+	threadIdStream << QThread::currentThreadId();
+	decorated.replace("{thread}", threadId);
 	
 	// Fill in variables
 	if (decorated.contains("{") && !logVars.isEmpty())
