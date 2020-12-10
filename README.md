@@ -1,4 +1,4 @@
-# QtWebApp [![GitLab CI Build Status](https://gitlab.com/msrd0/QtWebApp/badges/master/pipeline.svg)](https://gitlab.com/msrd0/QtWebApp/pipelines) [![License](https://img.shields.io/badge/license-LGPL--3.0-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+# QtWebApp [![Build](https://github.com/msrd0/QtWebApp/workflows/Build/badge.svg)](https://github.com/msrd0/QtWebApp/actions?query=workflow%3ABuild) [![License](https://img.shields.io/badge/license-LGPL--3.0-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 This library was forked from http://stefanfrings.de/qtwebapp/index-en.html
 
