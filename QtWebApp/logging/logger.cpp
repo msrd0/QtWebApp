@@ -43,9 +43,13 @@ Logger::Logger(const QString msgFormat, const QString timestampFormat, const QtM
 
 void Logger::msgHandler(const QtMsgType type, const QString &message, const QString &file, const QString &function, const int line)
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 	static QMutex recursiveMutex(QMutex::Recursive);
-	static QMutex nonRecursiveMutex(QMutex::NonRecursive);
-	
+#else
+	static QRecursiveMutex recursiveMutex;
+#endif
+	static QMutex nonRecursiveMutex;
+
 	// Prevent multiple threads from calling this method simultaneoulsy.
 	// But allow recursive calls, which is required to prevent a deadlock
 	// if the logger itself produces an error message.
