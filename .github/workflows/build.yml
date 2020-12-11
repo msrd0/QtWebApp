@@ -94,7 +94,6 @@ jobs:
           make
           popd # Demo2
         env:
-          ${{ matrix.env_script }}
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
           LDFLAGS: ${{ matrix.linkflags }}
