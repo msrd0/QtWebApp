@@ -35,6 +35,13 @@ jobs:
             linkflags: ""
             sudo: ""
             allowfail: true
+          - name: "Windows Latest MSVC"
+            os: windows-latest
+            cc: "cl"
+            cxx: "cl"
+            linkflags: ""
+            sudo: ""
+            allowfail: true
           - name: "MacOS Latest Clang"
             os: macos-latest
             cc: "clang"
