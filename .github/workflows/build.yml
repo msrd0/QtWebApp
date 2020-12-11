@@ -9,7 +9,6 @@ jobs:
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.allowfail }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,50 +18,28 @@ jobs:
             cc: "gcc"
             cxx: "g++"
             linkflags: ""
-            sudo: "sudo"
-            allowfail: false
           - name: "Ubuntu 20.04 Clang/LLD"
             os: ubuntu-20.04
             cc: "clang"
             cxx: "clang++"
             linkflags: "-fuse-ld=lld"
-            sudo: "sudo"
-            allowfail: false
-          - name: "Windows Latest MinGW"
-            os: windows-latest
-            cc: "gcc"
-            cxx: "g++"
-            linkflags: ""
-            sudo: ""
-            allowfail: true
-          - name: "Windows Latest MSVC"
-            os: windows-latest
-            cc: "cl"
-            cxx: "cl"
-            linkflags: ""
-            sudo: ""
-            allowfail: true
-            env_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           - name: "MacOS Latest Clang"
             os: macos-latest
             cc: "clang"
             cxx: "clang++"
             linkflags: ""
-            sudo: "sudo"
-            allowfail: false
     steps:
       - uses: actions/checkout@v2
       - uses: jurplel/install-qt-action@v2
       
       - name: Build QtWebApp
         run: |
-          ${{ matrix.env_script }}
           pushd QtWebApp
           mkdir build
           pushd build
           cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release ..
           make
-          ${{ matrix.sudo }} make install
+          sudo make install
           popd # build
           popd # QtWebApp
         env:
@@ -72,7 +49,6 @@ jobs:
       
       - name: Build Demo1
         run: |
-          ${{ matrix.env_script }}
           pushd Demo1
           mkdir build
           pushd build
@@ -86,7 +62,6 @@ jobs:
       
       - name: Build Demo2
         run: |
-          ${{ matrix.env_script }}
           pushd Demo2
           mkdir build
           pushd build
