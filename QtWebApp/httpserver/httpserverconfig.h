@@ -4,6 +4,7 @@
 
 #include <QHostAddress>
 #include <QSettings>
+#include <QStandardPaths>
 
 namespace qtwebapp {
 class HttpConnectionHandlerPool;
@@ -49,6 +50,9 @@ public:
 	
 	/// The file required for SSL support.
 	QString sslKeyFile, sslCertFile;
+
+	// Temporary directory
+	QString tmpDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 	
 private:
 	void parseSettings(const QSettings &settings);

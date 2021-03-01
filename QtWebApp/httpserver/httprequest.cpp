@@ -19,6 +19,7 @@ HttpRequest::HttpRequest(const HttpServerConfig &cfg)
 	maxSize=cfg.maxRequestSize;
 	maxMultiPartSize=cfg.maxMultipartSize;
 	tempFile=nullptr;
+	tmpDir = cfg.tmpDir;
 }
 
 
@@ -178,7 +179,7 @@ void HttpRequest::readBody(QTcpSocket* socket)
 		// Create an object for the temporary file, if not already present
 		if (tempFile == nullptr)
 		{
-			tempFile = new QTemporaryFile;
+			tempFile = new QTemporaryFile(tmpDir);
 		}
 		if (!tempFile->isOpen())
 		{
@@ -520,7 +521,7 @@ void HttpRequest::parseMultiPartFile()
 					// this is a file
 					if (!uploadedFile)
 					{
-						uploadedFile=new QTemporaryFile();
+						uploadedFile=new QTemporaryFile(tmpDir);
 						uploadedFile->open();
 					}
 					uploadedFile->write(line);
@@ -545,7 +546,7 @@ HttpRequest::~HttpRequest()
 {
 	foreach(QByteArray key, uploadedFiles.keys())
 	{
-		QTemporaryFile* file=uploadedFiles.value(key);
+		QFile* file=uploadedFiles.value(key);
 		if (file->isOpen())
 		{
 			file->close();
@@ -562,7 +563,7 @@ HttpRequest::~HttpRequest()
 	}
 }
 
-QTemporaryFile* HttpRequest::getUploadedFile(const QByteArray fieldName) const
+QFile* HttpRequest::getUploadedFile(const QByteArray fieldName) const
 {
 	return uploadedFiles.value(fieldName);
 }

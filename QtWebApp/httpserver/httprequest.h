@@ -137,7 +137,7 @@ public:
       For uploaded files, the method getParameters() returns
       the original fileName as provided by the calling web browser.
     */
-    QTemporaryFile* getUploadedFile(const QByteArray fieldName) const;
+    QFile* getUploadedFile(const QByteArray fieldName) const;
 
     /**
       Get the value of a cookie.
@@ -231,6 +231,9 @@ private:
 
     /** Buffer for collecting characters of request and header lines */
     QByteArray lineBuffer;
+
+    /** Directory for temporary files */
+    QString tmpDir;
 
 };
 
