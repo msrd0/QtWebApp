@@ -73,7 +73,7 @@ public:
 protected:
 	
 	/** Serves new incoming connection requests */
-	void incomingConnection(tSocketDescriptor socketDescriptor);
+	void incomingConnection(qintptr socketDescriptor);
 	
 private:
 	
@@ -91,10 +91,9 @@ signals:
 	/**
 	  Sent to the connection handler to process a new incoming connection.
 	  @param socketDescriptor references the accepted connection.
-	*/
-	
-	void handleConnection(tSocketDescriptor socketDescriptor);
-	
+        */
+	void handleConnection(qintptr socketDescriptor);
+
 };
 
 } // end of namespace
