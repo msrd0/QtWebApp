@@ -15,7 +15,7 @@ TemplateCache::TemplateCache(const TemplateEngineConfig &cfg, QObject* parent)
 #endif
 }
 
-QString TemplateCache::tryFile(const QString localizedName)
+QString TemplateCache::tryFile(const QString &localizedName)
 {
     qint64 now=QDateTime::currentMSecsSinceEpoch();
     mutex.lock();
