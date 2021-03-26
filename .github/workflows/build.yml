@@ -72,3 +72,38 @@ jobs:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
           LDFLAGS: ${{ matrix.linkflags }}
+
+  windows-mingw:
+    name: "Windows [mingw 32 bit]"
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        qt_version: ["5.15.2"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          arch: win32_mingw81
+          version: ${{ matrix.qt_version }}
+
+      - name: Download Qt MinGW
+        shell: cmake -P {0}
+        run: |
+          file(DOWNLOAD "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/tools_mingw/qt.tools.win32_mingw810/8.1.0-1-202004170606i686-8.1.0-release-posix-dwarf-rt_v6-rev0.7z" ../tools.7z )
+
+      - name: Unzip MinGW
+        shell: bash
+        run: |
+          cd ../
+          7z x ./tools.7z
+
+      - name: Add Qt and g++ to PATH
+        run: |
+          echo "$Qt5_DIR/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          cd ..
+          echo "$PWD/Tools/mingw810_32/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - run: cmake -S QtWebApp -B build-qtwebapp -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build-qtwebapp
+      - run: cmake --build build-qtwebapp --target install
