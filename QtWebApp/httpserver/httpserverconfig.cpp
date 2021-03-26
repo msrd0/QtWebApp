@@ -57,7 +57,7 @@ HttpSessionStoreConfig::HttpSessionStoreConfig(QSettings *settings)
 
 void HttpSessionStoreConfig::parseSettings(const QSettings &settings)
 {
-	expirationTime = parseNum(settings.value("expirationTime", (qulonglong)expirationTime), 1000);
+	expirationTime = parseNum(settings.value("expirationTime", expirationTime), 1000);
 	cookieName = settings.value("cookieName", cookieName).toByteArray();
 	
 	cookiePath = settings.value("cookiePath", cookiePath).toByteArray();
