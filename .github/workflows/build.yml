@@ -107,3 +107,9 @@ jobs:
       - run: cmake -S QtWebApp -B build-qtwebapp -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release
       - run: cmake --build build-qtwebapp
       - run: cmake --build build-qtwebapp --target install
+
+      - run: cmake -S Demo1 -B build-demo1 -G 'Unix Makefiles'
+      - run: cmake --build build-demo1
+
+      - run: cmake -S Demo2 -B build-demo2 -G 'Unix Makefiles'
+      - run: cmake --build build-demo2
