@@ -16,7 +16,7 @@ HttpSessionStore::HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject* p
     connect(&cleanupTimer,SIGNAL(timeout()),this,SLOT(sessionTimerEvent()));
     cleanupTimer.start(60000);
 #ifdef CMAKE_DEBUG
-    qDebug("HttpSessionStore: Sessions expire after %i milliseconds",cfg.expirationTime);
+    qDebug("HttpSessionStore: Sessions expire after %lli milliseconds", cfg.expirationTime);
 #endif
 }
 
