@@ -72,3 +72,45 @@ jobs:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
           LDFLAGS: ${{ matrix.linkflags }}
+
+  windows-mingw:
+    name: "Windows"
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        include:
+          - name: Windows MinGW 8.1
+            arch: win32_mingw81
+            generator: "-G 'Unix Makefiles'"
+            qt_version: "5.15.2"
+          - name: Windows MSVC 2019
+            arch: win64_msvc2019_64
+            generator: ""
+            qt_version: "5.15.2"
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jurplel/install-qt-action@v2
+        with:
+          arch: ${{ matrix.arch }}
+          version: ${{ matrix.qt_version }}
+
+      - uses: jurplel/install-qt-action@v2
+        if: matrix.arch == 'win32_mingw81'
+        with:
+          tools-only: 'true'
+          tools: 'tools_mingw,8.1.0-1-202004170606,qt.tools.win32_mingw810'
+
+      - name: Add g++ to PATH
+        if: matrix.arch == 'win32_mingw81'
+        run: echo "$env:IQTA_TOOLS/mingw810_32/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - run: cmake -S QtWebApp -B build-qtwebapp ${{ matrix.generator }} -DCMAKE_BUILD_TYPE=Release
+      - run: cmake --build build-qtwebapp
+      - run: cmake --build build-qtwebapp --target install
+
+      - run: cmake -S Demo1 -B build-demo1 ${{ matrix.generator }}
+      - run: cmake --build build-demo1
+
+      - run: cmake -S Demo2 -B build-demo2 ${{ matrix.generator }}
+      - run: cmake --build build-demo2
