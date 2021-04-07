@@ -81,7 +81,7 @@ void HttpConnectionHandler::createSocket()
 }
 
 
-void HttpConnectionHandler::handleConnection(tSocketDescriptor socketDescriptor)
+void HttpConnectionHandler::handleConnection(qintptr socketDescriptor)
 {
 #ifdef CMAKE_DEBUG
 	qDebug("HttpConnectionHandler (%p): handle new connection", static_cast<void*>(this));
