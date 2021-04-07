@@ -16,7 +16,7 @@ void FileUploadController::service(HttpRequest& request, HttpResponse& response)
     if (request.getParameter("action")=="show")
     {
         response.setHeader("Content-Type", "image/jpeg");
-        QTemporaryFile* file=request.getUploadedFile("file1");
+        QFile* file=request.getUploadedFile("file1");
         if (file)
         {
             while (!file->atEnd() && !file->error())
