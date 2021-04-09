@@ -97,6 +97,14 @@ private slots:
 	
 	/** Called every minute to cleanup expired sessions. */
 	void sessionTimerEvent();
+
+signals:
+
+    /**
+      Emitted when the session is deleted.
+      @param sessionId The ID number of the session.
+    */
+    void sessionDeleted(const QByteArray& sessionId);
 };
 
 } // end of namespace

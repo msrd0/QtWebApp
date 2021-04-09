@@ -6,10 +6,12 @@
 #include "logger.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <QMutex>
 #include <QDateTime>
 #include <QThread>
 #include <QObject>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QRecursiveMutex>
+#endif
 
 using namespace qtwebapp;
 
@@ -50,6 +52,8 @@ void Logger::msgHandler(const QtMsgType type, const QString &message, const QStr
 #endif
 	static QMutex nonRecursiveMutex;
 
+void Logger::msgHandler(const QtMsgType type, const QString &message, const QString &file, const QString &function, const int line)
+{   
 	// Prevent multiple threads from calling this method simultaneoulsy.
 	// But allow recursive calls, which is required to prevent a deadlock
 	// if the logger itself produces an error message.
@@ -77,7 +81,7 @@ void Logger::msgHandler(const QtMsgType type, const QString &message, const QStr
 }
 
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 void Logger::msgHandler5(const QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
 	(void)(context); // suppress "unused parameter" warning
@@ -95,7 +99,7 @@ Logger::~Logger()
 {
 	if (defaultLogger==this)
 	{
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 		qInstallMessageHandler(nullptr);
 #else
 		qInstallMsgHandler(nullptr);
@@ -115,7 +119,7 @@ void Logger::write(const LogMessage* logMessage)
 void Logger::installMsgHandler()
 {
 	defaultLogger=this;
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	qInstallMessageHandler(msgHandler5);
 #else
 	qInstallMsgHandler(msgHandler4);
@@ -156,7 +160,61 @@ void Logger::clear(const bool buffer, const bool variables)
 
 
 void Logger::log(const QtMsgType type, const QString& message, const QString &file, const QString &function, const int line)
-{
+{    
+    // Check if the type of the message reached the configured minLevel in the order
+    // DEBUG, INFO, WARNING, CRITICAL, FATAL
+    // Since Qt 5.5: INFO messages are between DEBUG and WARNING
+    bool toPrint=false;
+    switch (type)
+    {
+        case QtDebugMsg:
+            if (minLevel==QtDebugMsg)
+            {
+                toPrint=true;
+            }
+            break;
+
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+        case QtInfoMsg:
+            if (minLevel==QtDebugMsg ||
+                minLevel==QtInfoMsg)
+            {
+                toPrint=true;
+            }
+            break;
+    #endif
+
+        case QtWarningMsg:
+            if (minLevel==QtDebugMsg ||
+                #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+                    minLevel==QtInfoMsg ||
+                #endif
+                minLevel==QtWarningMsg)
+            {
+                toPrint=true;
+            }
+            break;
+
+        case QtCriticalMsg: // or QtSystemMsg which has the same int value
+            if (minLevel==QtDebugMsg ||
+                #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+                    minLevel==QtInfoMsg ||
+                #endif
+                minLevel==QtWarningMsg ||
+                minLevel==QtCriticalMsg)
+            {
+                toPrint=true;
+            }
+            break;
+
+        case QtFatalMsg:
+            toPrint=true;
+            break;
+
+        default: // For additional type that might get introduced in future
+            toPrint=true;
+    }
+
 	mutex.lock();
 	
 	// If the buffer is enabled, write the message into it
@@ -168,18 +226,19 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
 			buffers.setLocalData(new QList<LogMessage*>());
 		}
 		QList<LogMessage*>* buffer=buffers.localData();
+
         // Append the decorated log message to the buffer
 		LogMessage* logMessage=new LogMessage(type,message,logVars.localData(),file,function,line);
 		buffer->append(logMessage);
+
 		// Delete oldest message if the buffer became too large
 		if (buffer->size()>bufferSize)
 		{
 			delete buffer->takeFirst();
 		}
-		// If the type of the message is high enough, print the whole buffer
-        // With one Exception: INFO messages are treated like DEBUG messages here
-        QtMsgType level=(type==QtInfoMsg?QtDebugMsg:type);
-        if (level>=minLevel)
+
+        // Print the whole buffer if the type is high enough
+        if (toPrint)
         {
             // Print the whole buffer content
 			while (!buffer->isEmpty())
@@ -194,7 +253,7 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
 	// Buffer is disabled, print the message if the type is high enough
     else
     {
-		if (type>=minLevel)
+        if (toPrint)
 		{
 			LogMessage logMessage(type,message,logVars.localData(),file,function,line);
 			write(&logMessage);

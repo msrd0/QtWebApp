@@ -493,8 +493,9 @@ void HttpRequest::parseMultiPartFile()
 						qDebug("HttpRequest: set parameter %s=%s",fieldName.data(),fileName.data());
 #endif
 						uploadedFiles.insert(fieldName,uploadedFile);
+						long int fileSize = (long int) uploadedFile->size();
 #ifdef CMAKE_DEBUG
-						qDebug("HttpRequest: uploaded file size is %i",(int) uploadedFile->size());
+						qDebug("HttpRequest: uploaded file size is %li", fileSize);
 #endif
 					}
 					else

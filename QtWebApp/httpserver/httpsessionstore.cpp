@@ -105,6 +105,7 @@ void HttpSessionStore::sessionTimerEvent()
         if (now-lastAccess>cfg.expirationTime)
         {
             qDebug("HttpSessionStore: session %s expired",session.getId().data());
+            emit sessionDeleted(session.getId());
             sessions.erase(prev);
         }
     }
@@ -116,6 +117,7 @@ void HttpSessionStore::sessionTimerEvent()
 void HttpSessionStore::removeSession(HttpSession session)
 {
     mutex.lock();
+    emit sessionDeleted(session.getId());
     sessions.remove(session.getId());
     mutex.unlock();
 }

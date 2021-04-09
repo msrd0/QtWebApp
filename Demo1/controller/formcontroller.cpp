@@ -13,7 +13,7 @@ FormController::FormController()
 void FormController::service(HttpRequest& request, HttpResponse& response)
 {
 
-    response.setHeader("Content-Type", "text/html; charset=ISO-8859-1");
+    response.setHeader("Content-Type", "text/html; charset=UTF-8");
 
     if (request.getParameter("action")=="show")
     {
