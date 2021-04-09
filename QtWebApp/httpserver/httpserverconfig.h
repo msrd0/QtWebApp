@@ -137,4 +137,4 @@ namespace qtwebapp {
 		QString fileName;
 	};
 
-}
+} // namespace qtwebapp

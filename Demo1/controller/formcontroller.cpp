@@ -9,8 +9,7 @@ using namespace qtwebapp;
 
 FormController::FormController() {}
 
-void
-FormController::service(HttpRequest &request, HttpResponse &response) {
+void FormController::service(HttpRequest &request, HttpResponse &response) {
 
 	response.setHeader("Content-Type", "text/html; charset=UTF-8");
 

@@ -10,9 +10,7 @@
 
 using namespace qtwebapp;
 
-HttpSessionStore::HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject *parent)
-  : QObject(parent)
-  , cfg(cfg) {
+HttpSessionStore::HttpSessionStore(const HttpSessionStoreConfig &cfg, QObject *parent) : QObject(parent), cfg(cfg) {
 	connect(&cleanupTimer, SIGNAL(timeout()), this, SLOT(sessionTimerEvent()));
 	cleanupTimer.start(60000);
 #ifdef CMAKE_DEBUG
@@ -24,8 +22,7 @@ HttpSessionStore::~HttpSessionStore() {
 	cleanupTimer.stop();
 }
 
-QByteArray
-HttpSessionStore::getSessionId(HttpRequest &request, HttpResponse &response) {
+QByteArray HttpSessionStore::getSessionId(HttpRequest &request, HttpResponse &response) {
 	// The session ID in the response has priority because this one will be used in the next request.
 	mutex.lock();
 	// Get the session ID from the response cookie
@@ -45,8 +42,7 @@ HttpSessionStore::getSessionId(HttpRequest &request, HttpResponse &response) {
 	return sessionId;
 }
 
-HttpSession
-HttpSessionStore::getSession(HttpRequest &request, HttpResponse &response, bool allowCreate) {
+HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &response, bool allowCreate) {
 	QByteArray sessionId = getSessionId(request, response);
 	mutex.lock();
 	if (!sessionId.isEmpty()) {
@@ -54,12 +50,8 @@ HttpSessionStore::getSession(HttpRequest &request, HttpResponse &response, bool 
 		if (!session.isNull()) {
 			mutex.unlock();
 			// Refresh the session cookie
-			response.setCookie(HttpCookie(cfg.cookieName,
-			                              session.getId(),
-			                              cfg.expirationTime / 1000,
-			                              cfg.cookiePath,
-			                              cfg.cookieComment,
-			                              cfg.cookieDomain));
+			response.setCookie(HttpCookie(cfg.cookieName, session.getId(), cfg.expirationTime / 1000, cfg.cookiePath,
+			                              cfg.cookieComment, cfg.cookieDomain));
 			session.setLastAccess();
 			return session;
 		}
@@ -71,12 +63,8 @@ HttpSessionStore::getSession(HttpRequest &request, HttpResponse &response, bool 
 		qDebug("HttpSessionStore: create new session with ID %s", session.getId().data());
 #endif
 		sessions.insert(session.getId(), session);
-		response.setCookie(HttpCookie(cfg.cookieName,
-		                              session.getId(),
-		                              cfg.expirationTime / 1000,
-		                              cfg.cookiePath,
-		                              cfg.cookieComment,
-		                              cfg.cookieDomain));
+		response.setCookie(HttpCookie(cfg.cookieName, session.getId(), cfg.expirationTime / 1000, cfg.cookiePath,
+		                              cfg.cookieComment, cfg.cookieDomain));
 		mutex.unlock();
 		return session;
 	}
@@ -85,8 +73,7 @@ HttpSessionStore::getSession(HttpRequest &request, HttpResponse &response, bool 
 	return HttpSession();
 }
 
-HttpSession
-HttpSessionStore::getSession(const QByteArray id) {
+HttpSession HttpSessionStore::getSession(const QByteArray id) {
 	mutex.lock();
 	HttpSession session = sessions.value(id);
 	mutex.unlock();
@@ -94,8 +81,7 @@ HttpSessionStore::getSession(const QByteArray id) {
 	return session;
 }
 
-void
-HttpSessionStore::sessionTimerEvent() {
+void HttpSessionStore::sessionTimerEvent() {
 	mutex.lock();
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
 	QMap<QByteArray, HttpSession>::iterator i = sessions.begin();
@@ -114,8 +100,7 @@ HttpSessionStore::sessionTimerEvent() {
 }
 
 /** Delete a session */
-void
-HttpSessionStore::removeSession(HttpSession session) {
+void HttpSessionStore::removeSession(HttpSession session) {
 	mutex.lock();
 	emit sessionDeleted(session.getId());
 	sessions.remove(session.getId());

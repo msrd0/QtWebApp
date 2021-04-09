@@ -13,8 +13,7 @@ using namespace qtwebapp;
 
 TemplateController::TemplateController() {}
 
-void
-TemplateController::service(HttpRequest &request, HttpResponse &response) {
+void TemplateController::service(HttpRequest &request, HttpResponse &response) {
 	response.setHeader("Content-Type", "text/html; charset=UTF-8");
 
 	Template t = templateCache->getTemplate("demo", request.getHeader("Accept-Language"));

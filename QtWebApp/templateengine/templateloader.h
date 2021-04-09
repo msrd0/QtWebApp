@@ -81,4 +81,4 @@ namespace qtwebapp {
 		QTextCodec *textCodec;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

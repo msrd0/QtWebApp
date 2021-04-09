@@ -13,7 +13,7 @@
 using namespace qtwebapp;
 
 StaticFileController::StaticFileController(const StaticFileControllerConfig &cfg, QObject *parent)
-  : HttpRequestHandler(parent) {
+    : HttpRequestHandler(parent) {
 	maxAge = cfg.maxAge;
 	encoding = cfg.encoding;
 	docroot = cfg.path;
@@ -36,8 +36,7 @@ StaticFileController::StaticFileController(const StaticFileControllerConfig &cfg
 #endif
 }
 
-void
-StaticFileController::service(HttpRequest &request, HttpResponse &response) {
+void StaticFileController::service(HttpRequest &request, HttpResponse &response) {
 	QByteArray path = request.getPath();
 	// Check whether the browsers cache is up to date
 	if (!request.getHeader("If-None-Match").isEmpty() &&
@@ -121,8 +120,7 @@ StaticFileController::service(HttpRequest &request, HttpResponse &response) {
 	}
 }
 
-void
-StaticFileController::setContentType(const QString &fileName, HttpResponse &response) const {
+void StaticFileController::setContentType(const QString &fileName, HttpResponse &response) const {
 	if (fileName.endsWith(".png")) {
 		response.setHeader("Content-Type", "image/png");
 	} else if (fileName.endsWith(".jpg")) {

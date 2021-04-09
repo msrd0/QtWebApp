@@ -23,30 +23,20 @@ QThreadStorage<QHash<QString, QString> *> Logger::logVars;
 QMutex Logger::mutex;
 
 Logger::Logger(QObject *parent)
-  : QObject(parent)
-  , msgFormat("{timestamp} {type} {msg}")
-  , timestampFormat("dd.MM.yyyy hh:mm:ss.zzz")
-  , minLevel(QtDebugMsg)
-  , bufferSize(0) {}
+    : QObject(parent), msgFormat("{timestamp} {type} {msg}"), timestampFormat("dd.MM.yyyy hh:mm:ss.zzz"),
+      minLevel(QtDebugMsg), bufferSize(0) {}
 
-Logger::Logger(const QString msgFormat,
-               const QString timestampFormat,
-               const QtMsgType minLevel,
-               const int bufferSize,
+Logger::Logger(const QString msgFormat, const QString timestampFormat, const QtMsgType minLevel, const int bufferSize,
                QObject *parent)
-  : QObject(parent) {
+    : QObject(parent) {
 	this->msgFormat = msgFormat;
 	this->timestampFormat = timestampFormat;
 	this->minLevel = minLevel;
 	this->bufferSize = bufferSize;
 }
 
-void
-Logger::msgHandler(const QtMsgType type,
-                   const QString &message,
-                   const QString &file,
-                   const QString &function,
-                   const int line) {
+void Logger::msgHandler(const QtMsgType type, const QString &message, const QString &file, const QString &function,
+                        const int line) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 	static QMutex recursiveMutex(QMutex::Recursive);
 #else
@@ -76,8 +66,7 @@ Logger::msgHandler(const QtMsgType type,
 	recursiveMutex.unlock();
 }
 
-void
-Logger::msgHandler5(const QtMsgType type, const QMessageLogContext &context, const QString &message) {
+void Logger::msgHandler5(const QtMsgType type, const QMessageLogContext &context, const QString &message) {
 	(void)(context); // suppress "unused parameter" warning
 	msgHandler(type, message, context.file, context.function, context.line);
 }
@@ -89,20 +78,17 @@ Logger::~Logger() {
 	}
 }
 
-void
-Logger::write(const LogMessage *logMessage) {
+void Logger::write(const LogMessage *logMessage) {
 	fputs(qPrintable(logMessage->toString(msgFormat, timestampFormat)), stderr);
 	fflush(stderr);
 }
 
-void
-Logger::installMsgHandler() {
+void Logger::installMsgHandler() {
 	defaultLogger = this;
 	qInstallMessageHandler(msgHandler5);
 }
 
-void
-Logger::set(const QString &name, const QString &value) {
+void Logger::set(const QString &name, const QString &value) {
 	mutex.lock();
 	if (!logVars.hasLocalData()) {
 		logVars.setLocalData(new QHash<QString, QString>);
@@ -111,8 +97,7 @@ Logger::set(const QString &name, const QString &value) {
 	mutex.unlock();
 }
 
-void
-Logger::clear(const bool buffer, const bool variables) {
+void Logger::clear(const bool buffer, const bool variables) {
 	mutex.lock();
 	if (buffer && buffers.hasLocalData()) {
 		QList<LogMessage *> *buffer = buffers.localData();
@@ -127,8 +112,8 @@ Logger::clear(const bool buffer, const bool variables) {
 	mutex.unlock();
 }
 
-void
-Logger::log(const QtMsgType type, const QString &message, const QString &file, const QString &function, const int line) {
+void Logger::log(const QtMsgType type, const QString &message, const QString &file, const QString &function,
+                 const int line) {
 	// Check if the type of the message reached the configured minLevel in the order
 	// DEBUG, INFO, WARNING, CRITICAL, FATAL
 	// Since Qt 5.5: INFO messages are between DEBUG and WARNING

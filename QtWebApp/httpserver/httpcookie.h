@@ -35,15 +35,9 @@ namespace qtwebapp {
 		  @param sameSite Declare if the cookie can only be read by the same site, which is a stronger
 		         restriction than the domain. Allowed values: "Lax" and "Strict".
 		*/
-		HttpCookie(const QByteArray name,
-		           const QByteArray value,
-		           const int maxAge,
-		           const QByteArray path = "/",
-		           const QByteArray comment = QByteArray(),
-		           const QByteArray domain = QByteArray(),
-		           const bool secure = false,
-		           const bool httpOnly = false,
-		           const QByteArray sameSite = QByteArray());
+		HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path = "/",
+		           const QByteArray comment = QByteArray(), const QByteArray domain = QByteArray(),
+		           const bool secure = false, const bool httpOnly = false, const QByteArray sameSite = QByteArray());
 
 		/**
 		  Create a cookie from a string.
@@ -133,4 +127,4 @@ namespace qtwebapp {
 		int version;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

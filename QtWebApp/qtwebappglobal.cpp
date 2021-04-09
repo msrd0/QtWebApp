@@ -1,12 +1,10 @@
 #include "qtwebappglobal.h"
 
-const char *
-qtwebapp::getQtWebAppLibVersion() {
+const char *qtwebapp::getQtWebAppLibVersion() {
 	return QTWEBAPP_VERSION_STR;
 }
 
-int
-qtwebapp::parseNum(const QVariant &v, int base) {
+int qtwebapp::parseNum(const QVariant &v, int base) {
 	QString str = v.toString();
 	int mul = 1;
 	if (str.endsWith('K'))

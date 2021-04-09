@@ -11,8 +11,7 @@
 
 LoginController::LoginController() {}
 
-void
-LoginController::service(HttpRequest &request, HttpResponse &response) {
+void LoginController::service(HttpRequest &request, HttpResponse &response) {
 	QByteArray auth = request.getHeader("Authorization");
 	if (auth.isNull()) {
 		qInfo("User is not logged in");

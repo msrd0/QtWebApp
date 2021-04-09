@@ -6,8 +6,7 @@
 
 using namespace qtwebapp;
 
-TemplateCache::TemplateCache(const TemplateEngineConfig &cfg, QObject *parent)
-  : TemplateLoader(cfg, parent) {
+TemplateCache::TemplateCache(const TemplateEngineConfig &cfg, QObject *parent) : TemplateLoader(cfg, parent) {
 	cache.setMaxCost(cfg.cacheSize);
 	cacheTimeout = cfg.cacheTime;
 	long int cacheMaxCost = (long int)cache.maxCost();
@@ -16,8 +15,7 @@ TemplateCache::TemplateCache(const TemplateEngineConfig &cfg, QObject *parent)
 #endif
 }
 
-QString
-TemplateCache::tryFile(const QString &localizedName) {
+QString TemplateCache::tryFile(const QString &localizedName) {
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
 	mutex.lock();
 	// search in cache

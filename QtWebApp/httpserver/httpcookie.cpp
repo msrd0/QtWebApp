@@ -13,14 +13,8 @@ HttpCookie::HttpCookie() {
 	secure = false;
 }
 
-HttpCookie::HttpCookie(const QByteArray name,
-                       const QByteArray value,
-                       const int maxAge,
-                       const QByteArray path,
-                       const QByteArray comment,
-                       const QByteArray domain,
-                       const bool secure,
-                       const bool httpOnly,
+HttpCookie::HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path,
+                       const QByteArray comment, const QByteArray domain, const bool secure, const bool httpOnly,
                        const QByteArray sameSite) {
 	this->name = name;
 	this->value = value;
@@ -80,8 +74,7 @@ HttpCookie::HttpCookie(const QByteArray source) {
 	}
 }
 
-QByteArray
-HttpCookie::toByteArray() const {
+QByteArray HttpCookie::toByteArray() const {
 	QByteArray buffer(name);
 	buffer.append('=');
 	buffer.append(value);
@@ -116,103 +109,83 @@ HttpCookie::toByteArray() const {
 	return buffer;
 }
 
-void
-HttpCookie::setName(const QByteArray name) {
+void HttpCookie::setName(const QByteArray name) {
 	this->name = name;
 }
 
-void
-HttpCookie::setValue(const QByteArray value) {
+void HttpCookie::setValue(const QByteArray value) {
 	this->value = value;
 }
 
-void
-HttpCookie::setComment(const QByteArray comment) {
+void HttpCookie::setComment(const QByteArray comment) {
 	this->comment = comment;
 }
 
-void
-HttpCookie::setDomain(const QByteArray domain) {
+void HttpCookie::setDomain(const QByteArray domain) {
 	this->domain = domain;
 }
 
-void
-HttpCookie::setMaxAge(const int maxAge) {
+void HttpCookie::setMaxAge(const int maxAge) {
 	this->maxAge = maxAge;
 }
 
-void
-HttpCookie::setPath(const QByteArray path) {
+void HttpCookie::setPath(const QByteArray path) {
 	this->path = path;
 }
 
-void
-HttpCookie::setSecure(const bool secure) {
+void HttpCookie::setSecure(const bool secure) {
 	this->secure = secure;
 }
 
-void
-HttpCookie::setHttpOnly(const bool httpOnly) {
+void HttpCookie::setHttpOnly(const bool httpOnly) {
 	this->httpOnly = httpOnly;
 }
 
-void
-HttpCookie::setSameSite(const QByteArray sameSite) {
+void HttpCookie::setSameSite(const QByteArray sameSite) {
 	this->sameSite = sameSite;
 }
 
-QByteArray
-HttpCookie::getName() const {
+QByteArray HttpCookie::getName() const {
 	return name;
 }
 
-QByteArray
-HttpCookie::getValue() const {
+QByteArray HttpCookie::getValue() const {
 	return value;
 }
 
-QByteArray
-HttpCookie::getComment() const {
+QByteArray HttpCookie::getComment() const {
 	return comment;
 }
 
-QByteArray
-HttpCookie::getDomain() const {
+QByteArray HttpCookie::getDomain() const {
 	return domain;
 }
 
-int
-HttpCookie::getMaxAge() const {
+int HttpCookie::getMaxAge() const {
 	return maxAge;
 }
 
-QByteArray
-HttpCookie::getPath() const {
+QByteArray HttpCookie::getPath() const {
 	return path;
 }
 
-bool
-HttpCookie::getSecure() const {
+bool HttpCookie::getSecure() const {
 	return secure;
 }
 
-bool
-HttpCookie::getHttpOnly() const {
+bool HttpCookie::getHttpOnly() const {
 	return httpOnly;
 }
 
-QByteArray
-HttpCookie::getSameSite() const {
+QByteArray HttpCookie::getSameSite() const {
 	return sameSite;
 }
 
-int
-HttpCookie::getVersion() const {
+int HttpCookie::getVersion() const {
 	return version;
 }
 
-QList<QByteArray>
-HttpCookie::splitCSV(const QByteArray source) {
+QList<QByteArray> HttpCookie::splitCSV(const QByteArray source) {
 	bool inString = false;
 	QList<QByteArray> list;
 	QByteArray buffer;

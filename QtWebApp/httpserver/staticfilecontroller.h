@@ -87,4 +87,4 @@ namespace qtwebapp {
 		void setContentType(const QString &fileName, HttpResponse &response) const;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

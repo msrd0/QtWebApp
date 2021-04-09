@@ -15,8 +15,7 @@
 
 using namespace qtwebapp;
 
-TemplateLoader::TemplateLoader(const TemplateEngineConfig &cfg, QObject *parent)
-  : QObject(parent) {
+TemplateLoader::TemplateLoader(const TemplateEngineConfig &cfg, QObject *parent) : QObject(parent) {
 	templatePath = cfg.path;
 	// Convert relative path to absolute, based on the directory of the config file.
 	if (!cfg.fileName.isEmpty() && QDir::isRelativePath(templatePath)) {
@@ -37,8 +36,7 @@ TemplateLoader::TemplateLoader(const TemplateEngineConfig &cfg, QObject *parent)
 
 TemplateLoader::~TemplateLoader() {}
 
-QString
-TemplateLoader::tryFile(const QString &localizedName) {
+QString TemplateLoader::tryFile(const QString &localizedName) {
 	QString fileName = templatePath + "/" + localizedName + fileNameSuffix;
 #ifdef CMAKE_DEBUG
 	qDebug("TemplateCache: trying file %s", qPrintable(fileName));
@@ -58,8 +56,7 @@ TemplateLoader::tryFile(const QString &localizedName) {
 	return "";
 }
 
-Template
-TemplateLoader::getTemplate(const QString &templateName, const QString &locales) {
+Template TemplateLoader::getTemplate(const QString &templateName, const QString &locales) {
 	QSet<QString> tried; // used to suppress duplicate attempts
 	QStringList locs = locales.split(',',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)

@@ -31,8 +31,7 @@ namespace qtwebapp {
 		 * Constructor.
 		 * @param parent Parent object.
 		 */
-		HttpRequestHandler(QObject *parent = nullptr)
-		  : QObject(parent) {}
+		HttpRequestHandler(QObject *parent = nullptr) : QObject(parent) {}
 
 		/**
 		  Generate a response for an incoming HTTP request.
@@ -43,4 +42,4 @@ namespace qtwebapp {
 		virtual void service(HttpRequest &request, HttpResponse &response) = 0;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

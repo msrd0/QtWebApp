@@ -16,36 +16,30 @@ HttpResponse::HttpResponse(QTcpSocket *socket) {
 	chunkedMode = false;
 }
 
-void
-HttpResponse::setHeader(QByteArray name, QByteArray value) {
+void HttpResponse::setHeader(QByteArray name, QByteArray value) {
 	Q_ASSERT(sentHeaders == false);
 	headers.insert(name, value);
 }
 
-void
-HttpResponse::setHeader(QByteArray name, int value) {
+void HttpResponse::setHeader(QByteArray name, int value) {
 	Q_ASSERT(sentHeaders == false);
 	headers.insert(name, QByteArray::number(value));
 }
 
-QMap<QByteArray, QByteArray> &
-HttpResponse::getHeaders() {
+QMap<QByteArray, QByteArray> &HttpResponse::getHeaders() {
 	return headers;
 }
 
-void
-HttpResponse::setStatus(int statusCode, QByteArray description) {
+void HttpResponse::setStatus(int statusCode, QByteArray description) {
 	this->statusCode = statusCode;
 	statusText = description;
 }
 
-int
-HttpResponse::getStatusCode() const {
+int HttpResponse::getStatusCode() const {
 	return this->statusCode;
 }
 
-void
-HttpResponse::writeHeaders() {
+void HttpResponse::writeHeaders() {
 	Q_ASSERT(sentHeaders == false);
 	QByteArray buffer;
 	buffer.append("HTTP/1.1 ");
@@ -70,8 +64,7 @@ HttpResponse::writeHeaders() {
 	sentHeaders = true;
 }
 
-bool
-HttpResponse::writeToSocket(QByteArray data) {
+bool HttpResponse::writeToSocket(QByteArray data) {
 	int remaining = data.size();
 	char *ptr = data.data();
 	while (socket->isOpen() && remaining > 0) {
@@ -90,8 +83,7 @@ HttpResponse::writeToSocket(QByteArray data) {
 	return true;
 }
 
-void
-HttpResponse::write(QByteArray data, bool lastPart) {
+void HttpResponse::write(QByteArray data, bool lastPart) {
 	Q_ASSERT(sentLastPart == false);
 
 	// Send HTTP headers, if not already done (that happens only on the first call to write())
@@ -141,37 +133,31 @@ HttpResponse::write(QByteArray data, bool lastPart) {
 	}
 }
 
-bool
-HttpResponse::hasSentLastPart() const {
+bool HttpResponse::hasSentLastPart() const {
 	return sentLastPart;
 }
 
-void
-HttpResponse::setCookie(const HttpCookie &cookie) {
+void HttpResponse::setCookie(const HttpCookie &cookie) {
 	Q_ASSERT(sentHeaders == false);
 	if (!cookie.getName().isEmpty()) {
 		cookies.insert(cookie.getName(), cookie);
 	}
 }
 
-QMap<QByteArray, HttpCookie> &
-HttpResponse::getCookies() {
+QMap<QByteArray, HttpCookie> &HttpResponse::getCookies() {
 	return cookies;
 }
 
-void
-HttpResponse::redirect(const QByteArray &url) {
+void HttpResponse::redirect(const QByteArray &url) {
 	setStatus(303, "See Other");
 	setHeader("Location", url);
 	write("Redirect", true);
 }
 
-void
-HttpResponse::flush() {
+void HttpResponse::flush() {
 	socket->flush();
 }
 
-bool
-HttpResponse::isConnected() const {
+bool HttpResponse::isConnected() const {
 	return socket->isOpen();
 }

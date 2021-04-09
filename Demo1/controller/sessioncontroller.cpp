@@ -14,8 +14,7 @@ using namespace qtwebapp;
 
 SessionController::SessionController() {}
 
-void
-SessionController::service(HttpRequest &request, HttpResponse &response) {
+void SessionController::service(HttpRequest &request, HttpResponse &response) {
 
 	response.setHeader("Content-Type", "text/html; charset=UTF-8");
 

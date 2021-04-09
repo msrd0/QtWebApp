@@ -13,8 +13,7 @@
 using namespace qtwebapp;
 
 HttpListener::HttpListener(const HttpServerConfig &cfg, HttpRequestHandler *requestHandler, QObject *parent)
-  : QTcpServer(parent)
-  , cfg(cfg) {
+    : QTcpServer(parent), cfg(cfg) {
 	Q_ASSERT(requestHandler != nullptr);
 	pool = nullptr;
 	this->requestHandler = requestHandler;
@@ -31,8 +30,7 @@ HttpListener::~HttpListener() {
 #endif
 }
 
-void
-HttpListener::listen() {
+void HttpListener::listen() {
 	if (!pool) {
 		pool = new HttpConnectionHandlerPool(cfg, requestHandler);
 	}
@@ -44,8 +42,7 @@ HttpListener::listen() {
 	}
 }
 
-void
-HttpListener::close() {
+void HttpListener::close() {
 	QTcpServer::close();
 #ifdef CMAKE_DEBUG
 	qDebug("HttpListener: closed");
@@ -56,8 +53,7 @@ HttpListener::close() {
 	}
 }
 
-void
-HttpListener::incomingConnection(qintptr socketDescriptor) {
+void HttpListener::incomingConnection(qintptr socketDescriptor) {
 #ifdef SUPERVERBOSE
 	qDebug("HttpListener: New connection");
 #endif

@@ -17,8 +17,7 @@
 
 using namespace qtwebapp;
 
-void
-FileLogger::refreshSettings() {
+void FileLogger::refreshSettings() {
 	mutex.lock();
 	// Save old file name for later comparision with new settings
 	QString oldFileName = fileName;
@@ -65,8 +64,7 @@ FileLogger::refreshSettings() {
 	mutex.unlock();
 }
 
-FileLogger::FileLogger(QSettings *settings, const int refreshInterval, QObject *parent)
-  : Logger(parent) {
+FileLogger::FileLogger(QSettings *settings, const int refreshInterval, QObject *parent) : Logger(parent) {
 	Q_ASSERT(settings != nullptr);
 	Q_ASSERT(refreshInterval >= 0);
 	this->settings = settings;
@@ -82,8 +80,7 @@ FileLogger::~FileLogger() {
 	close();
 }
 
-void
-FileLogger::write(const LogMessage *logMessage) {
+void FileLogger::write(const LogMessage *logMessage) {
 	// Try to write to the file
 	if (file) {
 
@@ -109,8 +106,7 @@ FileLogger::write(const LogMessage *logMessage) {
 	}
 }
 
-void
-FileLogger::open() {
+void FileLogger::open() {
 	if (fileName.isEmpty()) {
 		qWarning("Name of logFile is empty");
 	} else {
@@ -122,8 +118,7 @@ FileLogger::open() {
 	}
 }
 
-void
-FileLogger::close() {
+void FileLogger::close() {
 	if (file) {
 		file->close();
 		delete file;
@@ -131,8 +126,7 @@ FileLogger::close() {
 	}
 }
 
-void
-FileLogger::rotate() {
+void FileLogger::rotate() {
 	// count current number of existing backup files
 	int count = 0;
 	forever {
@@ -159,8 +153,7 @@ FileLogger::rotate() {
 	QFile::rename(fileName, fileName + ".1");
 }
 
-void
-FileLogger::timerEvent(QTimerEvent *event) {
+void FileLogger::timerEvent(QTimerEvent *event) {
 	if (!event) {
 		return;
 	} else if (event->timerId() == refreshTimer.timerId()) {

@@ -234,4 +234,4 @@ namespace qtwebapp {
 		QString tmpDir;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

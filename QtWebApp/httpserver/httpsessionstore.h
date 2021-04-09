@@ -105,4 +105,4 @@ namespace qtwebapp {
 		void sessionDeleted(const QByteArray &sessionId);
 	};
 
-} // end of namespace
+} // namespace qtwebapp

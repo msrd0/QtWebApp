@@ -9,8 +9,7 @@ using namespace qtwebapp;
 
 FileUploadController::FileUploadController() {}
 
-void
-FileUploadController::service(HttpRequest &request, HttpResponse &response) {
+void FileUploadController::service(HttpRequest &request, HttpResponse &response) {
 
 	if (request.getParameter("action") == "show") {
 		response.setHeader("Content-Type", "image/jpeg");

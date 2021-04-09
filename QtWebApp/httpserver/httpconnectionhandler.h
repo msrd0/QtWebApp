@@ -51,8 +51,7 @@ namespace qtwebapp {
 		  @param requestHandler Handler that will process each incoming HTTP request
 		  @param sslConfiguration SSL (HTTPS) will be used if not NULL
 		*/
-		HttpConnectionHandler(const HttpServerConfig &cfg,
-		                      HttpRequestHandler *requestHandler,
+		HttpConnectionHandler(const HttpServerConfig &cfg, HttpRequestHandler *requestHandler,
 		                      const QSslConfiguration *sslConfiguration = nullptr);
 
 		/** Destructor */
@@ -115,4 +114,4 @@ namespace qtwebapp {
 		void thread_done();
 	};
 
-} // end of namespace
+} // namespace qtwebapp

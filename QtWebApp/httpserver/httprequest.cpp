@@ -22,8 +22,7 @@ HttpRequest::HttpRequest(const HttpServerConfig &cfg) {
 	tmpDir = cfg.tmpDir;
 }
 
-void
-HttpRequest::readRequest(QTcpSocket *socket) {
+void HttpRequest::readRequest(QTcpSocket *socket) {
 #ifdef SUPERVERBOSE
 	qDebug("HttpRequest: read request");
 #endif
@@ -56,8 +55,7 @@ HttpRequest::readRequest(QTcpSocket *socket) {
 	}
 }
 
-void
-HttpRequest::readHeader(QTcpSocket *socket) {
+void HttpRequest::readHeader(QTcpSocket *socket) {
 #ifdef SUPERVERBOSE
 	qDebug("HttpRequest: read header");
 #endif
@@ -131,8 +129,7 @@ HttpRequest::readHeader(QTcpSocket *socket) {
 	}
 }
 
-void
-HttpRequest::readBody(QTcpSocket *socket) {
+void HttpRequest::readBody(QTcpSocket *socket) {
 	Q_ASSERT(expectedBodySize != 0);
 	if (boundary.isEmpty()) {
 		// normal body, no multipart
@@ -183,8 +180,7 @@ HttpRequest::readBody(QTcpSocket *socket) {
 	}
 }
 
-void
-HttpRequest::decodeRequestParams() {
+void HttpRequest::decodeRequestParams() {
 #ifdef SUPERVERBOSE
 	qDebug("HttpRequest: extract and decode request parameters");
 #endif
@@ -220,8 +216,7 @@ HttpRequest::decodeRequestParams() {
 	}
 }
 
-void
-HttpRequest::extractCookies() {
+void HttpRequest::extractCookies() {
 #ifdef SUPERVERBOSE
 	qDebug("HttpRequest: extract cookies");
 #endif
@@ -247,8 +242,7 @@ HttpRequest::extractCookies() {
 	headers.remove("cookie");
 }
 
-void
-HttpRequest::readFromSocket(QTcpSocket *socket) {
+void HttpRequest::readFromSocket(QTcpSocket *socket) {
 	Q_ASSERT(status != complete);
 	if (status == waitForRequest) {
 		readRequest(socket);
@@ -269,68 +263,55 @@ HttpRequest::readFromSocket(QTcpSocket *socket) {
 	}
 }
 
-HttpRequest::RequestStatus
-HttpRequest::getStatus() const {
+HttpRequest::RequestStatus HttpRequest::getStatus() const {
 	return status;
 }
 
-QByteArray
-HttpRequest::getMethod() const {
+QByteArray HttpRequest::getMethod() const {
 	return method;
 }
 
-QByteArray
-HttpRequest::getPath() const {
+QByteArray HttpRequest::getPath() const {
 	return urlDecode(path);
 }
 
-const QByteArray &
-HttpRequest::getRawPath() const {
+const QByteArray &HttpRequest::getRawPath() const {
 	return path;
 }
 
-QByteArray
-HttpRequest::getVersion() const {
+QByteArray HttpRequest::getVersion() const {
 	return version;
 }
 
-QByteArray
-HttpRequest::getHeader(const QByteArray &name) const {
+QByteArray HttpRequest::getHeader(const QByteArray &name) const {
 	return headers.value(name.toLower());
 }
 
-QList<QByteArray>
-HttpRequest::getHeaders(const QByteArray &name) const {
+QList<QByteArray> HttpRequest::getHeaders(const QByteArray &name) const {
 	return headers.values(name.toLower());
 }
 
-QMultiMap<QByteArray, QByteArray>
-HttpRequest::getHeaderMap() const {
+QMultiMap<QByteArray, QByteArray> HttpRequest::getHeaderMap() const {
 	return headers;
 }
 
-QByteArray
-HttpRequest::getParameter(const QByteArray &name) const {
+QByteArray HttpRequest::getParameter(const QByteArray &name) const {
 	return parameters.value(name);
 }
 
-QList<QByteArray>
-HttpRequest::getParameters(const QByteArray &name) const {
+QList<QByteArray> HttpRequest::getParameters(const QByteArray &name) const {
 	return parameters.values(name);
 }
 
-QMultiMap<QByteArray, QByteArray>
-HttpRequest::getParameterMap() const {
+QMultiMap<QByteArray, QByteArray> HttpRequest::getParameterMap() const {
 	return parameters;
 }
 
-QByteArray
-HttpRequest::getBody() const {
+QByteArray HttpRequest::getBody() const {
 	return bodyData;
 }
 
-QByteArray
-HttpRequest::urlDecode(const QByteArray source) {
+QByteArray HttpRequest::urlDecode(const QByteArray source) {
 	QByteArray buffer(source);
 	buffer.replace('+', ' ');
 	int percentChar = buffer.indexOf('%');
@@ -346,8 +327,7 @@ HttpRequest::urlDecode(const QByteArray source) {
 	return buffer;
 }
 
-void
-HttpRequest::parseMultiPartFile() {
+void HttpRequest::parseMultiPartFile() {
 #ifdef CMAKE_DEBUG
 	qDebug("HttpRequest: parsing multipart temp file");
 #endif
@@ -470,19 +450,16 @@ HttpRequest::~HttpRequest() {
 	}
 }
 
-QFile *
-HttpRequest::getUploadedFile(const QByteArray fieldName) const {
+QFile *HttpRequest::getUploadedFile(const QByteArray fieldName) const {
 	return uploadedFiles.value(fieldName);
 }
 
-QByteArray
-HttpRequest::getCookie(const QByteArray &name) const {
+QByteArray HttpRequest::getCookie(const QByteArray &name) const {
 	return cookies.value(name);
 }
 
 /** Get the map of cookies */
-QMap<QByteArray, QByteArray> &
-HttpRequest::getCookieMap() {
+QMap<QByteArray, QByteArray> &HttpRequest::getCookieMap() {
 	return cookies;
 }
 
@@ -491,7 +468,6 @@ HttpRequest::getCookieMap() {
   Note that multiple clients may have the same IP address, if they
   share an internet connection (which is very common).
  */
-QHostAddress
-HttpRequest::getPeerAddress() const {
+QHostAddress HttpRequest::getPeerAddress() const {
 	return peerAddress;
 }

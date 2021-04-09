@@ -124,4 +124,4 @@ namespace qtwebapp {
 		void refreshSettings();
 	};
 
-} // end of namespace
+} // namespace qtwebapp

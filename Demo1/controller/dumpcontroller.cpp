@@ -13,8 +13,7 @@ using namespace qtwebapp;
 
 DumpController::DumpController() {}
 
-void
-DumpController::service(HttpRequest &request, HttpResponse &response) {
+void DumpController::service(HttpRequest &request, HttpResponse &response) {
 
 	response.setHeader("Content-Type", "text/html; charset=UTF-8");
 	response.setCookie(HttpCookie("firstCookie", "hello", 600, QByteArray(), QByteArray(), QByteArray(), false, true));

@@ -161,4 +161,4 @@ namespace qtwebapp {
 		bool warnings;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

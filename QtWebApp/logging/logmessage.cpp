@@ -10,12 +10,8 @@
 
 using namespace qtwebapp;
 
-LogMessage::LogMessage(const QtMsgType type,
-                       const QString &message,
-                       const QHash<QString, QString> *logVars,
-                       const QString &file,
-                       const QString &function,
-                       const int line) {
+LogMessage::LogMessage(const QtMsgType type, const QString &message, const QHash<QString, QString> *logVars,
+                       const QString &file, const QString &function, const int line) {
 	this->type = type;
 	this->message = message;
 	this->file = file;
@@ -31,8 +27,7 @@ LogMessage::LogMessage(const QtMsgType type,
 	}
 }
 
-QString
-LogMessage::toString(const QString &msgFormat, const QString &timestampFormat) const {
+QString LogMessage::toString(const QString &msgFormat, const QString &timestampFormat) const {
 	QString decorated = msgFormat + "\n";
 	decorated.replace("{msg}", message);
 
@@ -80,7 +75,6 @@ LogMessage::toString(const QString &msgFormat, const QString &timestampFormat) c
 	return decorated;
 }
 
-QtMsgType
-LogMessage::getType() const {
+QtMsgType LogMessage::getType() const {
 	return type;
 }

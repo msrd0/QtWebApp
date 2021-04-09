@@ -155,4 +155,4 @@ namespace qtwebapp {
 		void writeHeaders();
 	};
 
-} // end of namespace
+} // namespace qtwebapp

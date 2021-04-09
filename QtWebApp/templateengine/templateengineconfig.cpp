@@ -12,8 +12,7 @@ TemplateEngineConfig::TemplateEngineConfig(QSettings *settings) {
 	parseSettings(*settings);
 }
 
-void
-TemplateEngineConfig::parseSettings(const QSettings &settings) {
+void TemplateEngineConfig::parseSettings(const QSettings &settings) {
 #ifdef Q_OS_WIN
 	if (settings.format() != QSettings::NativeFormat)
 #endif

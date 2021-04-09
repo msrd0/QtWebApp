@@ -41,9 +41,7 @@ namespace qtwebapp {
 		  @param refreshInterval Interval of checking for changed config settings in msec, or 0=disabled
 		  @param parent Parent object.
 		*/
-		DualFileLogger(QSettings *firstSettings,
-		               QSettings *secondSettings,
-		               const int refreshInterval = 10000,
+		DualFileLogger(QSettings *firstSettings, QSettings *secondSettings, const int refreshInterval = 10000,
 		               QObject *parent = nullptr);
 
 		/**
@@ -57,11 +55,8 @@ namespace qtwebapp {
 		  or __FUNCTION__)
 		  @see LogMessage for a description of the message decoration.
 		*/
-		virtual void log(const QtMsgType type,
-		                 const QString &message,
-		                 const QString &file = QString(),
-		                 const QString &function = QString(),
-		                 const int line = 0);
+		virtual void log(const QtMsgType type, const QString &message, const QString &file = QString(),
+		                 const QString &function = QString(), const int line = 0);
 
 		/**
 		  Clear the thread-local data of the current thread.
@@ -79,4 +74,4 @@ namespace qtwebapp {
 		FileLogger *secondLogger;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

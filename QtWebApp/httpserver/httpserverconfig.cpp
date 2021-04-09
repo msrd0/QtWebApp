@@ -12,8 +12,7 @@ HttpServerConfig::HttpServerConfig(QSettings *settings) {
 	parseSettings(*settings);
 }
 
-void
-HttpServerConfig::parseSettings(const QSettings &settings) {
+void HttpServerConfig::parseSettings(const QSettings &settings) {
 #ifdef Q_OS_WIN
 	if (settings.format() != QSettings::NativeFormat)
 #endif
@@ -47,8 +46,7 @@ HttpSessionStoreConfig::HttpSessionStoreConfig(QSettings *settings) {
 	parseSettings(*settings);
 }
 
-void
-HttpSessionStoreConfig::parseSettings(const QSettings &settings) {
+void HttpSessionStoreConfig::parseSettings(const QSettings &settings) {
 	expirationTime = parseNum(settings.value("expirationTime", expirationTime), 1000);
 	cookieName = settings.value("cookieName", cookieName).toByteArray();
 
@@ -69,8 +67,7 @@ StaticFileControllerConfig::StaticFileControllerConfig(QSettings *settings) {
 	parseSettings(*settings);
 }
 
-void
-StaticFileControllerConfig::parseSettings(const QSettings &settings) {
+void StaticFileControllerConfig::parseSettings(const QSettings &settings) {
 #ifdef Q_OS_WIN
 	if (settings.format() != QSettings::NativeFormat)
 #endif

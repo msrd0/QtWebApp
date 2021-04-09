@@ -9,11 +9,9 @@
 
 using namespace qtwebapp;
 
-HttpConnectionHandler::HttpConnectionHandler(const HttpServerConfig &cfg,
-                                             HttpRequestHandler *requestHandler,
+HttpConnectionHandler::HttpConnectionHandler(const HttpServerConfig &cfg, HttpRequestHandler *requestHandler,
                                              const QSslConfiguration *sslConfiguration)
-  : QObject()
-  , cfg(cfg) {
+    : QObject(), cfg(cfg) {
 	Q_ASSERT(requestHandler != nullptr);
 	this->requestHandler = requestHandler;
 	this->sslConfiguration = sslConfiguration;
@@ -43,8 +41,7 @@ HttpConnectionHandler::HttpConnectionHandler(const HttpServerConfig &cfg,
 #endif
 }
 
-void
-HttpConnectionHandler::thread_done() {
+void HttpConnectionHandler::thread_done() {
 	readTimer.stop();
 	socket->close();
 	delete socket;
@@ -60,8 +57,7 @@ HttpConnectionHandler::~HttpConnectionHandler() {
 #endif
 }
 
-void
-HttpConnectionHandler::createSocket() {
+void HttpConnectionHandler::createSocket() {
 	// If SSL is supported and configured, then create an instance of QSslSocket
 #ifndef QT_NO_OPENSSL
 	if (sslConfiguration) {
@@ -78,8 +74,7 @@ HttpConnectionHandler::createSocket() {
 	socket = new QTcpSocket();
 }
 
-void
-HttpConnectionHandler::handleConnection(qintptr socketDescriptor) {
+void HttpConnectionHandler::handleConnection(qintptr socketDescriptor) {
 #ifdef CMAKE_DEBUG
 	qDebug("HttpConnectionHandler (%p): handle new connection", static_cast<void *>(this));
 #endif
@@ -92,8 +87,7 @@ HttpConnectionHandler::handleConnection(qintptr socketDescriptor) {
 	socket->abort();
 
 	if (!socket->setSocketDescriptor(socketDescriptor)) {
-		qCritical("HttpConnectionHandler (%p): cannot initialize socket: %s",
-		          static_cast<void *>(this),
+		qCritical("HttpConnectionHandler (%p): cannot initialize socket: %s", static_cast<void *>(this),
 		          qPrintable(socket->errorString()));
 		return;
 	}
@@ -115,18 +109,15 @@ HttpConnectionHandler::handleConnection(qintptr socketDescriptor) {
 	currentRequest = nullptr;
 }
 
-bool
-HttpConnectionHandler::isBusy() {
+bool HttpConnectionHandler::isBusy() {
 	return busy;
 }
 
-void
-HttpConnectionHandler::setBusy() {
+void HttpConnectionHandler::setBusy() {
 	this->busy = true;
 }
 
-void
-HttpConnectionHandler::readTimeout() {
+void HttpConnectionHandler::readTimeout() {
 	qDebug("HttpConnectionHandler (%p): read timeout occured", static_cast<void *>(this));
 
 	socket->write("HTTP/1.1 408 request timeout\r\nConnection: close\r\n\r\n408 request timeout\r\n");
@@ -138,8 +129,7 @@ HttpConnectionHandler::readTimeout() {
 	currentRequest = nullptr;
 }
 
-void
-HttpConnectionHandler::disconnected() {
+void HttpConnectionHandler::disconnected() {
 #ifdef CMAKE_DEBUG
 	qDebug("HttpConnectionHandler (%p): disconnected", static_cast<void *>(this));
 #endif
@@ -148,8 +138,7 @@ HttpConnectionHandler::disconnected() {
 	busy = false;
 }
 
-void
-HttpConnectionHandler::read() {
+void HttpConnectionHandler::read() {
 	// The loop adds support for HTTP pipelinig
 	while (socket->bytesAvailable()) {
 #ifdef SUPERVERBOSE
@@ -237,8 +226,7 @@ HttpConnectionHandler::read() {
 					// connection to tell the HTTP client that the end of the response has been reached.
 					bool hasContentLength = response.getHeaders().contains("Content-Length");
 					if (!hasContentLength) {
-						bool hasChunkedMode = QString::compare(response.getHeaders().value("Transfer-Encoding"),
-						                                       "chunked",
+						bool hasChunkedMode = QString::compare(response.getHeaders().value("Transfer-Encoding"), "chunked",
 						                                       Qt::CaseInsensitive) == 0;
 						if (!hasChunkedMode) {
 							closeConnection = true;

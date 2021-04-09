@@ -112,4 +112,4 @@ namespace qtwebapp {
 		HttpSessionData *dataPtr;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

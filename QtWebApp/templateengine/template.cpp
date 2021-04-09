@@ -9,8 +9,7 @@
 
 using namespace qtwebapp;
 
-Template::Template(const QString &source, const QString &sourceName)
-  : QString(source) {
+Template::Template(const QString &source, const QString &sourceName) : QString(source) {
 	this->sourceName = sourceName;
 	this->warnings = false;
 }
@@ -30,8 +29,7 @@ Template::Template(QFile &file, const QTextCodec *textCodec) {
 	}
 }
 
-int
-Template::setVariable(const QString &name, const QString &value) {
+int Template::setVariable(const QString &name, const QString &value) {
 	int count = 0;
 	QString variable = "{" + name + "}";
 	int start = indexOf(variable);
@@ -46,8 +44,7 @@ Template::setVariable(const QString &name, const QString &value) {
 	return count;
 }
 
-int
-Template::setCondition(const QString &name, const bool value) {
+int Template::setCondition(const QString &name, const bool value) {
 	int count = 0;
 	QString startTag = QString("{if %1}").arg(name);
 	QString elseTag = QString("{else %1}").arg(name);
@@ -114,16 +111,13 @@ Template::setCondition(const QString &name, const bool value) {
 		}
 	}
 	if (count == 0 && warnings) {
-		qWarning("Template: missing condition %s or %s in %s",
-		         qPrintable(startTag),
-		         qPrintable(startTag2),
+		qWarning("Template: missing condition %s or %s in %s", qPrintable(startTag), qPrintable(startTag2),
 		         qPrintable(sourceName));
 	}
 	return count;
 }
 
-int
-Template::loop(const QString &name, const int repetitions) {
+int Template::loop(const QString &name, const int repetitions) {
 	Q_ASSERT(repetitions >= 0);
 	int count = 0;
 	QString startTag = "{loop " + name + "}";
@@ -191,7 +185,6 @@ Template::loop(const QString &name, const int repetitions) {
 	return count;
 }
 
-void
-Template::enableWarnings(const bool enable) {
+void Template::enableWarnings(const bool enable) {
 	warnings = enable;
 }

@@ -14,9 +14,7 @@
 using namespace qtwebapp;
 
 HttpConnectionHandlerPool::HttpConnectionHandlerPool(const HttpServerConfig &cfg, HttpRequestHandler *requestHandler)
-  : QObject()
-  , cfg(cfg)
-  , requestHandler(requestHandler) {
+    : QObject(), cfg(cfg), requestHandler(requestHandler) {
 	sslConfiguration = nullptr;
 	loadSslConfig();
 	cleanupTimer.start(cfg.cleanupInterval);
@@ -32,8 +30,7 @@ HttpConnectionHandlerPool::~HttpConnectionHandlerPool() {
 #endif
 }
 
-HttpConnectionHandler *
-HttpConnectionHandlerPool::getConnectionHandler() {
+HttpConnectionHandler *HttpConnectionHandlerPool::getConnectionHandler() {
 	HttpConnectionHandler *freeHandler = nullptr;
 	mutex.lock();
 	// find a free handler in pool
@@ -57,8 +54,7 @@ HttpConnectionHandlerPool::getConnectionHandler() {
 	return freeHandler;
 }
 
-void
-HttpConnectionHandlerPool::cleanup() {
+void HttpConnectionHandlerPool::cleanup() {
 	int maxIdleHandlers = cfg.minThreads;
 	int idleCounter = 0;
 	mutex.lock();
@@ -69,8 +65,8 @@ HttpConnectionHandlerPool::cleanup() {
 				pool.removeOne(handler);
 				long int poolSize = (long int)pool.size();
 #ifdef CMAKE_DEBUG
-				qDebug(
-				    "HttpConnectionHandlerPool: Removed connection handler (%p), pool size is now %li", handler, poolSize);
+				qDebug("HttpConnectionHandlerPool: Removed connection handler (%p), pool size is now %li", handler,
+				       poolSize);
 #endif
 				break; // remove only one handler in each interval
 			}
@@ -79,8 +75,7 @@ HttpConnectionHandlerPool::cleanup() {
 	mutex.unlock();
 }
 
-void
-HttpConnectionHandlerPool::loadSslConfig() {
+void HttpConnectionHandlerPool::loadSslConfig() {
 	// If certificate and key files are configured, then load them
 	QString sslKeyFileName = cfg.sslKeyFile;
 	QString sslCertFileName = cfg.sslCertFile;

@@ -92,4 +92,4 @@ namespace qtwebapp {
 		void cleanup();
 	};
 
-} // end of namespace
+} // namespace qtwebapp

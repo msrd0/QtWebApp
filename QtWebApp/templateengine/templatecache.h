@@ -82,4 +82,4 @@ namespace qtwebapp {
 		QMutex mutex;
 	};
 
-} // end of namespace
+} // namespace qtwebapp

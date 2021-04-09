@@ -16,8 +16,7 @@ using namespace qtwebapp;
 /**
   Entry point of the program.
 */
-int
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
 	// Initialize the core application
 	QCoreApplication app(argc, argv);

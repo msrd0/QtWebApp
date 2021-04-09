@@ -87,4 +87,4 @@ namespace qtwebapp {
 		void handleConnection(qintptr socketDescriptor);
 	};
 
-} // end of namespace
+} // namespace qtwebapp

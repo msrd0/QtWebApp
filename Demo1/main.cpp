@@ -13,8 +13,7 @@
 using namespace qtwebapp;
 
 /** Search the configuration file */
-QString
-searchConfigFile() {
+QString searchConfigFile() {
 	QString binDir = QCoreApplication::applicationDirPath();
 	QString fileName("Demo1.ini");
 
@@ -45,8 +44,7 @@ searchConfigFile() {
 /**
   Entry point of the program.
 */
-int
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	QCoreApplication app(argc, argv);
 	app.setApplicationName("Demo1");
 
