@@ -7,8 +7,8 @@
 #define TEMPLATECONTROLLER_H
 
 #include "httprequest.h"
-#include "httpresponse.h"
 #include "httprequesthandler.h"
+#include "httpresponse.h"
 
 /**
   This controller generates a website using the template engine.
@@ -16,15 +16,14 @@
 */
 
 class TemplateController : public qtwebapp::HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(TemplateController)
-public:
+	Q_OBJECT
+	Q_DISABLE_COPY(TemplateController)
+  public:
+	/** Constructor */
+	TemplateController();
 
-    /** Constructor */
-    TemplateController();
-
-    /** Generates the response */
-    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
+	/** Generates the response */
+	void service(qtwebapp::HttpRequest &request, qtwebapp::HttpResponse &response);
 };
 
 #endif // TEMPLATECONTROLLER_H

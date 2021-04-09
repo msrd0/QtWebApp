@@ -7,8 +7,8 @@
 #define LOGINCONTROLLER_H
 
 #include "httprequest.h"
-#include "httpresponse.h"
 #include "httprequesthandler.h"
+#include "httpresponse.h"
 
 using namespace stefanfrings;
 
@@ -17,15 +17,14 @@ using namespace stefanfrings;
 */
 
 class LoginController : public HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(LoginController)
-public:
+	Q_OBJECT
+	Q_DISABLE_COPY(LoginController)
+  public:
+	/** Constructor */
+	LoginController();
 
-    /** Constructor */
-    LoginController();
-
-    /** Generates the response */
-    void service(HttpRequest& request, HttpResponse& response);
+	/** Generates the response */
+	void service(HttpRequest &request, HttpResponse &response);
 };
 
 #endif // LOGINCONTROLLER_H

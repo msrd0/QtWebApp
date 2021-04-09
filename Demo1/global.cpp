@@ -7,7 +7,7 @@
 
 using namespace qtwebapp;
 
-TemplateCache* templateCache;
-HttpSessionStore* sessionStore;
-StaticFileController* staticFileController;
-FileLogger* logger;
+TemplateCache *templateCache;
+HttpSessionStore *sessionStore;
+StaticFileController *staticFileController;
+FileLogger *logger;

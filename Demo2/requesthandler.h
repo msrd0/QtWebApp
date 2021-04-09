@@ -13,28 +13,26 @@
 */
 
 class RequestHandler : public qtwebapp::HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(RequestHandler)
-public:
+	Q_OBJECT
+	Q_DISABLE_COPY(RequestHandler)
+  public:
+	/**
+	  Constructor.
+	  @param parent Parent object
+	*/
+	RequestHandler(QObject *parent = 0);
 
-    /**
-      Constructor.
-      @param parent Parent object
-    */
-    RequestHandler(QObject* parent=0);
+	/**
+	  Destructor
+	*/
+	~RequestHandler();
 
-    /**
-      Destructor
-    */
-    ~RequestHandler();
-
-    /**
-      Process an incoming HTTP request.
-      @param request The received HTTP request
-      @param response Must be used to return the response
-    */
-    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
-
+	/**
+	  Process an incoming HTTP request.
+	  @param request The received HTTP request
+	  @param response Must be used to return the response
+	*/
+	void service(qtwebapp::HttpRequest &request, qtwebapp::HttpResponse &response);
 };
 
 #endif // REQUESTHANDLER_H
