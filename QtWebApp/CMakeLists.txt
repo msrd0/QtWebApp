@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 project(QtWebApp CXX)
 
 set(qtwebapp_MAJOR 1)
-set(qtwebapp_MINOR 7)
-set(qtwebapp_PATCH 11)
+set(qtwebapp_MINOR 8)
+set(qtwebapp_PATCH 3)
 set(qtwebapp_VERSION ${qtwebapp_MAJOR}.${qtwebapp_MINOR}.${qtwebapp_PATCH})
 
 find_package(Qt5 REQUIRED COMPONENTS Core Network)
