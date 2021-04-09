@@ -9,6 +9,8 @@
 
 #include <QDateTime>
 
+using namespace qtwebapp;
+
 LoginController::LoginController() {}
 
 void LoginController::service(HttpRequest &request, HttpResponse &response) {

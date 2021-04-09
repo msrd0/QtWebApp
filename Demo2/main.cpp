@@ -9,11 +9,11 @@
 #include <QDir>
 #include <QFile>
 #include <httpserver/httplistener.h>
+#include <httpserver/httpserverconfig.h>
 #include <logging/filelogger.h>
 
 using namespace qtwebapp;
 
-	foreach (QString dir, searchList) { qWarning("%s/%s not found", qPrintable(dir), qPrintable(fileName)); }
 /**
   Entry point of the program.
 */
@@ -23,21 +23,16 @@ int main(int argc, char *argv[]) {
 	QCoreApplication app(argc, argv);
 	app.setApplicationName("Demo2");
 
-	// Collect hardcoded configarion settings
-	QSettings *settings = new QSettings(&app);
-	// settings->setValue("host","192.168.0.100");
-	settings->setValue("port", "8080");
-	settings->setValue("minThreads", "4");
-	settings->setValue("maxThreads", "100");
-	settings->setValue("cleanupInterval", "60000");
-	settings->setValue("readTimeout", "60000");
-	settings->setValue("maxRequestSize", "16000");
-	settings->setValue("maxMultiPartSize", "10000000");
-	// settings->setValue("sslKeyFile","ssl/my.key");
-	// settings->setValue("sslCertFile","ssl/my.cert");
-
 	// Configure and start the TCP listener
-	new HttpListener(settings, new RequestHandler(&app), &app);
+	HttpServerConfig conf;
+	conf.port = 8080;
+	conf.minThreads = 4;
+	conf.maxThreads = 100;
+	conf.cleanupInterval = 60e3;
+	conf.readTimeout = 60e3;
+	conf.maxRequestSize = 16e3;
+	conf.maxMultipartSize = 10e6;
+	new HttpListener(conf, new RequestHandler(&app), &app);
 
 	qWarning("Application has started");
 	app.exec();

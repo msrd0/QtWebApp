@@ -10,13 +10,11 @@
 #include "httprequesthandler.h"
 #include "httpresponse.h"
 
-using namespace stefanfrings;
-
 /**
   This controller demonstrates how to use HTTP basic login.
 */
 
-class LoginController : public HttpRequestHandler {
+class LoginController : public qtwebapp::HttpRequestHandler {
 	Q_OBJECT
 	Q_DISABLE_COPY(LoginController)
   public:
@@ -24,7 +22,7 @@ class LoginController : public HttpRequestHandler {
 	LoginController();
 
 	/** Generates the response */
-	void service(HttpRequest &request, HttpResponse &response);
+	void service(qtwebapp::HttpRequest &request, qtwebapp::HttpResponse &response);
 };
 
 #endif // LOGINCONTROLLER_H

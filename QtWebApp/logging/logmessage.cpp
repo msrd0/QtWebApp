@@ -52,11 +52,9 @@ QString LogMessage::toString(const QString &msgFormat, const QString &timestampF
 		case QtFatalMsg: // or QtSystemMsg which has the same int value
 			decorated.replace("{type}", "FATAL   ");
 			break;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
 		case QtInfoMsg:
 			decorated.replace("{type}", "INFO    ");
 			break;
-#endif
 	}
 
 	decorated.replace("{file}", file);

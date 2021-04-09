@@ -7,8 +7,8 @@
 
 #include <logging/filelogger.h>
 
-RequestHandler::RequestHandler(QObject *parent) : HttpRequestHandler(parent) {
 using namespace qtwebapp;
+
 RequestHandler::RequestHandler(QObject *parent) : HttpRequestHandler(parent) {
 	qDebug("RequestHandler: created");
 }

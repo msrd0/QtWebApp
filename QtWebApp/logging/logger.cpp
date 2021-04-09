@@ -6,6 +6,7 @@
 #include "logger.h"
 
 #include <QDateTime>
+#include <QMutex>
 #include <QObject>
 #include <QThread>
 #include <stdio.h>
