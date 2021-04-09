@@ -51,7 +51,7 @@ HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &res
 			mutex.unlock();
 			// Refresh the session cookie
 			response.setCookie(HttpCookie(cfg.cookieName, session.getId(), cfg.expirationTime / 1000, cfg.cookiePath,
-			                              cfg.cookieComment, cfg.cookieDomain));
+			                              cfg.cookieComment, cfg.cookieDomain, false, false, "Lax"));
 			session.setLastAccess();
 			return session;
 		}
@@ -64,7 +64,7 @@ HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &res
 #endif
 		sessions.insert(session.getId(), session);
 		response.setCookie(HttpCookie(cfg.cookieName, session.getId(), cfg.expirationTime / 1000, cfg.cookiePath,
-		                              cfg.cookieComment, cfg.cookieDomain));
+		                              cfg.cookieComment, cfg.cookieDomain, false, false, "Lax"));
 		mutex.unlock();
 		return session;
 	}
