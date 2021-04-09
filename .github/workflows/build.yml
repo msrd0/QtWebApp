@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [upstream]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jurplel/install-qt-action@v2
+      
+      - name: Build QtWebApp
+        run: |
+          cd QtWebApp
+          mkdir build
+          cd build
+          qmake ..
+          make
+      
+      - name: Build Demo1
+        run: |
+          cd Demo1
+          mkdir build
+          cd build
+          qmake ..
+          make
+      
+      - name: Build Demo2
+        run: |
+          cd Demo2
+          mkdir build
+          cd build
+          qmake ..
+          make
+      
+      - name: Build Demo3
+        run: |
+          cd Demo3
+          mkdir build
+          cd build
+          qmake ..
+          make
