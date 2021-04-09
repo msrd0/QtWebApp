@@ -1,16 +1,29 @@
 #!/bin/busybox ash
-set -euo pipefail
+set -eo pipefail
+
+check=n
+if [ "$1" == "--check" ]
+then
+	check=y
+fi
+
+set -u
 
 format_file() {
-	echo "Formatting file $1"
 	local tmpfile
 	tmpfile=$(mktemp)
 	clang-format "$1" >$tmpfile
-	mv $tmpfile "$1"
+	
+	if [ $check == y ]
+	then
+		diff "$1" $tmpfile
+	else
+		mv $tmpfile "$1"
+	fi
 }
 
 format_dir() {
-	find . \( -name '*.h' -or -name '*.cpp' \) -not -path '*build*' \
+	find "$1" \( -name '*.h' -or -name '*.cpp' \) -not -path '*build*' \
 		| while read file; do
 			format_file "$file"
 		done

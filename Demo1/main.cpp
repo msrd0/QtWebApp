@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 	listenerSettings->beginGroup("listener");
 	new HttpListener(listenerSettings, new RequestMapper(&app), &app);
 
-	qWarning("Application has started");
+	qInfo("Application has started");
 	app.exec();
-	qWarning("Application has stopped");
+	qInfo("Application has stopped");
 }

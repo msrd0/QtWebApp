@@ -13,6 +13,7 @@
 
 using namespace qtwebapp;
 
+	foreach (QString dir, searchList) { qWarning("%s/%s not found", qPrintable(dir), qPrintable(fileName)); }
 /**
   Entry point of the program.
 */

@@ -150,7 +150,6 @@ void Logger::log(const QtMsgType type, const QString &message, const QString &fi
 		default: // For additional type that might get introduced in future
 			toPrint = true;
 	}
-
 	mutex.lock();
 
 	// If the buffer is enabled, write the message into it
