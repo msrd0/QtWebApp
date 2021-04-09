@@ -51,9 +51,7 @@ void Logger::msgHandler(const QtMsgType type, const QString &message, const QStr
 	static QRecursiveMutex recursiveMutex;
 #endif
 	static QMutex nonRecursiveMutex;
-
-void Logger::msgHandler(const QtMsgType type, const QString &message, const QString &file, const QString &function, const int line)
-{   
+	
 	// Prevent multiple threads from calling this method simultaneoulsy.
 	// But allow recursive calls, which is required to prevent a deadlock
 	// if the logger itself produces an error message.
@@ -80,30 +78,17 @@ void Logger::msgHandler(const QtMsgType type, const QString &message, const QStr
 	recursiveMutex.unlock();
 }
 
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 void Logger::msgHandler5(const QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
-	(void)(context); // suppress "unused parameter" warning
-	msgHandler(type,message,context.file,context.function,context.line);
+    (void)(context); // suppress "unused parameter" warning
+    msgHandler(type,message,context.file,context.function,context.line);
 }
-#else
-void Logger::msgHandler4(const QtMsgType type, const char* message)
-{
-	msgHandler(type,message);
-}
-#endif
-
 
 Logger::~Logger()
 {
 	if (defaultLogger==this)
 	{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 		qInstallMessageHandler(nullptr);
-#else
-		qInstallMsgHandler(nullptr);
-#endif
 		defaultLogger=nullptr;
 	}
 }
@@ -119,11 +104,7 @@ void Logger::write(const LogMessage* logMessage)
 void Logger::installMsgHandler()
 {
 	defaultLogger=this;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 	qInstallMessageHandler(msgHandler5);
-#else
-	qInstallMsgHandler(msgHandler4);
-#endif
 }
 
 
@@ -174,7 +155,6 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
             }
             break;
 
-    #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         case QtInfoMsg:
             if (minLevel==QtDebugMsg ||
                 minLevel==QtInfoMsg)
@@ -182,13 +162,10 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
                 toPrint=true;
             }
             break;
-    #endif
 
         case QtWarningMsg:
             if (minLevel==QtDebugMsg ||
-                #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-                    minLevel==QtInfoMsg ||
-                #endif
+                minLevel==QtInfoMsg ||
                 minLevel==QtWarningMsg)
             {
                 toPrint=true;
@@ -197,9 +174,7 @@ void Logger::log(const QtMsgType type, const QString& message, const QString &fi
 
         case QtCriticalMsg: // or QtSystemMsg which has the same int value
             if (minLevel==QtDebugMsg ||
-                #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-                    minLevel==QtInfoMsg ||
-                #endif
+                minLevel==QtInfoMsg ||
                 minLevel==QtWarningMsg ||
                 minLevel==QtCriticalMsg)
             {

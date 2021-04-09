@@ -159,29 +159,14 @@ private:
 	static void msgHandler(const QtMsgType type, const QString &message, const QString &file="",
 	                       const QString &function="", const int line=0);
 	
-	
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-	
 	/**
-	  Wrapper for QT version 5.
-	  @param type Message type (level)
-	  @param context Message context
-	  @param message Message text
-	  @see msgHandler()
+	 Wrapper for QT version 5.
+	 @param type Message type (level)
+	 @param context Message context
+	 @param message Message text
+	 @see msgHandler()
 	*/
 	static void msgHandler5(const QtMsgType type, const QMessageLogContext& context, const QString &message);
-	
-#else
-	
-	/**
-	  Wrapper for QT version 4.
-	  @param type Message type (level)
-	  @param message Message text
-	  @see msgHandler()
-	*/
-	static void msgHandler4(const QtMsgType type, const char * message);
-	
-#endif
 	
 	/** Thread local variables to be used in log messages */
 	static QThreadStorage<QHash<QString,QString>*> logVars;
