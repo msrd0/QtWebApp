@@ -1,2 +1,0 @@
-26.09.2019 17:15:26.720 0 DEBUG    0x7f550a92b780 ServiceHelper: Starting service
-26.09.2019 17:15:26.720 2 CRITICAL 0x7f550a92b780 HttpListener: Cannot bind on port 8080: The bound address is already in use

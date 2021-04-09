@@ -3,8 +3,8 @@
   @author Stefan Frings
 */
 
-#ifndef FILEUPLOADCONTROLLER_H
-#define FILEUPLOADCONTROLLER_H
+#ifndef LOGINCONTROLLER_H
+#define LOGINCONTROLLER_H
 
 #include "httprequest.h"
 #include "httpresponse.h"
@@ -13,20 +13,19 @@
 using namespace stefanfrings;
 
 /**
-  This controller displays a HTML form for file upload and recieved the file.
+  This controller demonstrates how to use HTTP basic login.
 */
 
-
-class FileUploadController : public HttpRequestHandler {
+class LoginController : public HttpRequestHandler {
     Q_OBJECT
-    Q_DISABLE_COPY(FileUploadController)
+    Q_DISABLE_COPY(LoginController)
 public:
 
     /** Constructor */
-    FileUploadController();
+    LoginController();
 
     /** Generates the response */
     void service(HttpRequest& request, HttpResponse& response);
 };
 
-#endif // FILEUPLOADCONTROLLER_H
+#endif // LOGINCONTROLLER_H
