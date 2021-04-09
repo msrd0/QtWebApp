@@ -11,6 +11,7 @@
 #include <QRegularExpression>
 #include <QSet>
 #include <QStringList>
+#include <QTextStream>
 
 using namespace qtwebapp;
 
@@ -29,7 +30,7 @@ TemplateLoader::TemplateLoader(const TemplateEngineConfig &cfg, QObject *parent)
 		textCodec = QTextCodec::codecForName(encoding.toLocal8Bit());
 	}
 #ifdef CMAKE_DEBUG
-	qDebug("TemplateLoader: path=%s, codec=%s", qPrintable(templatePath), textCodec->name().data());
+	qDebug("TemplateLoader: path=%s, codec=%s", qPrintable(templatePath), qPrintable(encoding));
 #endif
 }
 
@@ -69,6 +70,7 @@ Template TemplateLoader::getTemplate(const QString &templateName, const QString 
 	foreach (QString loc, locs) {
 		loc.replace(QRegularExpression(";.*"), "");
 		loc.replace('-', '_');
+
 		QString localizedName = templateName + "-" + loc.trimmed();
 		if (!tried.contains(localizedName)) {
 			QString document = tryFile(localizedName);

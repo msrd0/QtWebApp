@@ -30,8 +30,9 @@ StaticFileController::StaticFileController(const StaticFileControllerConfig &cfg
 	maxCachedFileSize = cfg.maxCachedFileSize;
 	cache.setMaxCost(cfg.cacheSize);
 	cacheTimeout = cfg.cacheTime;
+	long int cacheMaxCost = (long int)cache.maxCost();
 #ifdef CMAKE_DEBUG
-	qDebug("StaticFileController: cache timeout=%i, size=%i", cacheTimeout, cache.maxCost());
+	qDebug("StaticFileController: cache timeout=%i, size=%li", cacheTimeout, cacheMaxCost);
 #endif
 }
 

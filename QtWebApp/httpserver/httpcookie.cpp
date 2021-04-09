@@ -14,7 +14,8 @@ HttpCookie::HttpCookie() {
 }
 
 HttpCookie::HttpCookie(const QByteArray name, const QByteArray value, const int maxAge, const QByteArray path,
-                       const QByteArray comment, const QByteArray domain, const bool secure, const bool httpOnly) {
+                       const QByteArray comment, const QByteArray domain, const bool secure, const bool httpOnly,
+                       const QByteArray sameSite) {
 	this->name = name;
 	this->value = value;
 	this->maxAge = maxAge;
@@ -23,6 +24,7 @@ HttpCookie::HttpCookie(const QByteArray name, const QByteArray value, const int 
 	this->domain = domain;
 	this->secure = secure;
 	this->httpOnly = httpOnly;
+	this->sameSite = sameSite;
 	this->version = 1;
 }
 
@@ -30,6 +32,7 @@ HttpCookie::HttpCookie(const QByteArray source) {
 	version = 1;
 	maxAge = 0;
 	secure = false;
+	httpOnly = false;
 	QList<QByteArray> list = splitCSV(source);
 	foreach (QByteArray part, list) {
 
@@ -58,6 +61,8 @@ HttpCookie::HttpCookie(const QByteArray source) {
 			secure = true;
 		} else if (name == "HttpOnly") {
 			httpOnly = true;
+		} else if (name == "SameSite") {
+			sameSite = value;
 		} else if (name == "Version") {
 			version = value.toInt();
 		} else if (this->name.isEmpty()) {
@@ -94,6 +99,10 @@ QByteArray HttpCookie::toByteArray() const {
 	}
 	if (httpOnly) {
 		buffer.append("; HttpOnly");
+	}
+	if (!sameSite.isEmpty()) {
+		buffer.append("; SameSite=");
+		buffer.append(sameSite);
 	}
 	buffer.append("; Version=");
 	buffer.append(QByteArray::number(version));
@@ -132,6 +141,10 @@ void HttpCookie::setHttpOnly(const bool httpOnly) {
 	this->httpOnly = httpOnly;
 }
 
+void HttpCookie::setSameSite(const QByteArray sameSite) {
+	this->sameSite = sameSite;
+}
+
 QByteArray HttpCookie::getName() const {
 	return name;
 }
@@ -162,6 +175,10 @@ bool HttpCookie::getSecure() const {
 
 bool HttpCookie::getHttpOnly() const {
 	return httpOnly;
+}
+
+QByteArray HttpCookie::getSameSite() const {
+	return sameSite;
 }
 
 int HttpCookie::getVersion() const {

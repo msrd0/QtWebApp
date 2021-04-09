@@ -49,23 +49,19 @@ QString LogMessage::toString(const QString &msgFormat, const QString &timestampF
 		case QtCriticalMsg:
 			decorated.replace("{type}", "CRITICAL");
 			break;
-		case QtFatalMsg:
+		case QtFatalMsg: // or QtSystemMsg which has the same int value
 			decorated.replace("{type}", "FATAL   ");
 			break;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
 		case QtInfoMsg:
 			decorated.replace("{type}", "INFO    ");
 			break;
-#endif
 	}
 
 	decorated.replace("{file}", file);
 	decorated.replace("{function}", function);
 	decorated.replace("{line}", QString::number(line));
 
-	QString threadId;
-	QTextStream threadIdStream(&threadId);
-	threadIdStream << QThread::currentThreadId();
+	QString threadId = QString("0x%1").arg(qulonglong(QThread::currentThreadId()), 8, 16, QLatin1Char('0'));
 	decorated.replace("{thread}", threadId);
 
 	// Fill in variables

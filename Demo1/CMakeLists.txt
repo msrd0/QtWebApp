@@ -13,6 +13,8 @@ add_executable(demo1
 	controller/fileuploadcontroller.h
 	controller/formcontroller.cpp
 	controller/formcontroller.h
+	controller/logincontroller.cpp
+	controller/logincontroller.h
 	controller/sessioncontroller.cpp
 	controller/sessioncontroller.h
 	controller/templatecontroller.cpp

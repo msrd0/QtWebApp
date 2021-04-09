@@ -51,7 +51,7 @@ HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &res
 			mutex.unlock();
 			// Refresh the session cookie
 			response.setCookie(HttpCookie(cfg.cookieName, session.getId(), cfg.expirationTime / 1000, cfg.cookiePath,
-			                              cfg.cookieComment, cfg.cookieDomain));
+			                              cfg.cookieComment, cfg.cookieDomain, false, false, "Lax"));
 			session.setLastAccess();
 			return session;
 		}
@@ -64,7 +64,7 @@ HttpSession HttpSessionStore::getSession(HttpRequest &request, HttpResponse &res
 #endif
 		sessions.insert(session.getId(), session);
 		response.setCookie(HttpCookie(cfg.cookieName, session.getId(), cfg.expirationTime / 1000, cfg.cookiePath,
-		                              cfg.cookieComment, cfg.cookieDomain));
+		                              cfg.cookieComment, cfg.cookieDomain, false, false, "Lax"));
 		mutex.unlock();
 		return session;
 	}
@@ -92,6 +92,7 @@ void HttpSessionStore::sessionTimerEvent() {
 		qint64 lastAccess = session.getLastAccess();
 		if (now - lastAccess > cfg.expirationTime) {
 			qDebug("HttpSessionStore: session %s expired", session.getId().data());
+			emit sessionDeleted(session.getId());
 			sessions.erase(prev);
 		}
 	}
@@ -101,6 +102,7 @@ void HttpSessionStore::sessionTimerEvent() {
 /** Delete a session */
 void HttpSessionStore::removeSession(HttpSession session) {
 	mutex.lock();
+	emit sessionDeleted(session.getId());
 	sessions.remove(session.getId());
 	mutex.unlock();
 }

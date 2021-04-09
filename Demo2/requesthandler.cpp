@@ -9,9 +9,6 @@
 
 using namespace qtwebapp;
 
-/** Logger class */
-extern FileLogger *logger;
-
 RequestHandler::RequestHandler(QObject *parent) : HttpRequestHandler(parent) {
 	qDebug("RequestHandler: created");
 }
@@ -28,12 +25,7 @@ void RequestHandler::service(HttpRequest &request, HttpResponse &response) {
 	response.setHeader("Content-Type", "text/html; charset=ISO-8859-1");
 
 	// Return a simple HTML document
-	response.write("<html><body>Hello World</body></html>", true);
+	response.write("<html><body>Hello World!</body></html>", true);
 
 	qDebug("RequestHandler: finished request");
-
-	// Clear the log buffer
-	if (logger) {
-		logger->clear();
-	}
 }

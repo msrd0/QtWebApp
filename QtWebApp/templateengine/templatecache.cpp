@@ -9,8 +9,9 @@ using namespace qtwebapp;
 TemplateCache::TemplateCache(const TemplateEngineConfig &cfg, QObject *parent) : TemplateLoader(cfg, parent) {
 	cache.setMaxCost(cfg.cacheSize);
 	cacheTimeout = cfg.cacheTime;
+	long int cacheMaxCost = (long int)cache.maxCost();
 #ifdef CMAKE_DEBUG
-	qDebug("TemplateCache: timeout=%i, size=%i", cacheTimeout, cache.maxCost());
+	qDebug("TemplateCache: timeout=%i, size=%li", cacheTimeout, cacheMaxCost);
 #endif
 }
 

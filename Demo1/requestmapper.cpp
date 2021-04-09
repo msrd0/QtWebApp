@@ -8,6 +8,7 @@
 #include "controller/dumpcontroller.h"
 #include "controller/fileuploadcontroller.h"
 #include "controller/formcontroller.h"
+#include "controller/logincontroller.h"
 #include "controller/sessioncontroller.h"
 #include "controller/templatecontroller.h"
 #include "filelogger.h"
@@ -50,6 +51,10 @@ void RequestMapper::service(HttpRequest &request, HttpResponse &response) {
 
 	else if (path.startsWith("/session")) {
 		SessionController().service(request, response);
+	}
+
+	else if (path.startsWith("/login")) {
+		LoginController().service(request, response);
 	}
 
 	// All other pathes are mapped to the static file controller.

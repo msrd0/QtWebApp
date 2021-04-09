@@ -27,10 +27,9 @@ namespace qtwebapp {
 	  taken from a static thread local dictionary.
 	  <p>
 	  The logger can collect a configurable number of messages in thread-local
-	  ring buffers. If the buffer is enabled, then a log message with
-	  severity >= minLevel flushes the buffer, so the stored messages are
-	  written out. There is one exception: INFO messages are treated like DEBUG messages
-	  (level 0).
+	  FIFO buffers. A log message with severity >= minLevel flushes the buffer,
+	  so the messages are written out. There is one exception:
+	  INFO messages are treated like DEBUG messages (level 0).
 	  <p>
 	  Example: If you enable the buffer and use minLevel=2, then the application
 	  waits until an error occurs. Then it writes out the error message together
@@ -158,28 +157,14 @@ namespace qtwebapp {
 		static void msgHandler(const QtMsgType type, const QString &message, const QString &file = "",
 		                       const QString &function = "", const int line = 0);
 
-#if QT_VERSION >= 0x050000
-
 		/**
-		  Wrapper for QT version 5.
-		  @param type Message type (level)
-		  @param context Message context
-		  @param message Message text
-		  @see msgHandler()
+		 Wrapper for QT version 5.
+		 @param type Message type (level)
+		 @param context Message context
+		 @param message Message text
+		 @see msgHandler()
 		*/
 		static void msgHandler5(const QtMsgType type, const QMessageLogContext &context, const QString &message);
-
-#else
-
-		/**
-		  Wrapper for QT version 4.
-		  @param type Message type (level)
-		  @param message Message text
-		  @see msgHandler()
-		*/
-		static void msgHandler4(const QtMsgType type, const char *message);
-
-#endif
 
 		/** Thread local variables to be used in log messages */
 		static QThreadStorage<QHash<QString, QString> *> logVars;
