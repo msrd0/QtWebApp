@@ -1,0 +1,35 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+
+---
+Language: Cpp
+Standard: c++11
+
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
+
+BreakBeforeBraces: Attach
+
+ColumnLimit: 125
+ContinuationIndentWidth: 4
+IndentCaseLabels: true
+IndentWidth: 4
+NamespaceIndentation: All
+TabWidth: 4
+UseTab: ForIndentation
+
+DeriveLineEnding: false
+UseCRLF: false
+
+IncludeBlocks: Regroup
+SortIncludes: true
+SortUsingDeclarations: true
+
+PointerAlignment: Right
+
+...

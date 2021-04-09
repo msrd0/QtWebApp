@@ -7,24 +7,22 @@
 #define FILEUPLOADCONTROLLER_H
 
 #include "httprequest.h"
-#include "httpresponse.h"
 #include "httprequesthandler.h"
+#include "httpresponse.h"
 
 /**
   This controller displays a HTML form for file upload and recieved the file.
 */
 
-
 class FileUploadController : public qtwebapp::HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(FileUploadController)
-public:
+	Q_OBJECT
+	Q_DISABLE_COPY(FileUploadController)
+  public:
+	/** Constructor */
+	FileUploadController();
 
-    /** Constructor */
-    FileUploadController();
-
-    /** Generates the response */
-    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
+	/** Generates the response */
+	void service(qtwebapp::HttpRequest &request, qtwebapp::HttpResponse &response);
 };
 
 #endif // FILEUPLOADCONTROLLER_H
