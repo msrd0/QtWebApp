@@ -28,14 +28,6 @@ jobs:
           qmake ..
           make
       
-      - name: Build Demo2
-        run: |
-          cd Demo2
-          mkdir build
-          cd build
-          qmake ..
-          make
-      
       - name: Build Demo3
         run: |
           cd Demo3
