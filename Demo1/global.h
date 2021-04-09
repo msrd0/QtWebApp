@@ -6,10 +6,10 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include "templatecache.h"
+#include "filelogger.h"
 #include "httpsessionstore.h"
 #include "staticfilecontroller.h"
-#include "filelogger.h"
+#include "templatecache.h"
 
 /**
   Global objects that are shared by multiple source files

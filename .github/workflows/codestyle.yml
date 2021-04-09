@@ -1,0 +1,13 @@
+name: Code Style
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./format.sh --check

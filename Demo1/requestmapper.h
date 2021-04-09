@@ -14,28 +14,26 @@
 */
 
 class RequestMapper : public qtwebapp::HttpRequestHandler {
-    Q_OBJECT
-    Q_DISABLE_COPY(RequestMapper)
-public:
+	Q_OBJECT
+	Q_DISABLE_COPY(RequestMapper)
+  public:
+	/**
+	  Constructor.
+	  @param parent Parent object
+	*/
+	RequestMapper(QObject *parent = 0);
 
-    /**
-      Constructor.
-      @param parent Parent object
-    */
-    RequestMapper(QObject* parent=0);
+	/**
+	  Destructor.
+	*/
+	~RequestMapper();
 
-    /**
-      Destructor.
-    */
-    ~RequestMapper();
-
-    /**
-      Dispatch incoming HTTP requests to different controllers depending on the URL.
-      @param request The received HTTP request
-      @param response Must be used to return the response
-    */
-    void service(qtwebapp::HttpRequest& request, qtwebapp::HttpResponse& response);
-
+	/**
+	  Dispatch incoming HTTP requests to different controllers depending on the URL.
+	  @param request The received HTTP request
+	  @param response Must be used to return the response
+	*/
+	void service(qtwebapp::HttpRequest &request, qtwebapp::HttpResponse &response);
 };
 
 #endif // REQUESTMAPPER_H
