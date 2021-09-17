@@ -12,6 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        qt_version: [5.15.2, 6.2.0]
         include:
           - name: "Ubuntu 20.04 GCC"
             os: ubuntu-20.04
@@ -31,6 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ qt_version }}
       
       - name: Build QtWebApp
         run: |
