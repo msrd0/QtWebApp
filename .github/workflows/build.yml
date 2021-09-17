@@ -31,11 +31,14 @@ jobs:
             cc: "clang"
             cxx: "clang++"
             linkflags: ""
+          - qt_version: 6.2.0
+            extra_modules: "qt5compat"
     steps:
       - uses: actions/checkout@v2
       - uses: jurplel/install-qt-action@v2
         with:
           version: ${{ matrix.qt_version }}
+          modules: ${{ matrix.extra_modules }}
       
       - name: Build QtWebApp
         run: |
