@@ -20,6 +20,9 @@ if (NOT ${Qt@QT_VERSION_MAJOR@_FOUND})
 	set(QtWebApp_FOUND False)
 	return()
 endif()
+if (@QT_VERSION_MAJOR@ EQUAL 6)
+	find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
+endif()
 
 set(QtWebApp_LIBRARIES Qt@QT_VERSION_MAJOR@::Core Qt@QT_VERSION_MAJOR@::Network)
 

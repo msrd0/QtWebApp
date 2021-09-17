@@ -17,6 +17,9 @@ target_include_directories(QtWebAppTemplateEngine PUBLIC
 	$<INSTALL_INTERFACE:include/qtwebapp/templateengine>
 )
 target_link_libraries(QtWebAppTemplateEngine QtWebAppGlobal Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network)
+if (Qt6_FOUND)
+    target_link_libraries(QtWebAppTemplateEngine Qt6::Core5Compat)
+endif()
 set_target_properties(QtWebAppTemplateEngine PROPERTIES
 		VERSION ${qtwebapp_VERSION}
 		SOVERSION ${qtwebapp_MAJOR}
