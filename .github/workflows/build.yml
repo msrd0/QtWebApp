@@ -7,30 +7,35 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.os }} ${{matrix.cxx}} Qt ${{matrix.qt_version}}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-20.04, macos-latest]
+        cxx: ["g++", "clang++"]
+        qt_version: [5.15.2]
+        exclude:
+          - os: macos-latest
+            cxx: "g++"
         include:
-          - name: "Ubuntu 20.04 GCC"
-            os: ubuntu-20.04
+          - os: ubuntu-20.04
             cc: "gcc"
             cxx: "g++"
             linkflags: ""
-          - name: "Ubuntu 20.04 Clang/LLD"
-            os: ubuntu-20.04
+          - os: ubuntu-20.04
             cc: "clang"
             cxx: "clang++"
             linkflags: "-fuse-ld=lld"
-          - name: "MacOS Latest Clang"
-            os: macos-latest
+          - os: macos-latest
             cc: "clang"
             cxx: "clang++"
             linkflags: ""
     steps:
       - uses: actions/checkout@v2
       - uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ matrix.qt_version }}
       
       - name: Build QtWebApp
         run: |
