@@ -13,15 +13,15 @@ if (QtWebApp_FIND_REQUIRED)
 	set(_req REQUIRED)
 endif()
 
-# TODO: Qt5Network is not required for all modules
-find_package(Qt5 ${_req} COMPONENTS Core Network)
-if (NOT ${Qt5_FOUND})
-	set(QtWebApp_NOT_FOUND_MESSAGE "Unable to find Qt5")
+# TODO: Qt Network is not required for all modules
+find_package(Qt@QT_VERSION_MAJOR@ ${_req} COMPONENTS Core Network)
+if (NOT ${Qt@QT_VERSION_MAJOR@_FOUND})
+	set(QtWebApp_NOT_FOUND_MESSAGE "Unable to find Qt@QT_VERSION_MAJOR@")
 	set(QtWebApp_FOUND False)
 	return()
 endif()
 
-set(QtWebApp_LIBRARIES Qt5::Core Qt5::Network)
+set(QtWebApp_LIBRARIES Qt@QT_VERSION_MAJOR@::Core Qt@QT_VERSION_MAJOR@::Network)
 
 set(_comps Global ${QtWebApp_FIND_COMPONENTS})
 

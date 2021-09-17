@@ -16,7 +16,7 @@ target_include_directories(QtWebAppLogging PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 	$<INSTALL_INTERFACE:include/qtwebapp/logging>
 )
-target_link_libraries(QtWebAppLogging Qt5::Core Qt5::Network)
+target_link_libraries(QtWebAppLogging Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network)
 set_target_properties(QtWebAppLogging PROPERTIES
 		VERSION ${qtwebapp_VERSION}
 		SOVERSION ${qtwebapp_MAJOR}
