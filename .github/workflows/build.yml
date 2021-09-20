@@ -7,41 +7,38 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.os }} ${{matrix.cxx}} Qt ${{matrix.qt_version}}
+    name: ${{ matrix.os }}-${{ matrix.compiler.cc }}-Qt${{ matrix.qt.version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-latest]
-        cxx: ["g++", "clang++"]
-        qt_version: [5.15.2, 6.2.0]
-        exclude:
-          - os: macos-latest
+        os:
+          - "ubuntu-latest"
+          - "macos-latest"
+        compiler:
+          - cc: "gcc"
             cxx: "g++"
-        include:
-          - os: ubuntu-20.04
-            cc: "gcc"
-            cxx: "g++"
-            linkflags: ""
-          - os: ubuntu-20.04
-            cc: "clang"
+          - cc: "clang"
             cxx: "clang++"
-            linkflags: "-fuse-ld=lld"
-          - os: macos-latest
-            cc: "clang"
-            cxx: "clang++"
-            linkflags: ""
-          - qt_version: 6.2.0
+        qt:
+          - version: "5.12.2"
+            extra_modules: ""
+          - version: "6.2.0"
             extra_modules: "qt5compat"
+        exclude:
+          - os: "macos-latest"
+            compiler:
+              cc: "gcc"
     steps:
       - uses: actions/checkout@v2
       - uses: jurplel/install-qt-action@v2
         with:
-          version: ${{ matrix.qt_version }}
-          modules: ${{ matrix.extra_modules }}
+          version: ${{ matrix.qt.version }}
+          modules: ${{ matrix.qt.extra_modules }}
       
       - name: Build QtWebApp
         run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "$CC" == "clang" ]; then export LDFLAGS=-fuse-ld=lld; fi
           pushd QtWebApp
           mkdir build
           pushd build
@@ -51,12 +48,12 @@ jobs:
           popd # build
           popd # QtWebApp
         env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
-          LDFLAGS: ${{ matrix.linkflags }}
+          CC: ${{ matrix.compiler.cc }}
+          CXX: ${{ matrix.compiler.cxx }}
       
       - name: Build Demo1
         run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "$CC" == "clang" ]; then export LDFLAGS=-fuse-ld=lld; fi
           pushd Demo1
           mkdir build
           pushd build
@@ -64,12 +61,12 @@ jobs:
           make
           popd # Demo1
         env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
-          LDFLAGS: ${{ matrix.linkflags }}
+          CC: ${{ matrix.compiler.cc }}
+          CXX: ${{ matrix.compiler.cxx }}
       
       - name: Build Demo2
         run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "$CC" == "clang" ]; then export LDFLAGS=-fuse-ld=lld; fi
           pushd Demo2
           mkdir build
           pushd build
@@ -77,9 +74,8 @@ jobs:
           make
           popd # Demo2
         env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
-          LDFLAGS: ${{ matrix.linkflags }}
+          CC: ${{ matrix.compiler.cc }}
+          CXX: ${{ matrix.compiler.cxx }}
 
   windows-mingw:
     name: "Windows"
