@@ -3,7 +3,6 @@ project("QtWebApp Demo 1")
 
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Core Network)
 find_package(QtWebApp REQUIRED COMPONENTS HttpServer Logging TemplateEngine)
 
 add_executable(demo1

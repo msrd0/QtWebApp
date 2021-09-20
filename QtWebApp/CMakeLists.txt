@@ -6,7 +6,12 @@ set(qtwebapp_MINOR 8)
 set(qtwebapp_PATCH 3)
 set(qtwebapp_VERSION ${qtwebapp_MAJOR}.${qtwebapp_MINOR}.${qtwebapp_PATCH})
 
-find_package(Qt5 REQUIRED COMPONENTS Core Network)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED HINTS $ENV{Qt6_DIR} $ENV{Qt5_DIR})
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Network REQUIRED)
+
+if (Qt6_FOUND)
+    find_package(Qt6 COMPONENTS Core5Compat REQUIRED)
+endif()
 
 set(CMAKE_AUTOMOC ON)
 
@@ -45,7 +50,7 @@ target_include_directories(QtWebAppGlobal PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 	$<INSTALL_INTERFACE:include/qtwebapp>
 )
-target_link_libraries(QtWebAppGlobal Qt5::Core)
+target_link_libraries(QtWebAppGlobal Qt${QT_VERSION_MAJOR}::Core)
 set_target_properties(QtWebAppGlobal PROPERTIES
 		VERSION ${qtwebapp_VERSION}
 		SOVERSION ${qtwebapp_MAJOR}
