@@ -1,12 +1,8 @@
-cmake_minimum_required(VERSION 3.1)
-project(QtWebApp CXX)
-
 set(qtwebapp_MAJOR 1)
 set(qtwebapp_MINOR 8)
 set(qtwebapp_PATCH 3)
 set(qtwebapp_VERSION ${qtwebapp_MAJOR}.${qtwebapp_MINOR}.${qtwebapp_PATCH})
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED HINTS $ENV{Qt6_DIR} $ENV{Qt5_DIR})
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Network REQUIRED)
 
 if (Qt6_FOUND)
