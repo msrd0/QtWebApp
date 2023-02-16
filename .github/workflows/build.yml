@@ -31,7 +31,7 @@ jobs:
               cc: "gcc"
     steps:
       - uses: actions/checkout@v3
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: ${{ matrix.qt.version }}
           modules: ${{ matrix.qt.extra_modules }}
@@ -94,16 +94,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           arch: ${{ matrix.arch }}
           version: ${{ matrix.qt_version }}
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         if: matrix.arch == 'win32_mingw81'
         with:
           tools-only: 'true'
-          tools: 'tools_mingw,8.1.0-1-202004170606,qt.tools.win32_mingw810'
+          tools: 'tools_mingw,qt.tools.win32_mingw810'
 
       - name: Add g++ to PATH
         if: matrix.arch == 'win32_mingw81'
