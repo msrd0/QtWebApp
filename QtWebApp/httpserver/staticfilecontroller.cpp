@@ -17,7 +17,7 @@ StaticFileController::StaticFileController(const StaticFileControllerConfig &cfg
 	maxAge = cfg.maxAge;
 	encoding = cfg.encoding;
 	docroot = cfg.path;
-	if (!cfg.fileName.isEmpty() && !(docroot.startsWith(":/") || !docroot.startsWith("qrc://"))) {
+	if (!cfg.fileName.isEmpty() && !docroot.startsWith(":/") && !docroot.startsWith("qrc://")) {
 		// Convert relative path to absolute, based on the directory of the config file.
 		if (QDir::isRelativePath(docroot)) {
 			QFileInfo configFile(cfg.fileName);
