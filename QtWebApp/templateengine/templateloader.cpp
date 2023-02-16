@@ -24,11 +24,13 @@ TemplateLoader::TemplateLoader(const TemplateEngineConfig &cfg, QObject *parent)
 	}
 	fileNameSuffix = cfg.suffix;
 	QString encoding = cfg.encoding;
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
 	if (encoding.isEmpty()) {
 		textCodec = QTextCodec::codecForLocale();
 	} else {
 		textCodec = QTextCodec::codecForName(encoding.toLocal8Bit());
 	}
+#endif
 #ifdef CMAKE_DEBUG
 	qDebug("TemplateLoader: path=%s, codec=%s", qPrintable(templatePath), qPrintable(encoding));
 #endif
@@ -44,7 +46,11 @@ QString TemplateLoader::tryFile(const QString &localizedName) {
 	QFile file(fileName);
 	if (file.exists()) {
 		file.open(QIODevice::ReadOnly);
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
 		QString document = textCodec->toUnicode(file.readAll());
+#else
+		QString document = QString::fromUtf8(file.readAll());
+#endif
 		file.close();
 		if (file.error()) {
 			qCritical("TemplateLoader: cannot load file %s, %s", qPrintable(fileName), qPrintable(file.errorString()));

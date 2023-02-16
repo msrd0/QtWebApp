@@ -10,13 +10,11 @@
 using namespace qtwebapp;
 
 Template::Template(const QString &source, const QString &sourceName) : QString(source) {
-	this->sourceName = sourceName;
 	this->warnings = false;
+	this->sourceName = sourceName;
 }
 
-Template::Template(QFile &file, const QTextCodec *textCodec) {
-	this->warnings = false;
-	sourceName = QFileInfo(file.fileName()).baseName();
+static QByteArray readFromFile(QFile &file, const QString &sourceName) {
 	if (!file.isOpen()) {
 		file.open(QFile::ReadOnly | QFile::Text);
 	}
@@ -24,10 +22,25 @@ Template::Template(QFile &file, const QTextCodec *textCodec) {
 	file.close();
 	if (data.size() == 0 || file.error()) {
 		qCritical("Template: cannot read from %s, %s", qPrintable(sourceName), qPrintable(file.errorString()));
-	} else {
-		append(textCodec->toUnicode(data));
 	}
+	return data;
 }
+
+Template::Template(QFile &file) {
+	this->warnings = false;
+	sourceName = QFileInfo(file.fileName()).baseName();
+	const auto data = readFromFile(file, sourceName);
+	append(QString::fromUtf8(data));
+}
+
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
+Template::Template(QFile &file, const QTextCodec *textCodec) {
+	this->warnings = false;
+	sourceName = QFileInfo(file.fileName()).baseName();
+	const auto data = readFromFile(file, sourceName);
+	append(textCodec->toUnicode(data));
+}
+#endif
 
 int Template::setVariable(const QString &name, const QString &value) {
 	int count = 0;

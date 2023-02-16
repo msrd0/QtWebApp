@@ -12,7 +12,10 @@
 #include <QMutex>
 #include <QSettings>
 #include <QString>
+
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
 #include <QTextCodec>
+#endif
 
 namespace qtwebapp {
 
@@ -77,8 +80,10 @@ namespace qtwebapp {
 		/** Suffix to the filenames */
 		QString fileNameSuffix;
 
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
 		/** Codec for decoding the files */
 		QTextCodec *textCodec;
+#endif
 	};
 
 } // namespace qtwebapp

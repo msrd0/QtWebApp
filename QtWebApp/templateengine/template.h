@@ -8,7 +8,10 @@
 #include "qtwebappglobal.h"
 
 #include <QFile>
+
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
 #include <QTextCodec>
+#endif
 
 namespace qtwebapp {
 
@@ -99,11 +102,23 @@ namespace qtwebapp {
 		  cache template files by itself, so using this constructor is only recommended
 		  to be used on local filesystem.
 		  @param file File that provides the source text
+		  @see TemplateLoader
+		  @see TemplateCache
+		*/
+		Template(QFile &file);
+
+#ifdef QTWEBAPP_ENABLE_TEXTCODEC
+		/**
+		  Constructor that reads the template from a file. Note that this class does not
+		  cache template files by itself, so using this constructor is only recommended
+		  to be used on local filesystem.
+		  @param file File that provides the source text
 		  @param textCodec Encoding of the source
 		  @see TemplateLoader
 		  @see TemplateCache
 		*/
 		Template(QFile &file, const QTextCodec *textCodec);
+#endif
 
 		/**
 		  Replace a variable by the given value.
