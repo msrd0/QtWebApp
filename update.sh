@@ -7,5 +7,7 @@ for dir in QtWebApp Demo{1,2,3}; do
 done
 
 # download the new upstream sources
-wget -qO- http://stefanfrings.de/qtwebapp/QtWebApp.zip \
-	| bsdtar xf - --strip-components 1
+sourcezip=$(mktemp)
+wget -O $sourcezip http://stefanfrings.de/qtwebapp/QtWebApp.zip
+bsdtar xf $sourcezip --strip-components 1
+rm $sourcezip
