@@ -103,7 +103,7 @@ jobs:
         if: matrix.arch == 'win32_mingw81'
         with:
           tools-only: 'true'
-          tools: 'tools_mingw,8.1.0-1-202004170606,qt.tools.win32_mingw810'
+          tools: 'tools_mingw,qt.tools.win32_mingw810'
 
       - name: Add g++ to PATH
         if: matrix.arch == 'win32_mingw81'
