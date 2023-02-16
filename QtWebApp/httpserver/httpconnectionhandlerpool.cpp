@@ -23,7 +23,9 @@ HttpConnectionHandlerPool::HttpConnectionHandlerPool(const HttpServerConfig &cfg
 
 HttpConnectionHandlerPool::~HttpConnectionHandlerPool() {
 	// delete all connection handlers and wait until their threads are closed
-	foreach (HttpConnectionHandler *handler, pool) { delete handler; }
+	foreach (HttpConnectionHandler *handler, pool) {
+		delete handler;
+	}
 	delete sslConfiguration;
 #ifdef CMAKE_DEBUG
 	qDebug("HttpConnectionHandlerPool (%p): destroyed", this);

@@ -67,7 +67,9 @@ QString LogMessage::toString(const QString &msgFormat, const QString &timestampF
 	// Fill in variables
 	if (decorated.contains("{") && !logVars.isEmpty()) {
 		QList<QString> keys = logVars.keys();
-		foreach (QString key, keys) { decorated.replace("{" + key + "}", logVars.value(key)); }
+		foreach (QString key, keys) {
+			decorated.replace("{" + key + "}", logVars.value(key));
+		}
 	}
 
 	return decorated;
