@@ -36,7 +36,9 @@ QString searchConfigFile() {
 	}
 
 	// not found
-	foreach (QString dir, searchList) { qWarning("%s/%s not found", qPrintable(dir), qPrintable(fileName)); }
+	foreach (QString dir, searchList) {
+		qWarning("%s/%s not found", qPrintable(dir), qPrintable(fileName));
+	}
 	qFatal("Cannot find config file %s", qPrintable(fileName));
 	return nullptr;
 }
