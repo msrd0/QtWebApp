@@ -39,14 +39,12 @@ jobs:
       - name: Build QtWebApp
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ] && [ "$CC" == "clang" ]; then export LDFLAGS=-fuse-ld=lld; fi
-          pushd QtWebApp
           mkdir build
           pushd build
           cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release ..
           make
           sudo make install
           popd # build
-          popd # QtWebApp
         env:
           CC: ${{ matrix.compiler.cc }}
           CXX: ${{ matrix.compiler.cxx }}
@@ -109,7 +107,7 @@ jobs:
         if: matrix.arch == 'win32_mingw81'
         run: echo "$env:IQTA_TOOLS/mingw810_32/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - run: cmake -S QtWebApp -B build-qtwebapp ${{ matrix.generator }} -DCMAKE_BUILD_TYPE=Release
+      - run: cmake -B build-qtwebapp ${{ matrix.generator }} -DCMAKE_BUILD_TYPE=Release
       - run: cmake --build build-qtwebapp
       - run: cmake --build build-qtwebapp --target install
 

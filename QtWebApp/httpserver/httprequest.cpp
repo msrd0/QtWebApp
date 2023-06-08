@@ -369,9 +369,11 @@ void HttpRequest::parseMultiPartFile() {
 #endif
 		QTemporaryFile *uploadedFile = nullptr;
 		QByteArray fieldValue;
+		QByteArray boundaryStart = "--" + boundary;
+		QByteArray boundaryEnd = boundary + "--";
 		while (!tempFile->atEnd() && !finished && !tempFile->error()) {
 			QByteArray line = tempFile->readLine(65536);
-			if (line.startsWith("--" + boundary)) {
+			if (line.startsWith(boundaryStart)) {
 				// Boundary found. Until now we have collected 2 bytes too much,
 				// so remove them from the last result
 				if (fileName.isEmpty() && !fieldName.isEmpty()) {
@@ -403,7 +405,7 @@ void HttpRequest::parseMultiPartFile() {
 						qWarning("HttpRequest: format error, unexpected end of file data");
 					}
 				}
-				if (line.contains(boundary + "--")) {
+				if (line.contains(boundaryEnd)) {
 					finished = true;
 				}
 				break;
